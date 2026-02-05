@@ -1,0 +1,62 @@
+<!--pages/my-favorites/my-favorites.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>{{texts.loading}}</text>
+  </view>
+
+  <!-- 收藏列表 -->
+  <view wx:elif="{{favorites.length > 0}}" class="favorites-list">
+    <view
+      wx:for="{{favorites}}"
+      wx:key="id"
+      class="dj-card"
+    >
+      <view class="dj-content" bindtap="goToDJDetail" data-id="{{item.id}}">
+        <view class="dj-photo">
+          <image
+            src="{{item.photo_url || '/images/default-avatar.png'}}"
+            mode="aspectFill"
+            class="photo"
+          />
+        </view>
+
+        <view class="dj-info">
+          <text class="dj-name">{{item.name}}</text>
+          <text class="dj-city">📍 {{item.city}}</text>
+
+          <view class="rating-row">
+            <view class="stars">
+              <text wx:for="{{item.fullStars}}" wx:key="index" class="star">★</text>
+              <text wx:for="{{item.emptyStars}}" wx:key="index" class="star empty">☆</text>
+            </view>
+            <text class="rating-value">{{item.overall_rating}}</text>
+            <text class="review-count">({{item.review_count}})</text>
+          </view>
+
+          <view wx:if="{{item.styleList.length > 0}}" class="style-tags">
+            <text wx:for="{{item.styleList}}" wx:key="index" class="tag">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="unfavorite-btn" bindtap="removeFavorite" data-id="{{item.id}}" data-name="{{item.name}}">
+        <text class="icon">★</text>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more">
+      <text wx:if="{{loading}}" class="loading-text">{{texts.loading}}</text>
+      <text wx:elif="{{hasMore}}" class="more-btn" bindtap="loadFavorites">{{texts.loadMore}}</text>
+      <text wx:else class="no-more">{{texts.noMore}}</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state">
+    <text class="icon">⭐</text>
+    <text class="text">{{texts.empty}}</text>
+    <button class="explore-btn" bindtap="goToHome">{{texts.goExplore}}</button>
+  </view>
+</view>

@@ -1,0 +1,42 @@
+/* components/rating-stars/rating-stars.wxss */
+
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.rating-stars.interactive .star {
+  cursor: pointer;
+}
+
+/* 星星样式 */
+.star {
+  line-height: 1;
+}
+
+.star.full {
+  color: #FFD700;
+}
+
+.star.empty {
+  color: #DDD;
+}
+
+/* 尺寸变体 */
+.rating-stars.small .star {
+  font-size: 24rpx;
+}
+
+.rating-stars.medium .star {
+  font-size: 32rpx;
+}
+
+.rating-stars.large .star {
+  font-size: 48rpx;
+}
+
+/* 交互效果 */
+.rating-stars.interactive .star:active {
+  transform: scale(1.1);
+}

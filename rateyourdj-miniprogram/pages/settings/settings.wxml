@@ -1,0 +1,74 @@
+<!--pages/settings/settings.wxml-->
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-section">
+    <view wx:if="{{isLoggedIn}}" class="user-info">
+      <image
+        src="{{userInfo.avatar_url || '/images/default-avatar.png'}}"
+        class="avatar"
+        mode="aspectFill"
+      />
+      <view class="user-details">
+        <text class="nickname">{{userInfo.nickname}}</text>
+        <view class="stats">
+          <text class="stat-item">{{reviewCount}} {{texts.reviewCount}}</text>
+          <text class="separator">·</text>
+          <text class="stat-item">{{favoriteCount}} {{texts.favoriteCount}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="login-prompt">
+      <image src="/images/default-avatar.png" class="avatar" mode="aspectFill" />
+      <button class="login-btn" bindtap="handleLogin">{{texts.login}}</button>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <!-- 我的评论 -->
+    <view class="menu-item" bindtap="goToMyReviews">
+      <text class="menu-icon">✍️</text>
+      <text class="menu-label">{{texts.myReviews}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <!-- 我的收藏 -->
+    <view class="menu-item" bindtap="goToMyFavorites">
+      <text class="menu-icon">⭐</text>
+      <text class="menu-label">{{texts.myFavorites}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 设置菜单 -->
+  <view class="menu-section">
+    <!-- 语言设置 -->
+    <view class="menu-item" bindtap="switchLanguage">
+      <text class="menu-icon">🌐</text>
+      <text class="menu-label">{{texts.language}}</text>
+      <text class="menu-value">{{currentLanguage === 'zh-CN' ? texts.chinese : texts.english}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <!-- 清除缓存 -->
+    <view class="menu-item" bindtap="clearCache">
+      <text class="menu-icon">🗑️</text>
+      <text class="menu-label">{{texts.clearCache}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <!-- 关于 -->
+    <view class="menu-item" bindtap="showAbout">
+      <text class="menu-icon">ℹ️</text>
+      <text class="menu-label">{{texts.about}}</text>
+      <text class="menu-value">v1.0.0</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view wx:if="{{isLoggedIn}}" class="logout-section">
+    <button class="logout-btn" bindtap="handleLogout">{{texts.logout}}</button>
+  </view>
+</view>

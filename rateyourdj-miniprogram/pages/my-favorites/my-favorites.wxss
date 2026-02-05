@@ -1,0 +1,191 @@
+/* pages/my-favorites/my-favorites.wxss */
+
+.container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding: 20rpx;
+}
+
+/* 加载状态 */
+.loading {
+  padding: 100rpx 0;
+  text-align: center;
+  color: #999;
+}
+
+/* 收藏列表 */
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding-bottom: 40rpx;
+}
+
+/* DJ卡片 */
+.dj-card {
+  background: #FFF;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  gap: 24rpx;
+  position: relative;
+}
+
+.dj-content {
+  flex: 1;
+  display: flex;
+  gap: 24rpx;
+}
+
+.dj-photo {
+  width: 120rpx;
+  height: 120rpx;
+  flex-shrink: 0;
+}
+
+.dj-photo .photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
+  background-color: #F0F0F0;
+}
+
+.dj-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.dj-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.3;
+  padding-right: 40rpx;
+}
+
+.dj-city {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 24rpx;
+}
+
+.rating-row .stars {
+  display: flex;
+  gap: 2rpx;
+  font-size: 24rpx;
+}
+
+.rating-row .stars .star {
+  color: #FFD700;
+}
+
+.rating-row .stars .star.empty {
+  color: #DDD;
+}
+
+.rating-row .rating-value {
+  font-weight: 700;
+  color: #000;
+  font-size: 28rpx;
+}
+
+.rating-row .review-count {
+  color: #999;
+}
+
+.style-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.style-tags .tag {
+  padding: 6rpx 16rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 20rpx;
+  border-radius: 4rpx;
+  font-weight: 500;
+}
+
+/* 取消收藏按钮 */
+.unfavorite-btn {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unfavorite-btn .icon {
+  font-size: 40rpx;
+  color: #FFD700;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.load-more .loading-text,
+.load-more .no-more {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.load-more .more-btn {
+  display: inline-block;
+  padding: 16rpx 60rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 8rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 150rpx 40rpx;
+  text-align: center;
+}
+
+.empty-state .icon {
+  display: block;
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.3;
+}
+
+.empty-state .text {
+  display: block;
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 50rpx;
+}
+
+.explore-btn {
+  width: 400rpx;
+  margin: 0 auto;
+  padding: 24rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 12rpx;
+}
+
+.explore-btn::after {
+  border: none;
+}

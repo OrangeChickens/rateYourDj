@@ -1,0 +1,20 @@
+<!--components/rating-stars/rating-stars.wxml-->
+<view class="rating-stars {{size}} {{interactive ? 'interactive' : ''}}">
+  <!-- 实心星星 -->
+  <text
+    wx:for="{{fullStars}}"
+    wx:key="index"
+    class="star full"
+    bindtap="onStarTap"
+    data-index="{{index}}"
+  >★</text>
+
+  <!-- 空心星星 -->
+  <text
+    wx:for="{{emptyStars}}"
+    wx:key="index"
+    class="star empty"
+    bindtap="onStarTap"
+    data-index="{{fullStars + index}}"
+  >☆</text>
+</view>

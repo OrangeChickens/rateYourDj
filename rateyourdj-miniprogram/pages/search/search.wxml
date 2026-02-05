@@ -1,0 +1,114 @@
+<!--pages/search/search.wxml-->
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="{{texts.placeholder}}"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        focus="{{true}}"
+      />
+      <text wx:if="{{keyword}}" class="clear-icon" bindtap="clearInput">✕</text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="content">
+    <!-- 未搜索时显示：搜索历史和热门搜索 -->
+    <view wx:if="{{!hasSearched}}" class="search-suggestions">
+      <!-- 搜索历史 -->
+      <view wx:if="{{searchHistory.length > 0}}" class="history-section">
+        <view class="section-header">
+          <text class="title">{{texts.history}}</text>
+          <text class="clear-btn" bindtap="clearHistory">{{texts.clearHistory}}</text>
+        </view>
+        <view class="tag-list">
+          <text
+            wx:for="{{searchHistory}}"
+            wx:key="index"
+            class="tag"
+            bindtap="selectKeyword"
+            data-keyword="{{item}}"
+          >{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 热门搜索 -->
+      <view class="hot-section">
+        <view class="section-header">
+          <text class="title">{{texts.hotSearch}}</text>
+        </view>
+        <view class="tag-list">
+          <text
+            wx:for="{{hotSearches}}"
+            wx:key="index"
+            class="tag hot"
+            bindtap="selectKeyword"
+            data-keyword="{{item}}"
+          >{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索结果 -->
+    <view wx:else class="search-results">
+      <view class="results-header">
+        <text class="title">{{texts.result}}</text>
+        <text class="count">{{searchResults.length}} DJs</text>
+      </view>
+
+      <!-- DJ列表 -->
+      <view wx:if="{{searchResults.length > 0}}" class="dj-list">
+        <view
+          wx:for="{{searchResults}}"
+          wx:key="id"
+          class="dj-card"
+          bindtap="goToDJDetail"
+          data-id="{{item.id}}"
+        >
+          <view class="dj-photo">
+            <image
+              src="{{item.photo_url || '/images/default-avatar.png'}}"
+              mode="aspectFill"
+              class="photo"
+            />
+          </view>
+
+          <view class="dj-info">
+            <text class="dj-name">{{item.name}}</text>
+            <text class="dj-city">📍 {{item.city}}</text>
+
+            <view class="rating-row">
+              <view class="stars">
+                <text wx:for="{{item.fullStars}}" wx:key="index" class="star">★</text>
+                <text wx:for="{{item.emptyStars}}" wx:key="index" class="star empty">☆</text>
+              </view>
+              <text class="rating-value">{{item.overall_rating}}</text>
+              <text class="review-count">({{item.review_count}})</text>
+            </view>
+
+            <view wx:if="{{item.styleList.length > 0}}" class="style-tags">
+              <text wx:for="{{item.styleList}}" wx:key="index" class="tag">{{item}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 加载更多 -->
+        <view class="load-more">
+          <text wx:if="{{searching}}" class="loading">{{texts.loading}}</text>
+          <text wx:elif="{{hasMore}}" class="more-btn" bindtap="loadMore">加载更多</text>
+          <text wx:else class="no-more">没有更多了</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:else class="empty-state">
+        <text class="icon">🔍</text>
+        <text class="text">{{texts.noResult}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

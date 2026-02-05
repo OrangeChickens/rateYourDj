@@ -1,0 +1,29 @@
+<!--pages/city-list/city-list.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>{{texts.loading}}</text>
+  </view>
+
+  <!-- 城市列表 -->
+  <view wx:elif="{{cities.length > 0}}" class="city-list">
+    <view
+      wx:for="{{cities}}"
+      wx:key="city"
+      class="city-item {{selectedCity === item.city ? 'selected' : ''}}"
+      bindtap="selectCity"
+      data-city="{{item.city}}"
+    >
+      <view class="city-info">
+        <text class="city-name">{{item.city}}</text>
+        <text class="dj-count">{{item.dj_count}} DJs</text>
+      </view>
+      <text wx:if="{{selectedCity === item.city}}" class="check-icon">✓</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state">
+    <text>{{texts.noData}}</text>
+  </view>
+</view>

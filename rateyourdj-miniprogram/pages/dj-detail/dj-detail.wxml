@@ -1,0 +1,181 @@
+<!--pages/dj-detail/dj-detail.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>{{texts.loading}}</text>
+  </view>
+
+  <!-- DJ详情 -->
+  <view wx:else class="dj-detail">
+    <!-- DJ头部信息 -->
+    <view class="dj-header">
+      <view class="dj-photo">
+        <image
+          src="{{dj.photo_url || '/images/default-avatar.png'}}"
+          mode="aspectFill"
+          class="photo"
+        />
+      </view>
+
+      <view class="dj-info">
+        <view class="dj-name">{{dj.name}}</view>
+        <view class="dj-meta">
+          <text class="city">{{dj.city}}</text>
+          <text wx:if="{{dj.label}}" class="label">{{dj.label}}</text>
+        </view>
+
+        <!-- 音乐风格标签 -->
+        <view class="style-tags">
+          <text wx:for="{{dj.styleList}}" wx:key="index" class="tag">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 收藏按钮 -->
+      <view class="favorite-btn" bindtap="toggleFavorite">
+        <text class="icon">{{isFavorited ? '★' : '☆'}}</text>
+        <text class="text">{{isFavorited ? texts.unfavorite : texts.favorite}}</text>
+      </view>
+    </view>
+
+    <!-- 评分统计 -->
+    <view class="rating-section">
+      <view class="overall-rating">
+        <view class="rating-value">{{dj.overall_rating}}</view>
+        <view class="stars">
+          <text wx:for="{{dj.overallStars.full}}" wx:key="index" class="star full">★</text>
+          <text wx:for="{{dj.overallStars.empty}}" wx:key="index" class="star empty">☆</text>
+        </view>
+        <view class="review-count">{{dj.review_count}} {{texts.reviews}}</view>
+      </view>
+
+      <view class="rating-details">
+        <view class="rating-item">
+          <text class="label">Set</text>
+          <view class="stars-small">
+            <text wx:for="{{dj.setStars.full}}" wx:key="index" class="star">★</text>
+            <text wx:for="{{dj.setStars.empty}}" wx:key="index" class="star">☆</text>
+          </view>
+          <text class="value">{{dj.set_rating}}</text>
+        </view>
+
+        <view class="rating-item">
+          <text class="label">Performance</text>
+          <view class="stars-small">
+            <text wx:for="{{dj.performanceStars.full}}" wx:key="index" class="star">★</text>
+            <text wx:for="{{dj.performanceStars.empty}}" wx:key="index" class="star">☆</text>
+          </view>
+          <text class="value">{{dj.performance_rating}}</text>
+        </view>
+
+        <view class="rating-item">
+          <text class="label">Personality</text>
+          <view class="stars-small">
+            <text wx:for="{{dj.personalityStars.full}}" wx:key="index" class="star">★</text>
+            <text wx:for="{{dj.personalityStars.empty}}" wx:key="index" class="star">☆</text>
+          </view>
+          <text class="value">{{dj.personality_rating}}</text>
+        </view>
+
+        <view class="rating-item would-choose">
+          <text class="label">{{texts.wouldChooseAgain}}</text>
+          <text class="value highlight">{{dj.would_choose_again_percent}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 评论区域 -->
+    <view class="reviews-section">
+      <view class="section-header">
+        <text class="title">{{texts.reviews}} ({{dj.review_count}})</text>
+        <text class="sort-btn" bindtap="showSortOptions">
+          {{sortOptions[selectedSortIndex]}} ▼
+        </text>
+      </view>
+
+      <!-- 评论列表 -->
+      <view wx:if="{{reviews.length > 0}}" class="review-list">
+        <view wx:for="{{reviews}}" wx:key="id" class="review-card">
+          <view class="review-header">
+            <image
+              src="{{item.is_anonymous ? '/images/anonymous-avatar.png' : item.avatar_url}}"
+              class="avatar"
+            />
+            <view class="user-info">
+              <text class="nickname">{{item.is_anonymous ? 'Anonymous' : item.nickname}}</text>
+              <text class="date">{{item.formattedDate}}</text>
+            </view>
+            <view class="rating">
+              <text wx:for="{{item.stars.full}}" wx:key="index" class="star">★</text>
+              <text wx:for="{{item.stars.empty}}" wx:key="index" class="star empty">☆</text>
+            </view>
+          </view>
+
+          <view class="review-content">
+            <!-- 评分详情 -->
+            <view class="rating-row">
+              <text class="item">Set: {{item.set_rating}}</text>
+              <text class="item">Performance: {{item.performance_rating}}</text>
+              <text class="item">Personality: {{item.personality_rating}}</text>
+            </view>
+
+            <view wx:if="{{item.would_choose_again !== null}}" class="would-choose">
+              <text class="{{item.would_choose_again ? 'yes' : 'no'}}">
+                {{item.would_choose_again ? '✓' : '✗'}} Would choose again
+              </text>
+            </view>
+
+            <!-- 标签 -->
+            <view wx:if="{{item.tagList.length > 0}}" class="tags">
+              <text wx:for="{{item.tagList}}" wx:key="index" class="tag">{{item}}</text>
+            </view>
+
+            <!-- 评论文字 -->
+            <text wx:if="{{item.comment}}" class="comment">{{item.comment}}</text>
+          </view>
+
+          <view class="review-actions">
+            <view class="action" bindtap="markHelpful" data-id="{{item.id}}">
+              <text class="icon">👍</text>
+              <text class="count">{{item.helpful_count}}</text>
+            </view>
+            <view class="action report" bindtap="reportReview" data-id="{{item.id}}">
+              <text class="icon">⚠️</text>
+              <text>Report</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 加载更多 -->
+        <view class="load-more">
+          <text wx:if="{{hasMore && !reviewsLoading}}" class="btn" bindtap="loadMoreReviews">
+            {{texts.loadMore}}
+          </text>
+          <text wx:elif="{{reviewsLoading}}" class="loading-text">{{texts.loading}}</text>
+          <text wx:else class="no-more">{{texts.noMore}}</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:else class="empty-state">
+        <text>{{texts.noReviews}}</text>
+      </view>
+    </view>
+
+    <!-- 底部写评论按钮 -->
+    <view class="write-review-btn" bindtap="goToWriteReview">
+      <text>{{texts.writeReview}}</text>
+    </view>
+  </view>
+
+  <!-- 排序选择器 -->
+  <picker
+    wx:if="{{showSortPicker}}"
+    mode="selector"
+    range="{{sortOptions}}"
+    value="{{selectedSortIndex}}"
+    bindchange="onSortChange"
+    bindcancel="onSortCancel"
+  >
+    <view></view>
+  </picker>
+</view>

@@ -1,0 +1,15 @@
+# WeChat DevTools generated files
+.DS_Store
+*.log
+
+# WeChat DevTools debug files
+**/*.wxss.map
+miniprogram_npm/
+node_modules/
+
+# Build output
+dist/
+
+# Temporary files
+*.tmp
+.cache/

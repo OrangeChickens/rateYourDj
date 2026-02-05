@@ -1,0 +1,172 @@
+<!--pages/review-create/review-create.wxml-->
+<view class="container">
+  <view class="page-header">
+    <text class="dj-name">{{djName}}</text>
+    <text class="subtitle">{{texts.title}}</text>
+  </view>
+
+  <scroll-view scroll-y class="form-content">
+    <!-- 综合评分 -->
+    <view class="rating-section">
+      <view class="section-title">{{texts.rateOverall}} *</view>
+      <view class="stars-input">
+        <text
+          wx:for="{{[1,2,3,4,5]}}"
+          wx:key="index"
+          class="star {{overallRating >= item ? 'active' : ''}}"
+          bindtap="setRating"
+          data-type="overallRating"
+          data-value="{{item}}"
+        >★</text>
+      </view>
+      <text class="rating-value">{{overallRating || '-'}}/5</text>
+    </view>
+
+    <!-- Set评分 -->
+    <view class="rating-section">
+      <view class="section-title">{{texts.rateSet}} *</view>
+      <view class="stars-input">
+        <text
+          wx:for="{{[1,2,3,4,5]}}"
+          wx:key="index"
+          class="star {{setRating >= item ? 'active' : ''}}"
+          bindtap="setRating"
+          data-type="setRating"
+          data-value="{{item}}"
+        >★</text>
+      </view>
+      <text class="rating-value">{{setRating || '-'}}/5</text>
+    </view>
+
+    <!-- 表演力评分 -->
+    <view class="rating-section">
+      <view class="section-title">{{texts.ratePerformance}} *</view>
+      <view class="stars-input">
+        <text
+          wx:for="{{[1,2,3,4,5]}}"
+          wx:key="index"
+          class="star {{performanceRating >= item ? 'active' : ''}}"
+          bindtap="setRating"
+          data-type="performanceRating"
+          data-value="{{item}}"
+        >★</text>
+      </view>
+      <text class="rating-value">{{performanceRating || '-'}}/5</text>
+    </view>
+
+    <!-- 性格评分 -->
+    <view class="rating-section">
+      <view class="section-title">{{texts.ratePersonality}} *</view>
+      <view class="stars-input">
+        <text
+          wx:for="{{[1,2,3,4,5]}}"
+          wx:key="index"
+          class="star {{personalityRating >= item ? 'active' : ''}}"
+          bindtap="setRating"
+          data-type="personalityRating"
+          data-value="{{item}}"
+        >★</text>
+      </view>
+      <text class="rating-value">{{personalityRating || '-'}}/5</text>
+    </view>
+
+    <!-- 是否会再选 -->
+    <view class="toggle-section">
+      <text class="section-title">{{texts.wouldChooseAgain}}</text>
+      <switch
+        checked="{{wouldChooseAgain}}"
+        bindchange="toggleWouldChoose"
+        color="#FFD700"
+      />
+    </view>
+
+    <!-- 标签选择 -->
+    <view class="tags-section">
+      <view class="section-title">{{texts.selectTags}}</view>
+
+      <!-- 音乐风格标签 -->
+      <view class="tag-group">
+        <text class="group-title">Music Style</text>
+        <view class="tag-list">
+          <text
+            wx:for="{{presetTags}}"
+            wx:if="{{item.category === 'style'}}"
+            wx:key="id"
+            class="tag {{selectedTags.indexOf(item.name) > -1 ? 'selected' : ''}}"
+            bindtap="toggleTag"
+            data-name="{{item.name}}"
+          >{{item.name}}</text>
+        </view>
+      </view>
+
+      <!-- 表现力标签 -->
+      <view class="tag-group">
+        <text class="group-title">Performance</text>
+        <view class="tag-list">
+          <text
+            wx:for="{{presetTags}}"
+            wx:if="{{item.category === 'performance'}}"
+            wx:key="id"
+            class="tag {{selectedTags.indexOf(item.name) > -1 ? 'selected' : ''}}"
+            bindtap="toggleTag"
+            data-name="{{item.name}}"
+          >{{item.name}}</text>
+        </view>
+      </view>
+
+      <!-- 性格标签 -->
+      <view class="tag-group">
+        <text class="group-title">Personality</text>
+        <view class="tag-list">
+          <text
+            wx:for="{{presetTags}}"
+            wx:if="{{item.category === 'personality'}}"
+            wx:key="id"
+            class="tag {{selectedTags.indexOf(item.name) > -1 ? 'selected' : ''}}"
+            bindtap="toggleTag"
+            data-name="{{item.name}}"
+          >{{item.name}}</text>
+        </view>
+      </view>
+
+      <view class="selected-count">
+        已选择 {{selectedTags.length}}/{{maxTags}}
+      </view>
+    </view>
+
+    <!-- 文字评论 -->
+    <view class="comment-section">
+      <view class="section-title">{{texts.writeComment}}</view>
+      <textarea
+        class="comment-input"
+        placeholder="{{texts.commentPlaceholder}}"
+        value="{{comment}}"
+        bindinput="onCommentInput"
+        maxlength="500"
+        auto-height
+      />
+      <view class="char-count">{{comment.length}}/500</view>
+    </view>
+
+    <!-- 匿名选项 -->
+    <view class="anonymous-section">
+      <text class="section-title">{{texts.anonymous}}</text>
+      <switch
+        checked="{{isAnonymous}}"
+        bindchange="toggleAnonymous"
+        color="#FFD700"
+      />
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <button
+        class="submit-btn {{submitting ? 'disabled' : ''}}"
+        bindtap="submitReview"
+        disabled="{{submitting}}"
+      >
+        {{submitting ? '提交中...' : texts.submit}}
+      </button>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,67 @@
+/* pages/city-list/city-list.wxss */
+
+.container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+}
+
+/* 加载状态 */
+.loading {
+  padding: 100rpx 0;
+  text-align: center;
+  color: #999;
+}
+
+/* 城市列表 */
+.city-list {
+  background: #FFF;
+}
+
+.city-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+  transition: background-color 0.2s;
+}
+
+.city-item:last-child {
+  border-bottom: none;
+}
+
+.city-item.selected {
+  background-color: #FFF9E6;
+}
+
+.city-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.city-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #000;
+}
+
+.dj-count {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.check-icon {
+  font-size: 40rpx;
+  color: #FFD700;
+  font-weight: 700;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 150rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+}

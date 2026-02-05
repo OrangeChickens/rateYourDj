@@ -1,0 +1,403 @@
+/* pages/dj-detail/dj-detail.wxss */
+
+.container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+  padding-bottom: 100rpx;
+}
+
+/* 加载状态 */
+.loading {
+  padding: 100rpx 0;
+  text-align: center;
+  color: #999;
+}
+
+/* DJ头部 */
+.dj-header {
+  background: #FFF;
+  padding: 40rpx;
+  display: flex;
+  gap: 30rpx;
+  position: relative;
+}
+
+.dj-photo {
+  width: 180rpx;
+  height: 180rpx;
+  flex-shrink: 0;
+}
+
+.dj-photo .photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  background-color: #F0F0F0;
+}
+
+.dj-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.dj-name {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.3;
+}
+
+.dj-meta {
+  display: flex;
+  gap: 20rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.dj-meta .city::before {
+  content: '📍 ';
+}
+
+.dj-meta .label {
+  color: #999;
+}
+
+.style-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.style-tags .tag {
+  padding: 8rpx 20rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 24rpx;
+  border-radius: 6rpx;
+  font-weight: 500;
+}
+
+/* 收藏按钮 */
+.favorite-btn {
+  position: absolute;
+  top: 40rpx;
+  right: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.favorite-btn .icon {
+  font-size: 48rpx;
+  color: #FFD700;
+}
+
+.favorite-btn .text {
+  font-size: 20rpx;
+  color: #666;
+}
+
+/* 评分统计 */
+.rating-section {
+  background: #FFF;
+  margin-top: 20rpx;
+  padding: 40rpx;
+}
+
+.overall-rating {
+  text-align: center;
+  padding-bottom: 40rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.rating-value {
+  font-size: 96rpx;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
+}
+
+.overall-rating .stars {
+  margin: 20rpx 0;
+  font-size: 40rpx;
+}
+
+.overall-rating .stars .star.full {
+  color: #FFD700;
+}
+
+.overall-rating .stars .star.empty {
+  color: #DDD;
+}
+
+.review-count {
+  font-size: 28rpx;
+  color: #999;
+  margin-top: 16rpx;
+}
+
+.rating-details {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  margin-top: 40rpx;
+}
+
+.rating-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.rating-item .label {
+  flex: 1;
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.rating-item .stars-small {
+  font-size: 28rpx;
+}
+
+.rating-item .stars-small .star {
+  color: #FFD700;
+}
+
+.rating-item .value {
+  width: 80rpx;
+  text-align: right;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000;
+}
+
+.rating-item.would-choose {
+  padding-top: 20rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.rating-item .value.highlight {
+  color: #FFD700;
+  font-size: 40rpx;
+}
+
+/* 评论区域 */
+.reviews-section {
+  background: #FFF;
+  margin-top: 20rpx;
+  padding: 40rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.section-header .title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000;
+}
+
+.section-header .sort-btn {
+  font-size: 26rpx;
+  color: #666;
+  padding: 8rpx 20rpx;
+  background-color: #F5F5F5;
+  border-radius: 6rpx;
+}
+
+/* 评论卡片 */
+.review-card {
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.review-card:last-child {
+  border-bottom: none;
+}
+
+.review-header {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.review-header .avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background-color: #F0F0F0;
+}
+
+.review-header .user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.review-header .nickname {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000;
+}
+
+.review-header .date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.review-header .rating {
+  font-size: 28rpx;
+}
+
+.review-header .rating .star {
+  color: #FFD700;
+}
+
+.review-header .rating .star.empty {
+  color: #DDD;
+}
+
+/* 评论内容 */
+.review-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.rating-row {
+  display: flex;
+  gap: 30rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.rating-row .item {
+  display: flex;
+  align-items: center;
+}
+
+.would-choose {
+  font-size: 24rpx;
+}
+
+.would-choose .yes {
+  color: #52C41A;
+  font-weight: 500;
+}
+
+.would-choose .no {
+  color: #FF4D4F;
+  font-weight: 500;
+}
+
+.review-content .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.review-content .tags .tag {
+  padding: 8rpx 20rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 22rpx;
+  border-radius: 6rpx;
+  font-weight: 500;
+}
+
+.review-content .comment {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 评论操作 */
+.review-actions {
+  display: flex;
+  gap: 40rpx;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #F5F5F5;
+}
+
+.review-actions .action {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.review-actions .action .icon {
+  font-size: 28rpx;
+}
+
+.review-actions .action.report {
+  margin-left: auto;
+  color: #999;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.load-more .btn {
+  display: inline-block;
+  padding: 16rpx 60rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 8rpx;
+}
+
+.load-more .loading-text,
+.load-more .no-more {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 100rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 底部写评论按钮 */
+.write-review-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 40rpx;
+  background-color: #FFF;
+  border-top: 1rpx solid #F0F0F0;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.write-review-btn text {
+  display: block;
+  width: 100%;
+  padding: 24rpx;
+  background-color: #FFD700;
+  color: #000;
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 12rpx;
+}

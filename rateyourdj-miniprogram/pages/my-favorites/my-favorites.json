@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "My Favorites",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}
