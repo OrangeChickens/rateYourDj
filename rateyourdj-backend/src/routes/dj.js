@@ -7,6 +7,7 @@ const {
   searchDJs,
   getHotDJs,
   getCities,
+  getLabels,
   createDJ
 } = require('../controllers/djController');
 
@@ -24,6 +25,9 @@ router.get('/hot/list', getHotDJs);
 
 // 获取所有城市
 router.get('/cities/all', getCities);
+
+// 获取所有厂牌
+router.get('/labels/all', getLabels);
 
 // 创建DJ（仅管理员）
 router.post('/create', requireAdmin, createDJ);

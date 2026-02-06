@@ -112,6 +112,20 @@ async function getCities(req, res, next) {
   }
 }
 
+// 获取所有厂牌
+async function getLabels(req, res, next) {
+  try {
+    const labels = await DJ.getLabels();
+
+    res.json({
+      success: true,
+      data: labels
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // 创建DJ（仅管理员）
 async function createDJ(req, res, next) {
   try {
@@ -163,5 +177,6 @@ module.exports = {
   searchDJs,
   getHotDJs,
   getCities,
+  getLabels,
   createDJ
 };

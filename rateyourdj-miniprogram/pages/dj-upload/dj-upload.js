@@ -1,5 +1,6 @@
 // pages/dj-upload/dj-upload.js
 import { showLoading, hideLoading, showToast } from '../../utils/util';
+import { djAPI, tagAPI } from '../../utils/api';
 
 const app = getApp();
 
@@ -7,14 +8,25 @@ Page({
   data: {
     name: '',
     city: '',
+    cityRegion: ['', '', ''], // 省、市、区
+    customCityItem: '全部',
+
     label: '',
-    music_style: '',
+    labelIndex: 0,
+    labelOptions: [],
+    labelList: [], // 实际的厂牌列表数据
+    showCustomLabel: false,
+    customLabel: '',
+
+    selectedStyles: [], // 选中的音乐风格
+    styleTagOptions: [], // 可选的风格标签
+
     photo_url: '',
     localImagePath: '',
     uploading: false
   },
 
-  onLoad() {
+  async onLoad() {
     // 检查管理员权限
     const userInfo = app.globalData.userInfo;
     const token = app.globalData.token;
@@ -61,6 +73,50 @@ Page({
     }
 
     console.log('权限检查通过，用户是管理员');
+
+    // 加载数据
+    await this.loadFormData();
+  },
+
+  // 加载表单数据
+  async loadFormData() {
+    try {
+      showLoading('加载中...');
+
+      // 并行加载厂牌和标签数据
+      const [labelsRes, tagsRes] = await Promise.all([
+        djAPI.getLabels(),
+        tagAPI.getPresets()
+      ]);
+
+      console.log('厂牌数据:', labelsRes);
+      console.log('标签数据:', tagsRes);
+
+      // 处理厂牌数据
+      if (labelsRes.success) {
+        const labelList = labelsRes.data || [];
+        const labelOptions = [...labelList.map(item => item.label), '自定义'];
+
+        this.setData({
+          labelList,
+          labelOptions
+        });
+      }
+
+      // 处理标签数据 - 只使用 style 类别的标签
+      if (tagsRes.success) {
+        const styleTagOptions = tagsRes.data.style || [];
+        this.setData({
+          styleTagOptions
+        });
+      }
+
+    } catch (error) {
+      console.error('加载表单数据失败:', error);
+      showToast('加载数据失败，请重试');
+    } finally {
+      hideLoading();
+    }
   },
 
   // 输入DJ名称
@@ -68,19 +124,73 @@ Page({
     this.setData({ name: e.detail.value });
   },
 
-  // 输入城市
-  onCityInput(e) {
-    this.setData({ city: e.detail.value });
+  // 城市选择变化
+  onCityChange(e) {
+    console.log('城市选择:', e.detail.value);
+    const cityRegion = e.detail.value;
+    // 使用市级城市，如果没有则使用省级
+    const city = cityRegion[1] || cityRegion[0];
+
+    this.setData({
+      cityRegion,
+      city
+    });
   },
 
-  // 输入厂牌
-  onLabelInput(e) {
-    this.setData({ label: e.detail.value });
+  // 厂牌选择变化
+  onLabelChange(e) {
+    const index = e.detail.value;
+    const selectedLabel = this.data.labelOptions[index];
+
+    console.log('厂牌选择:', selectedLabel);
+
+    if (selectedLabel === '自定义') {
+      // 显示自定义输入框
+      this.setData({
+        labelIndex: index,
+        label: '',
+        showCustomLabel: true,
+        customLabel: ''
+      });
+    } else {
+      // 使用已有厂牌
+      this.setData({
+        labelIndex: index,
+        label: selectedLabel,
+        showCustomLabel: false,
+        customLabel: ''
+      });
+    }
   },
 
-  // 输入音乐风格
-  onStyleInput(e) {
-    this.setData({ music_style: e.detail.value });
+  // 自定义厂牌输入
+  onCustomLabelInput(e) {
+    this.setData({
+      customLabel: e.detail.value,
+      label: e.detail.value
+    });
+  },
+
+  // 音乐风格标签点击
+  onStyleTagTap(e) {
+    const tagName = e.currentTarget.dataset.name;
+    const selectedStyles = [...this.data.selectedStyles];
+    const index = selectedStyles.indexOf(tagName);
+
+    if (index > -1) {
+      // 已选中，取消选择
+      selectedStyles.splice(index, 1);
+    } else {
+      // 未选中，添加选择
+      if (selectedStyles.length >= 5) {
+        showToast('最多选择 5 个音乐风格');
+        return;
+      }
+      selectedStyles.push(tagName);
+    }
+
+    this.setData({ selectedStyles });
+    console.log('已选择音乐风格:', selectedStyles);
   },
 
   // 选择图片
@@ -92,13 +202,7 @@ Page({
       success: (settingRes) => {
         console.log('当前权限设置:', settingRes.authSetting);
 
-        // 检查 scope.writePhotosAlbum（相册写入权限，但读取相册不需要这个）
-        // 检查 scope.camera（相机权限）
-        const albumAuth = settingRes.authSetting['scope.writePhotosAlbum'];
         const cameraAuth = settingRes.authSetting['scope.camera'];
-
-        console.log('相册权限:', albumAuth);
-        console.log('相机权限:', cameraAuth);
 
         // 如果明确拒绝了相机权限，引导用户开启
         if (cameraAuth === false) {
@@ -120,7 +224,7 @@ Page({
           return;
         }
 
-        // 直接尝试选择图片（微信会自动弹出授权）
+        // 直接尝试选择图片
         this.doChooseImage();
       },
       fail: (error) => {
@@ -193,7 +297,6 @@ Page({
             wx.openSetting({
               success: (openRes) => {
                 console.log('打开设置成功:', openRes.authSetting);
-                // 检查用户是否开启了权限
                 if (openRes.authSetting['scope.camera'] || openRes.authSetting['scope.writePhotosAlbum']) {
                   showToast('权限已开启，请重试');
                 }
@@ -285,18 +388,16 @@ Page({
 
       showLoading('正在创建DJ...');
 
+      // 组装音乐风格字符串
+      const music_style = this.data.selectedStyles.join(',') || null;
+
       // 提交DJ信息
-      const res = await app.request({
-        url: '/dj/create',
-        method: 'POST',
-        data: {
-          name: this.data.name,
-          city: this.data.city,
-          label: this.data.label || null,
-          music_style: this.data.music_style || null,
-          photo_url: photoUrl
-        },
-        needAuth: true
+      const res = await djAPI.create({
+        name: this.data.name,
+        city: this.data.city,
+        label: this.data.label || null,
+        music_style: music_style,
+        photo_url: photoUrl
       });
 
       console.log('创建DJ响应:', res);

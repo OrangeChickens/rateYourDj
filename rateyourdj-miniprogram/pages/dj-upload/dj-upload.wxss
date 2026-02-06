@@ -88,3 +88,55 @@
 .submit-btn[disabled] {
   background: #ccc;
 }
+
+/* Picker 样式 */
+.picker {
+  width: 100%;
+  height: 80rpx;
+  background: #f7f7f7;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  color: #333;
+}
+
+.picker:empty::before {
+  content: '请选择';
+  color: #999;
+}
+
+/* 标签选择器样式 */
+.tag-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  padding: 20rpx;
+  background: #f7f7f7;
+  border-radius: 8rpx;
+}
+
+.tag-item {
+  padding: 12rpx 24rpx;
+  background: white;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 40rpx;
+  font-size: 26rpx;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.tag-item.selected {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border-color: #FFD700;
+  color: white;
+  font-weight: bold;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+}

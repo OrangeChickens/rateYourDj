@@ -119,6 +119,18 @@ class DJ {
     return rows;
   }
 
+  // 获取所有厂牌及统计
+  static async getLabels() {
+    const [rows] = await pool.query(
+      `SELECT label, COUNT(*) as dj_count
+       FROM djs
+       WHERE label IS NOT NULL AND label != ''
+       GROUP BY label
+       ORDER BY dj_count DESC`
+    );
+    return rows;
+  }
+
   // 更新DJ评分
   static async updateRatings(id, ratings) {
     const {

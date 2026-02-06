@@ -46,6 +46,24 @@ export const djAPI = {
       url: '/dj/cities/all',
       method: 'GET'
     });
+  },
+
+  // 获取厂牌列表
+  getLabels() {
+    return app.request({
+      url: '/dj/labels/all',
+      method: 'GET'
+    });
+  },
+
+  // 创建DJ（管理员）
+  create(data) {
+    return app.request({
+      url: '/dj/create',
+      method: 'POST',
+      data,
+      needAuth: true
+    });
   }
 };
 

@@ -26,37 +26,61 @@
       />
     </view>
 
-    <!-- 城市 -->
+    <!-- 城市选择 - 使用微信 region 组件 -->
     <view class="form-item">
       <text class="label">城市 *</text>
-      <input
-        class="input"
-        placeholder="请输入城市"
-        value="{{city}}"
-        bindinput="onCityInput"
-      />
+      <picker
+        mode="region"
+        bindchange="onCityChange"
+        value="{{cityRegion}}"
+        custom-item="{{customCityItem}}"
+      >
+        <view class="picker">
+          {{city || '请选择城市'}}
+        </view>
+      </picker>
     </view>
 
-    <!-- 厂牌 -->
+    <!-- 厂牌选择 - 可选择现有或自定义 -->
     <view class="form-item">
       <text class="label">厂牌</text>
+      <picker
+        bindchange="onLabelChange"
+        value="{{labelIndex}}"
+        range="{{labelOptions}}"
+      >
+        <view class="picker">
+          {{label || '请选择厂牌（选填）'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 自定义厂牌输入框（当选择"自定义"时显示） -->
+    <view class="form-item" wx:if="{{showCustomLabel}}">
+      <text class="label">自定义厂牌</text>
       <input
         class="input"
-        placeholder="请输入厂牌名称（选填）"
-        value="{{label}}"
-        bindinput="onLabelInput"
+        placeholder="请输入厂牌名称"
+        value="{{customLabel}}"
+        bindinput="onCustomLabelInput"
       />
     </view>
 
-    <!-- 音乐风格 -->
+    <!-- 音乐风格选择 - 多选标签 -->
     <view class="form-item">
       <text class="label">音乐风格</text>
-      <input
-        class="input"
-        placeholder="请输入音乐风格，用逗号分隔（如: House,Techno）"
-        value="{{music_style}}"
-        bindinput="onStyleInput"
-      />
+      <view class="tag-selector">
+        <view
+          class="tag-item {{selectedStyles.indexOf(item.name) > -1 ? 'selected' : ''}}"
+          wx:for="{{styleTagOptions}}"
+          wx:key="id"
+          bindtap="onStyleTagTap"
+          data-name="{{item.name}}"
+        >
+          {{item.name}}
+        </view>
+      </view>
+      <view class="hint-text">最多选择 5 个标签</view>
     </view>
 
     <!-- 提交按钮 -->
