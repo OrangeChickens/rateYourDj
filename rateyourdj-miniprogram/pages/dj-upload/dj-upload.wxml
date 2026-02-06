@@ -1,0 +1,71 @@
+<!--pages/dj-upload/dj-upload.wxml-->
+<view class="container">
+  <view class="form-section">
+    <view class="form-title">上传DJ资料</view>
+
+    <!-- DJ照片 -->
+    <view class="form-item">
+      <text class="label">DJ照片 *</text>
+      <view class="image-upload" bindtap="chooseImage">
+        <image wx:if="{{localImagePath}}" src="{{localImagePath}}" mode="aspectFill" class="preview-image" />
+        <view wx:else class="upload-placeholder">
+          <text class="upload-icon">📷</text>
+          <text class="upload-text">点击选择照片</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- DJ名称 -->
+    <view class="form-item">
+      <text class="label">DJ名称 *</text>
+      <input
+        class="input"
+        placeholder="请输入DJ名称"
+        value="{{name}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <!-- 城市 -->
+    <view class="form-item">
+      <text class="label">城市 *</text>
+      <input
+        class="input"
+        placeholder="请输入城市"
+        value="{{city}}"
+        bindinput="onCityInput"
+      />
+    </view>
+
+    <!-- 厂牌 -->
+    <view class="form-item">
+      <text class="label">厂牌</text>
+      <input
+        class="input"
+        placeholder="请输入厂牌名称（选填）"
+        value="{{label}}"
+        bindinput="onLabelInput"
+      />
+    </view>
+
+    <!-- 音乐风格 -->
+    <view class="form-item">
+      <text class="label">音乐风格</text>
+      <input
+        class="input"
+        placeholder="请输入音乐风格，用逗号分隔（如: House,Techno）"
+        value="{{music_style}}"
+        bindinput="onStyleInput"
+      />
+    </view>
+
+    <!-- 提交按钮 -->
+    <button
+      class="submit-btn"
+      bindtap="handleSubmit"
+      disabled="{{uploading}}"
+    >
+      {{uploading ? '上传中...' : '提交'}}
+    </button>
+  </view>
+</view>

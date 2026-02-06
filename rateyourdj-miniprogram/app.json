@@ -6,7 +6,8 @@
     "pages/review-create/review-create",
     "pages/my-favorites/my-favorites",
     "pages/settings/settings",
-    "pages/city-list/city-list"
+    "pages/city-list/city-list",
+    "pages/dj-upload/dj-upload"
   ],
   "window": {
     "backgroundTextStyle": "light",

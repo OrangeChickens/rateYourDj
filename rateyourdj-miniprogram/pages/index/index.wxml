@@ -40,7 +40,7 @@
             <text class="dj-name">{{item.name}}</text>
             <view class="dj-meta">
               <text class="dj-city">📍 {{item.city}}</text>
-              <text class="dj-label" wx:if="{{item.label}}">{{item.label}}</text>
+              <text class="dj-label" wx:if="{{item.label}}">厂牌：{{item.label}}</text>
             </view>
           </view>
         </view>

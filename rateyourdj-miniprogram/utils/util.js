@@ -90,17 +90,16 @@ export function hideLoading() {
 /**
  * 显示确认对话框
  */
-export function showConfirm(content, title = '提示') {
-  return new Promise((resolve, reject) => {
+export function showConfirm(title, content) {
+  return new Promise((resolve) => {
     wx.showModal({
-      title,
-      content,
+      title: title || '提示',
+      content: content || '',
       success: (res) => {
-        if (res.confirm) {
-          resolve();
-        } else {
-          reject();
-        }
+        resolve(res.confirm);
+      },
+      fail: () => {
+        resolve(false);
       }
     });
   });
@@ -145,8 +144,6 @@ export function checkLogin() {
  * 要求登录
  */
 export async function requireLogin() {
-  const app = getApp();
-
   if (checkLogin()) {
     return true;
   }
@@ -154,18 +151,21 @@ export async function requireLogin() {
   try {
     const res = await wx.showModal({
       title: '提示',
-      content: '此功能需要登录，是否立即登录？'
+      content: '此功能需要登录，请前往"我的"页面登录',
+      confirmText: '去登录',
+      cancelText: '取消'
     });
 
     if (res.confirm) {
-      await app.login();
-      return true;
+      // 跳转到设置页面让用户手动登录
+      wx.switchTab({
+        url: '/pages/settings/settings'
+      });
     }
 
     return false;
   } catch (error) {
-    console.error('登录失败:', error);
-    showToast('登录失败，请重试');
+    console.error('提示登录失败:', error);
     return false;
   }
 }

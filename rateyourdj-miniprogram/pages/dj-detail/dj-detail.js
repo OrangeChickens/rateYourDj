@@ -164,7 +164,9 @@ Page({
         i18n.t('common.loginConfirm')
       );
       if (confirmed) {
-        app.login();
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
       }
       return;
     }
@@ -242,7 +244,9 @@ Page({
         i18n.t('common.loginConfirm')
       );
       if (confirmed) {
-        app.login();
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
       }
       return;
     }
@@ -272,7 +276,9 @@ Page({
         i18n.t('common.loginConfirm')
       );
       if (confirmed) {
-        app.login();
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
       }
       return;
     }
@@ -308,7 +314,9 @@ Page({
         i18n.t('common.loginConfirm')
       ).then(confirmed => {
         if (confirmed) {
-          app.login();
+          wx.switchTab({
+            url: '/pages/settings/settings'
+          });
         }
       });
       return;

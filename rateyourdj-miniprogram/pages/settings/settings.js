@@ -9,6 +9,7 @@ Page({
   data: {
     userInfo: null,
     isLoggedIn: false,
+    isAdmin: false,
     currentLanguage: 'zh-CN',
     reviewCount: 0,
     favoriteCount: 0,
@@ -30,7 +31,7 @@ Page({
 
   // 更新语言
   updateLanguage() {
-    const currentLang = i18n.getLanguage();
+    const currentLang = i18n.getLocale();
     this.setData({
       currentLanguage: currentLang,
       texts: {
@@ -42,7 +43,6 @@ Page({
         language: i18n.t('settings.language'),
         chinese: i18n.t('settings.chinese'),
         english: i18n.t('settings.english'),
-        clearCache: i18n.t('settings.cache'),
         about: i18n.t('profile.about'),
         version: i18n.t('settings.version'),
         logout: i18n.t('profile.logout'),
@@ -58,12 +58,18 @@ Page({
     const userInfo = app.globalData.userInfo;
     this.setData({
       isLoggedIn: !!token,
-      userInfo: userInfo
+      userInfo: userInfo,
+      isAdmin: userInfo && userInfo.role === 'admin'
     });
   },
 
   // 加载用户资料
   async loadUserProfile() {
+    // 确保有 token 才加载
+    if (!app.globalData.token) {
+      return;
+    }
+
     try {
       const res = await userAPI.getProfile();
       if (res.success) {
@@ -77,12 +83,30 @@ Page({
       }
     } catch (error) {
       console.error('加载用户资料失败:', error);
+      // 如果加载失败，可能是 token 过期，清除登录状态
+      if (error.message && error.message.includes('登录')) {
+        this.setData({
+          isLoggedIn: false,
+          userInfo: null
+        });
+      }
     }
   },
 
   // 登录
-  handleLogin() {
-    app.login();
+  async handleLogin() {
+    try {
+      await app.login();
+      // 登录成功后刷新页面状态
+      this.checkLoginStatus();
+      this.loadUserProfile();
+    } catch (error) {
+      console.error('登录失败:', error);
+      // 用户取消授权不需要提示
+      if (error.errMsg && !error.errMsg.includes('cancel')) {
+        showToast('登录失败，请重试');
+      }
+    }
   },
 
   // 切换语言
@@ -91,7 +115,7 @@ Page({
       itemList: [this.data.texts.chinese, this.data.texts.english],
       success: (res) => {
         const lang = res.tapIndex === 0 ? 'zh-CN' : 'en-US';
-        i18n.setLanguage(lang);
+        i18n.setLocale(lang);
         this.updateLanguage();
 
         // 通知其他页面更新语言
@@ -108,7 +132,7 @@ Page({
   // 查看我的评论
   goToMyReviews() {
     if (!this.data.isLoggedIn) {
-      app.login();
+      showToast('请先登录');
       return;
     }
 
@@ -120,7 +144,7 @@ Page({
   // 查看我的收藏
   goToMyFavorites() {
     if (!this.data.isLoggedIn) {
-      app.login();
+      showToast('请先登录');
       return;
     }
 
@@ -129,34 +153,11 @@ Page({
     });
   },
 
-  // 清除缓存
-  async clearCache() {
-    const confirmed = await showConfirm(
-      this.data.texts.clearCache,
-      i18n.t('settings.clearCacheConfirm')
-    );
-
-    if (!confirmed) return;
-
-    try {
-      showLoading();
-      // 清除本地缓存（保留登录信息和语言设置）
-      const token = wx.getStorageSync('token');
-      const language = wx.getStorageSync('language');
-
-      wx.clearStorageSync();
-
-      // 恢复关键信息
-      if (token) wx.setStorageSync('token', token);
-      if (language) wx.setStorageSync('language', language);
-
-      showToast(i18n.t('settings.clearCacheSuccess'));
-    } catch (error) {
-      console.error('清除缓存失败:', error);
-      showToast(i18n.t('error.operationFailed'));
-    } finally {
-      hideLoading();
-    }
+  // 跳转到上传DJ页面
+  goToUploadDJ() {
+    wx.navigateTo({
+      url: '/pages/dj-upload/dj-upload'
+    });
   },
 
   // 关于
@@ -172,8 +173,8 @@ Page({
   // 退出登录
   async handleLogout() {
     const confirmed = await showConfirm(
-      this.data.texts.logout,
-      i18n.t('profile.logoutConfirm')
+      '退出登录',
+      '确定要退出登录吗？'
     );
 
     if (!confirmed) return;

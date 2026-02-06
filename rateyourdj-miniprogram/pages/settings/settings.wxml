@@ -41,6 +41,15 @@
     </view>
   </view>
 
+  <!-- 管理员菜单 -->
+  <view class="menu-section" wx:if="{{isAdmin}}">
+    <view class="menu-item" bindtap="goToUploadDJ">
+      <text class="menu-icon">➕</text>
+      <text class="menu-label">上传DJ资料</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
   <!-- 设置菜单 -->
   <view class="menu-section">
     <!-- 语言设置 -->
@@ -48,13 +57,6 @@
       <text class="menu-icon">🌐</text>
       <text class="menu-label">{{texts.language}}</text>
       <text class="menu-value">{{currentLanguage === 'zh-CN' ? texts.chinese : texts.english}}</text>
-      <text class="menu-arrow">›</text>
-    </view>
-
-    <!-- 清除缓存 -->
-    <view class="menu-item" bindtap="clearCache">
-      <text class="menu-icon">🗑️</text>
-      <text class="menu-label">{{texts.clearCache}}</text>
       <text class="menu-arrow">›</text>
     </view>
 

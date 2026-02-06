@@ -21,7 +21,7 @@
         <view class="dj-name">{{dj.name}}</view>
         <view class="dj-meta">
           <text class="city">{{dj.city}}</text>
-          <text wx:if="{{dj.label}}" class="label">{{dj.label}}</text>
+          <text wx:if="{{dj.label}}" class="label">厂牌：{{dj.label}}</text>
         </view>
 
         <!-- 音乐风格标签 -->

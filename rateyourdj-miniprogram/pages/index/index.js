@@ -43,7 +43,26 @@ Page({
     try {
       this.setData({ loading: true });
 
-      const res = await djAPI.getHotList(10);
+      // 调试信息
+      const app = getApp();
+      console.log('=== 开始加载热门DJ ===');
+      console.log('API Base URL:', app.globalData.apiBaseUrl);
+      console.log('选中城市:', this.data.selectedCity);
+
+      // 根据选中城市加载DJ列表
+      const params = {
+        limit: 20,
+        sort: 'overall_rating',
+        order: 'DESC'
+      };
+
+      // 如果选中了具体城市，添加城市过滤
+      if (this.data.selectedCity && this.data.selectedCity !== '全部城市') {
+        params.city = this.data.selectedCity;
+      }
+
+      const res = await djAPI.getList(params);
+      console.log('API 响应:', res);
 
       if (res.success) {
         // 处理数据：生成星星和标签列表
