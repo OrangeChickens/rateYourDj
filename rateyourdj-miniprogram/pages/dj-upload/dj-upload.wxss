@@ -129,8 +129,8 @@
 }
 
 .tag-item.selected {
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  border-color: #FFD700;
+  background: #333;
+  border-color: #333;
   color: white;
   font-weight: bold;
 }

@@ -106,9 +106,12 @@ Page({
       // 处理标签数据 - 只使用 style 类别的标签
       if (tagsRes.success) {
         const styleTagOptions = tagsRes.data.style || [];
+        console.log('音乐风格标签数量:', styleTagOptions.length);
+        console.log('音乐风格标签:', styleTagOptions);
         this.setData({
           styleTagOptions
         });
+        console.log('setData 后 styleTagOptions:', this.data.styleTagOptions);
       }
 
     } catch (error) {
@@ -173,13 +176,21 @@ Page({
 
   // 音乐风格标签点击
   onStyleTagTap(e) {
+    console.log('标签点击事件触发');
+    console.log('event:', e);
+    console.log('dataset:', e.currentTarget.dataset);
+
     const tagName = e.currentTarget.dataset.name;
+    console.log('点击的标签:', tagName);
+    console.log('当前已选择:', this.data.selectedStyles);
+
     const selectedStyles = [...this.data.selectedStyles];
     const index = selectedStyles.indexOf(tagName);
 
     if (index > -1) {
       // 已选中，取消选择
       selectedStyles.splice(index, 1);
+      console.log('取消选择:', tagName);
     } else {
       // 未选中，添加选择
       if (selectedStyles.length >= 5) {
@@ -187,10 +198,11 @@ Page({
         return;
       }
       selectedStyles.push(tagName);
+      console.log('添加选择:', tagName);
     }
 
     this.setData({ selectedStyles });
-    console.log('已选择音乐风格:', selectedStyles);
+    console.log('更新后已选择:', selectedStyles);
   },
 
   // 选择图片
