@@ -1,4 +1,21 @@
 <!--pages/dj-upload/dj-upload.wxml-->
+
+<!-- WXS 模块：用于检查标签是否被选中 -->
+<wxs module="tools">
+  var isSelected = function(selectedStyles, tagName) {
+    for (var i = 0; i < selectedStyles.length; i++) {
+      if (selectedStyles[i] === tagName) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  module.exports = {
+    isSelected: isSelected
+  };
+</wxs>
+
 <view class="container">
   <view class="form-section">
     <view class="form-title">上传DJ资料</view>
@@ -71,14 +88,14 @@
       <text class="label">音乐风格</text>
       <view class="tag-selector">
         <view
-          class="tag-item {{selectedStyles.indexOf(item.name) > -1 ? 'selected' : ''}}"
+          class="tag-item {{tools.isSelected(selectedStyles, item.name) ? 'selected' : ''}}"
           wx:for="{{styleTagOptions}}"
           wx:key="id"
           bindtap="onStyleTagTap"
           data-name="{{item.name}}"
         >
           {{item.name}}
-          <text style="font-size: 20rpx; color: red;">[{{selectedStyles.indexOf(item.name)}}]</text>
+          <text style="font-size: 20rpx; color: red;">[{{tools.isSelected(selectedStyles, item.name) ? 'Y' : 'N'}}]</text>
         </view>
       </view>
       <view class="hint-text">最多选择 5 个标签</view>
