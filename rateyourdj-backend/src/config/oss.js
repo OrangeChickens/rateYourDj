@@ -11,7 +11,7 @@ function createOSSClient() {
 }
 
 // 上传文件到OSS
-async function uploadToOSS(file, filename) {
+async function uploadToOSS(file, filename, djName = 'unknown', djLabel = 'independent') {
   console.log('🔧 创建OSS客户端...');
   console.log('  - Region:', process.env.OSS_REGION);
   console.log('  - Bucket:', process.env.OSS_BUCKET);
@@ -19,11 +19,18 @@ async function uploadToOSS(file, filename) {
 
   const client = createOSSClient();
 
-  // 构建文件路径：dj-photos/2024/02/filename.jpg
+  // 清理DJ名字和厂牌，移除特殊字符，用于文件路径
+  const safeDjName = djName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5-]/g, '_');
+  const safeDjLabel = djLabel.replace(/[^a-zA-Z0-9\u4e00-\u9fa5-]/g, '_');
+
+  // 构建文件路径：dj-photos/厂牌/DJ名字/2024-02-06_filename.jpg
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  const objectName = `dj-photos/${year}/${month}/${filename}`;
+  const day = String(date.getDate()).padStart(2, '0');
+  const datePrefix = `${year}-${month}-${day}`;
+
+  const objectName = `dj-photos/${safeDjLabel}/${safeDjName}/${datePrefix}_${filename}`;
 
   console.log('📂 OSS路径:', objectName);
   console.log('📄 本地文件:', file.path);

@@ -13,10 +13,16 @@ async function uploadImage(req, res, next) {
       });
     }
 
+    // 获取DJ信息（从表单参数）
+    const djName = req.body.dj_name || 'unknown';
+    const djLabel = req.body.dj_label || 'independent';
+
     console.log('📤 开始上传图片:');
     console.log('  - 文件名:', req.file.filename);
     console.log('  - 大小:', (req.file.size / 1024).toFixed(2), 'KB');
     console.log('  - 类型:', req.file.mimetype);
+    console.log('  - DJ名字:', djName);
+    console.log('  - DJ厂牌:', djLabel);
     console.log('  - 环境:', process.env.NODE_ENV);
     console.log('  - OSS Bucket:', process.env.OSS_BUCKET || '未配置');
 
@@ -27,7 +33,8 @@ async function uploadImage(req, res, next) {
       console.log('🚀 使用阿里云OSS上传...');
 
       try {
-        imageUrl = await uploadToOSS(req.file, req.file.filename);
+        // 传递DJ信息用于构建文件路径
+        imageUrl = await uploadToOSS(req.file, req.file.filename, djName, djLabel);
         console.log('✅ OSS上传成功:', imageUrl);
 
         // 删除本地临时文件

@@ -211,12 +211,20 @@ Page({
   // 上传图片到阿里云
   async uploadImageToAliyun(filePath) {
     console.log('开始上传图片:', filePath);
+    console.log('DJ信息:', {
+      name: this.data.name,
+      label: this.data.label || 'independent'
+    });
 
     return new Promise((resolve, reject) => {
       wx.uploadFile({
         url: `${app.globalData.apiBaseUrl}/upload/image`,
         filePath: filePath,
         name: 'file',
+        formData: {
+          dj_name: this.data.name || 'unknown',
+          dj_label: this.data.label || 'independent'
+        },
         header: {
           'Authorization': `Bearer ${app.globalData.token}`
         },
