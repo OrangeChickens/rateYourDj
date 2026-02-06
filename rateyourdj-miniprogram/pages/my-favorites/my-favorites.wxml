@@ -23,15 +23,22 @@
 
         <view class="dj-info">
           <text class="dj-name">{{item.name}}</text>
-          <text class="dj-city">📍 {{item.city}}</text>
+          <text class="dj-city">{{item.city}}</text>
 
           <view class="rating-row">
             <view class="stars">
               <text wx:for="{{item.fullStars}}" wx:key="index" class="star">★</text>
               <text wx:for="{{item.emptyStars}}" wx:key="index" class="star empty">☆</text>
             </view>
-            <text class="rating-value">{{item.overall_rating}}</text>
+            <text class="rating-value rating-{{item.overall_rating >= 4 ? 'high' : item.overall_rating >= 3 ? 'medium' : 'low'}}">{{item.overall_rating}}</text>
             <text class="review-count">({{item.review_count}})</text>
+          </view>
+
+          <view wx:if="{{item.would_choose_again_percent !== null}}" class="would-choose-row">
+            <text class="would-choose-text">
+              <text class="would-choose-percent">{{item.would_choose_again_percent}}%</text>
+              <text class="would-choose-label">会再次捧场</text>
+            </text>
           </view>
 
           <view wx:if="{{item.styleList.length > 0}}" class="style-tags">
@@ -55,7 +62,7 @@
 
   <!-- 空状态 -->
   <view wx:else class="empty-state">
-    <text class="icon">⭐</text>
+    <text class="icon">—</text>
     <text class="text">{{texts.empty}}</text>
     <button class="explore-btn" bindtap="goToHome">{{texts.goExplore}}</button>
   </view>

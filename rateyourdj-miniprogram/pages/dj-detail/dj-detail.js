@@ -23,7 +23,6 @@ Page({
     sortType: 'created_at', // created_at, helpful_count, overall_rating
     sortOrder: 'DESC',
     sortOptions: [],
-    showSortPicker: false,
     selectedSortIndex: 0,
 
     // 国际化文本
@@ -45,6 +44,18 @@ Page({
     this.checkFavoriteStatus();
   },
 
+  onShow() {
+    // 检查是否需要刷新数据（从写评论页返回）
+    const needRefresh = getApp().globalData.needRefreshDJDetail;
+    if (needRefresh) {
+      console.log('检测到需要刷新DJ详情');
+      this.loadDJDetail();
+      this.loadReviews();
+      // 清除刷新标记
+      getApp().globalData.needRefreshDJDetail = false;
+    }
+  },
+
   // 更新语言
   updateLanguage() {
     const sortOptions = [
@@ -62,6 +73,11 @@ Page({
         favorite: i18n.t('djDetail.favorite'),
         unfavorite: i18n.t('djDetail.unfavorite'),
         wouldChooseAgain: i18n.t('djDetail.wouldChooseAgain'),
+        set: i18n.t('djDetail.setRating'),
+        performance: i18n.t('djDetail.performance'),
+        personality: i18n.t('djDetail.personality'),
+        anonymousUser: i18n.t('review.anonymousUser'),
+        report: i18n.t('review.report'),
         loading: i18n.t('common.loading'),
         noReviews: i18n.t('djDetail.noReviews'),
         loadMore: i18n.t('common.loadMore'),
@@ -191,47 +207,41 @@ Page({
 
   // 显示排序选择器
   showSortOptions() {
-    this.setData({ showSortPicker: true });
-  },
+    wx.showActionSheet({
+      itemList: this.data.sortOptions,
+      success: (res) => {
+        const index = res.tapIndex;
+        let sortType = 'created_at';
+        let sortOrder = 'DESC';
 
-  // 选择排序方式
-  onSortChange(e) {
-    const index = e.detail.value;
-    let sortType = 'created_at';
-    let sortOrder = 'DESC';
+        switch (index) {
+          case 0: // 最新
+            sortType = 'created_at';
+            sortOrder = 'DESC';
+            break;
+          case 1: // 最有帮助
+            sortType = 'helpful_count';
+            sortOrder = 'DESC';
+            break;
+          case 2: // 评分最高
+            sortType = 'overall_rating';
+            sortOrder = 'DESC';
+            break;
+          case 3: // 评分最低
+            sortType = 'overall_rating';
+            sortOrder = 'ASC';
+            break;
+        }
 
-    switch (index) {
-      case 0: // 最新
-        sortType = 'created_at';
-        sortOrder = 'DESC';
-        break;
-      case 1: // 最有帮助
-        sortType = 'helpful_count';
-        sortOrder = 'DESC';
-        break;
-      case 2: // 评分最高
-        sortType = 'overall_rating';
-        sortOrder = 'DESC';
-        break;
-      case 3: // 评分最低
-        sortType = 'overall_rating';
-        sortOrder = 'ASC';
-        break;
-    }
+        this.setData({
+          sortType,
+          sortOrder,
+          selectedSortIndex: index
+        });
 
-    this.setData({
-      sortType,
-      sortOrder,
-      selectedSortIndex: index,
-      showSortPicker: false
+        this.loadReviews();
+      }
     });
-
-    this.loadReviews();
-  },
-
-  // 取消排序选择
-  onSortCancel() {
-    this.setData({ showSortPicker: false });
   },
 
   // 标记评论有帮助

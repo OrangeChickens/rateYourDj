@@ -3,14 +3,14 @@
   <!-- 搜索框 -->
   <view class="search-section">
     <view class="search-bar" bindtap="goToSearch">
-      <text class="search-icon">🔍</text>
+      <text class="search-icon">SEARCH</text>
       <text class="search-placeholder">{{searchPlaceholder}}</text>
     </view>
   </view>
 
   <!-- 城市选择 -->
   <view class="city-section" bindtap="goToCityList">
-    <text class="city-icon">📍</text>
+    <text class="city-icon">CITY</text>
     <text class="city-name">{{selectedCity}}</text>
     <text class="city-arrow">▼</text>
   </view>
@@ -39,8 +39,8 @@
           <view class="dj-info">
             <text class="dj-name">{{item.name}}</text>
             <view class="dj-meta">
-              <text class="dj-city">📍 {{item.city}}</text>
-              <text class="dj-label" wx:if="{{item.label}}">厂牌：{{item.label}}</text>
+              <text class="dj-city">{{item.city}}</text>
+              <text class="dj-label" wx:if="{{item.label}}">{{item.label}}</text>
             </view>
           </view>
         </view>
@@ -49,13 +49,19 @@
           <!-- 评分 -->
           <view class="rating-section">
             <view class="overall-rating">
-              <text class="rating-number">{{item.overall_rating}}</text>
+              <text class="rating-number rating-{{item.overall_rating >= 4 ? 'high' : item.overall_rating >= 3 ? 'medium' : 'low'}}">{{item.overall_rating}}</text>
               <view class="rating-stars">
                 <text class="star star-filled" wx:for="{{item.fullStars}}" wx:key="index">★</text>
                 <text class="star star-empty" wx:for="{{item.emptyStars}}" wx:key="index">★</text>
               </view>
             </view>
-            <text class="review-count">{{item.review_count}}条评论</text>
+            <view class="rating-info">
+              <text class="review-count">{{item.review_count}}条评论</text>
+              <text class="would-choose" wx:if="{{item.would_choose_again_percent !== null}}">
+                <text class="would-choose-percent">{{item.would_choose_again_percent}}%</text>
+                <text class="would-choose-label">会再次捧场</text>
+              </text>
+            </view>
           </view>
 
           <!-- 标签 -->
@@ -66,15 +72,21 @@
       </view>
     </view>
 
-    <!-- 加载中 -->
-    <view class="loading" wx:if="{{loading}}">
+    <!-- 初始加载中 -->
+    <view class="loading" wx:if="{{loading && currentPage === 1}}">
       <text>{{loadingText}}</text>
     </view>
 
     <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{!loading && hotDJs.length === 0}}">
-      <text class="empty-icon">🎵</text>
+    <view class="empty-state" wx:elif="{{!loading && hotDJs.length === 0}}">
+      <text class="empty-icon">—</text>
       <text class="empty-text">{{noDataText}}</text>
+    </view>
+
+    <!-- 底部加载状态 -->
+    <view class="load-more" wx:if="{{hotDJs.length > 0}}">
+      <text wx:if="{{loading}}" class="loading-text">{{loadingText}}</text>
+      <text wx:elif="{{!hasMore}}" class="no-more">没有更多了</text>
     </view>
   </view>
 </view>

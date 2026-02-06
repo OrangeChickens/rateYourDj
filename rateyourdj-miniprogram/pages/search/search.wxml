@@ -3,7 +3,7 @@
   <!-- 搜索框 -->
   <view class="search-bar">
     <view class="search-input-wrapper">
-      <text class="search-icon">🔍</text>
+      <text class="search-icon">SEARCH</text>
       <input
         class="search-input"
         type="text"
@@ -12,7 +12,7 @@
         bindinput="onSearchInput"
         focus="{{true}}"
       />
-      <text wx:if="{{keyword}}" class="clear-icon" bindtap="clearInput">✕</text>
+      <text wx:if="{{keyword}}" class="clear-icon" bindtap="clearInput">×</text>
     </view>
   </view>
 
@@ -79,7 +79,7 @@
 
           <view class="dj-info">
             <text class="dj-name">{{item.name}}</text>
-            <text class="dj-city">📍 {{item.city}}</text>
+            <text class="dj-city">{{item.city}}</text>
 
             <view class="rating-row">
               <view class="stars">
@@ -106,7 +106,7 @@
 
       <!-- 空状态 -->
       <view wx:else class="empty-state">
-        <text class="icon">🔍</text>
+        <text class="icon">—</text>
         <text class="text">{{texts.noResult}}</text>
       </view>
     </view>

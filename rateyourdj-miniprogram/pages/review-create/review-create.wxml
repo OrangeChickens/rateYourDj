@@ -86,51 +86,54 @@
 
       <!-- 音乐风格标签 -->
       <view class="tag-group">
-        <text class="group-title">Music Style</text>
+        <text class="group-title">{{texts.styleTags}}</text>
         <view class="tag-list">
-          <text
+          <view
             wx:for="{{presetTags}}"
             wx:if="{{item.category === 'style'}}"
             wx:key="id"
-            class="tag {{selectedTags.indexOf(item.name) > -1 ? 'selected' : ''}}"
+            class="tag {{item.selected ? 'selected' : ''}}"
             bindtap="toggleTag"
             data-name="{{item.name}}"
-          >{{item.name}}</text>
+            data-index="{{index}}"
+          >{{item.name}}</view>
         </view>
       </view>
 
       <!-- 表现力标签 -->
       <view class="tag-group">
-        <text class="group-title">Performance</text>
+        <text class="group-title">{{texts.performanceTags}}</text>
         <view class="tag-list">
-          <text
+          <view
             wx:for="{{presetTags}}"
             wx:if="{{item.category === 'performance'}}"
             wx:key="id"
-            class="tag {{selectedTags.indexOf(item.name) > -1 ? 'selected' : ''}}"
+            class="tag {{item.selected ? 'selected' : ''}}"
             bindtap="toggleTag"
             data-name="{{item.name}}"
-          >{{item.name}}</text>
+            data-index="{{index}}"
+          >{{item.name}}</view>
         </view>
       </view>
 
       <!-- 性格标签 -->
       <view class="tag-group">
-        <text class="group-title">Personality</text>
+        <text class="group-title">{{texts.personalityTags}}</text>
         <view class="tag-list">
-          <text
+          <view
             wx:for="{{presetTags}}"
             wx:if="{{item.category === 'personality'}}"
             wx:key="id"
-            class="tag {{selectedTags.indexOf(item.name) > -1 ? 'selected' : ''}}"
+            class="tag {{item.selected ? 'selected' : ''}}"
             bindtap="toggleTag"
             data-name="{{item.name}}"
-          >{{item.name}}</text>
+            data-index="{{index}}"
+          >{{item.name}}</view>
         </view>
       </view>
 
       <view class="selected-count">
-        已选择 {{selectedTags.length}}/{{maxTags}}
+        {{texts.tagsSelected}} {{selectedTags.length}}/{{maxTags}}
       </view>
     </view>
 
@@ -165,7 +168,7 @@
         bindtap="submitReview"
         disabled="{{submitting}}"
       >
-        {{submitting ? '提交中...' : texts.submit}}
+        {{submitting ? texts.submitting : texts.submit}}
       </button>
     </view>
   </scroll-view>

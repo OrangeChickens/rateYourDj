@@ -21,6 +21,13 @@ Page({
   },
 
   onShow() {
+    // 设置 TabBar 选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 1
+      });
+    }
+
     // 每次显示时检查登录状态并加载数据
     if (requireLogin()) {
       this.loadFavorites();
@@ -51,7 +58,7 @@ Page({
       }
 
       const page = append ? this.data.currentPage + 1 : 1;
-      const res = await userAPI.getFavorites({ page, limit: 20 });
+      const res = await userAPI.getFavorites({ page, limit: 10 });
 
       if (res.success) {
         // 处理数据

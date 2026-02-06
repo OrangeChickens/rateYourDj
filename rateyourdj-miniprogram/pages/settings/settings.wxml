@@ -30,14 +30,14 @@
   <view class="menu-section">
     <!-- 我的评论 -->
     <view class="menu-item" bindtap="goToMyReviews">
-      <text class="menu-icon">✍️</text>
+      <text class="menu-icon">REV</text>
       <text class="menu-label">{{texts.myReviews}}</text>
       <text class="menu-arrow">›</text>
     </view>
 
     <!-- 我的收藏 -->
     <view class="menu-item" bindtap="goToMyFavorites">
-      <text class="menu-icon">⭐</text>
+      <text class="menu-icon">FAV</text>
       <text class="menu-label">{{texts.myFavorites}}</text>
       <text class="menu-arrow">›</text>
     </view>
@@ -46,7 +46,7 @@
   <!-- 管理员菜单 -->
   <view class="menu-section" wx:if="{{isAdmin}}">
     <view class="menu-item" bindtap="goToUploadDJ">
-      <text class="menu-icon">➕</text>
+      <text class="menu-icon">ADD</text>
       <text class="menu-label">上传DJ资料</text>
       <text class="menu-arrow">›</text>
     </view>
@@ -56,7 +56,7 @@
   <view class="menu-section">
     <!-- 语言设置 -->
     <view class="menu-item" bindtap="switchLanguage">
-      <text class="menu-icon">🌐</text>
+      <text class="menu-icon">LANG</text>
       <text class="menu-label">{{texts.language}}</text>
       <text class="menu-value">{{currentLanguage === 'zh-CN' ? texts.chinese : texts.english}}</text>
       <text class="menu-arrow">›</text>
@@ -64,7 +64,7 @@
 
     <!-- 关于 -->
     <view class="menu-item" bindtap="showAbout">
-      <text class="menu-icon">ℹ️</text>
+      <text class="menu-icon">INFO</text>
       <text class="menu-label">{{texts.about}}</text>
       <text class="menu-value">v1.0.0</text>
       <text class="menu-arrow">›</text>

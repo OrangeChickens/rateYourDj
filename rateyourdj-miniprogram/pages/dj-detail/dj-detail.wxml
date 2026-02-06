@@ -21,7 +21,9 @@
         <view class="dj-name">{{dj.name}}</view>
         <view class="dj-meta">
           <text class="city">{{dj.city}}</text>
-          <text wx:if="{{dj.label}}" class="label">厂牌：{{dj.label}}</text>
+        </view>
+        <view class="dj-meta" wx:if="{{dj.label}}">
+          <text class="label">厂牌：{{dj.label}}</text>
         </view>
 
         <!-- 音乐风格标签 -->
@@ -50,7 +52,7 @@
 
       <view class="rating-details">
         <view class="rating-item">
-          <text class="label">Set</text>
+          <text class="label">{{texts.set}}</text>
           <view class="stars-small">
             <text wx:for="{{dj.setStars.full}}" wx:key="index" class="star">★</text>
             <text wx:for="{{dj.setStars.empty}}" wx:key="index" class="star">☆</text>
@@ -59,7 +61,7 @@
         </view>
 
         <view class="rating-item">
-          <text class="label">Performance</text>
+          <text class="label">{{texts.performance}}</text>
           <view class="stars-small">
             <text wx:for="{{dj.performanceStars.full}}" wx:key="index" class="star">★</text>
             <text wx:for="{{dj.performanceStars.empty}}" wx:key="index" class="star">☆</text>
@@ -68,7 +70,7 @@
         </view>
 
         <view class="rating-item">
-          <text class="label">Personality</text>
+          <text class="label">{{texts.personality}}</text>
           <view class="stars-small">
             <text wx:for="{{dj.personalityStars.full}}" wx:key="index" class="star">★</text>
             <text wx:for="{{dj.personalityStars.empty}}" wx:key="index" class="star">☆</text>
@@ -78,6 +80,7 @@
 
         <view class="rating-item would-choose">
           <text class="label">{{texts.wouldChooseAgain}}</text>
+          <view class="stars-small"></view>
           <text class="value highlight">{{dj.would_choose_again_percent}}%</text>
         </view>
       </view>
@@ -101,7 +104,7 @@
               class="avatar"
             />
             <view class="user-info">
-              <text class="nickname">{{item.is_anonymous ? 'Anonymous' : item.nickname}}</text>
+              <text class="nickname">{{item.is_anonymous ? texts.anonymousUser : item.nickname}}</text>
               <text class="date">{{item.formattedDate}}</text>
             </view>
             <view class="rating">
@@ -113,14 +116,14 @@
           <view class="review-content">
             <!-- 评分详情 -->
             <view class="rating-row">
-              <text class="item">Set: {{item.set_rating}}</text>
-              <text class="item">Performance: {{item.performance_rating}}</text>
-              <text class="item">Personality: {{item.personality_rating}}</text>
+              <text class="item">{{texts.set}}: {{item.set_rating}}</text>
+              <text class="item">{{texts.performance}}: {{item.performance_rating}}</text>
+              <text class="item">{{texts.personality}}: {{item.personality_rating}}</text>
             </view>
 
             <view wx:if="{{item.would_choose_again !== null}}" class="would-choose">
               <text class="{{item.would_choose_again ? 'yes' : 'no'}}">
-                {{item.would_choose_again ? '✓' : '✗'}} Would choose again
+                {{item.would_choose_again ? '✓' : '✗'}} {{texts.wouldChooseAgain}}
               </text>
             </view>
 
@@ -139,8 +142,8 @@
               <text class="count">{{item.helpful_count}}</text>
             </view>
             <view class="action report" bindtap="reportReview" data-id="{{item.id}}">
-              <text class="icon">⚠️</text>
-              <text>Report</text>
+              <text class="icon">!</text>
+              <text>{{texts.report}}</text>
             </view>
           </view>
         </view>
@@ -166,16 +169,4 @@
       <text>{{texts.writeReview}}</text>
     </view>
   </view>
-
-  <!-- 排序选择器 -->
-  <picker
-    wx:if="{{showSortPicker}}"
-    mode="selector"
-    range="{{sortOptions}}"
-    value="{{selectedSortIndex}}"
-    bindchange="onSortChange"
-    bindcancel="onSortCancel"
-  >
-    <view></view>
-  </picker>
 </view>

@@ -1,8 +1,8 @@
-/* pages/search/search.wxss */
+/* pages/search/search.wxss - NTS 风格 */
 
 .container {
   min-height: 100vh;
-  background-color: #F5F5F5;
+  background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
 }
@@ -10,69 +10,82 @@
 /* 搜索框 */
 .search-bar {
   background: #FFF;
-  padding: 20rpx 40rpx;
-  border-bottom: 1rpx solid #F0F0F0;
+  padding: 32rpx 48rpx;
+  border-bottom: 3rpx solid #000;
 }
 
 .search-input-wrapper {
   display: flex;
   align-items: center;
-  background-color: #F5F5F5;
-  border-radius: 40rpx;
-  padding: 16rpx 32rpx;
+  background-color: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  padding: 24rpx 32rpx;
   gap: 16rpx;
 }
 
 .search-icon {
-  font-size: 32rpx;
-  color: #999;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .search-input {
   flex: 1;
-  font-size: 28rpx;
-  color: #333;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #000;
 }
 
 .clear-icon {
   font-size: 32rpx;
-  color: #999;
+  font-weight: 700;
+  color: #000;
   padding: 8rpx;
 }
 
 /* 内容区域 */
 .content {
   flex: 1;
-  padding: 20rpx;
+  padding: 48rpx 32rpx;
 }
 
 /* 搜索建议 */
 .search-suggestions {
-  padding: 20rpx;
+  padding: 0;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 32rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #000;
 }
 
 .section-header .title {
-  font-size: 30rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: 700;
   color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .section-header .clear-btn {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 /* 历史和热门搜索 */
 .history-section,
 .hot-section {
-  margin-bottom: 60rpx;
+  margin-bottom: 80rpx;
 }
 
 .tag-list {
@@ -82,173 +95,206 @@
 }
 
 .tag-list .tag {
-  padding: 12rpx 28rpx;
+  padding: 16rpx 32rpx;
   background-color: #FFF;
-  color: #666;
-  font-size: 26rpx;
-  border-radius: 40rpx;
-  border: 1rpx solid #E0E0E0;
+  color: #000;
+  font-size: 22rpx;
+  font-weight: 700;
+  border-radius: 0;
+  border: 2rpx solid #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .tag-list .tag.hot {
-  background-color: #FFF9E6;
-  border-color: #FFD700;
-  color: #000;
+  background-color: #000;
+  border-color: #000;
+  color: #FFF;
 }
 
 /* 搜索结果 */
 .search-results {
-  padding: 20rpx;
+  padding: 0;
 }
 
 .results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 32rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #000;
 }
 
 .results-header .title {
-  font-size: 30rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: 700;
   color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .results-header .count {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 /* DJ卡片 */
 .dj-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 32rpx;
 }
 
 .dj-card {
   background: #FFF;
-  border-radius: 12rpx;
-  padding: 30rpx;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  padding: 48rpx;
   display: flex;
-  gap: 24rpx;
+  gap: 32rpx;
 }
 
 .dj-photo {
-  width: 120rpx;
-  height: 120rpx;
+  width: 140rpx;
+  height: 140rpx;
   flex-shrink: 0;
 }
 
 .dj-photo .photo {
   width: 100%;
   height: 100%;
-  border-radius: 8rpx;
+  border-radius: 0;
   background-color: #F0F0F0;
+  border: 2rpx solid #000;
 }
 
 .dj-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 20rpx;
 }
 
 .dj-name {
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: 700;
   color: #000;
-  line-height: 1.3;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .dj-city {
-  font-size: 24rpx;
-  color: #666;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .rating-row {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  font-size: 24rpx;
+  gap: 16rpx;
+  font-size: 20rpx;
 }
 
 .rating-row .stars {
   display: flex;
-  gap: 2rpx;
-  font-size: 24rpx;
+  gap: 4rpx;
+  font-size: 20rpx;
 }
 
 .rating-row .stars .star {
-  color: #FFD700;
+  color: #000;
 }
 
 .rating-row .stars .star.empty {
-  color: #DDD;
+  color: #CCCCCC;
 }
 
 .rating-row .rating-value {
   font-weight: 700;
   color: #000;
-  font-size: 28rpx;
+  font-size: 32rpx;
+  letter-spacing: -1rpx;
 }
 
 .rating-row .review-count {
-  color: #999;
+  color: #000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .style-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8rpx;
+  gap: 16rpx;
 }
 
 .style-tags .tag {
-  padding: 6rpx 16rpx;
-  background-color: #FFD700;
+  padding: 12rpx 24rpx;
+  background-color: #FFF;
   color: #000;
   font-size: 20rpx;
-  border-radius: 4rpx;
-  font-weight: 500;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 /* 加载更多 */
 .load-more {
   text-align: center;
-  padding: 40rpx 0;
+  padding: 64rpx 0;
 }
 
 .load-more .loading,
 .load-more .no-more {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .load-more .more-btn {
   display: inline-block;
-  padding: 16rpx 60rpx;
-  background-color: #FFD700;
-  color: #000;
-  font-size: 28rpx;
-  font-weight: 600;
-  border-radius: 8rpx;
+  padding: 28rpx 80rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 /* 空状态 */
 .empty-state {
-  padding: 150rpx 0;
+  padding: 200rpx 0;
   text-align: center;
 }
 
 .empty-state .icon {
   display: block;
   font-size: 120rpx;
-  margin-bottom: 30rpx;
-  opacity: 0.3;
+  margin-bottom: 48rpx;
+  opacity: 0.2;
 }
 
 .empty-state .text {
   display: block;
-  font-size: 28rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
   color: #999;
 }

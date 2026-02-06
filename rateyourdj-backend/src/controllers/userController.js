@@ -142,10 +142,11 @@ async function getUserReviews(req, res, next) {
 async function getSearchHistory(req, res, next) {
   try {
     const [history] = await pool.query(
-      `SELECT DISTINCT keyword
+      `SELECT keyword, MAX(created_at) as last_searched
        FROM search_history
        WHERE user_id = ?
-       ORDER BY created_at DESC
+       GROUP BY keyword
+       ORDER BY last_searched DESC
        LIMIT 10`,
       [req.user.userId]
     );

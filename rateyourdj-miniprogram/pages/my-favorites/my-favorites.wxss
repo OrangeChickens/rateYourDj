@@ -1,189 +1,259 @@
-/* pages/my-favorites/my-favorites.wxss */
+/* pages/my-favorites/my-favorites.wxss - NTS 风格 */
 
 .container {
   min-height: 100vh;
-  background-color: #F5F5F5;
-  padding: 20rpx;
+  background-color: #FFFFFF;
+  padding: 48rpx 32rpx;
 }
 
 /* 加载状态 */
 .loading {
-  padding: 100rpx 0;
+  padding: 160rpx 0;
   text-align: center;
-  color: #999;
+  color: #000;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 /* 收藏列表 */
 .favorites-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  padding-bottom: 40rpx;
+  gap: 32rpx;
+  padding-bottom: 64rpx;
 }
 
 /* DJ卡片 */
 .dj-card {
   background: #FFF;
-  border-radius: 12rpx;
-  padding: 30rpx;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  padding: 48rpx;
   display: flex;
-  gap: 24rpx;
+  gap: 32rpx;
   position: relative;
 }
 
 .dj-content {
   flex: 1;
   display: flex;
-  gap: 24rpx;
+  gap: 32rpx;
 }
 
 .dj-photo {
-  width: 120rpx;
-  height: 120rpx;
+  width: 140rpx;
+  height: 140rpx;
   flex-shrink: 0;
 }
 
 .dj-photo .photo {
   width: 100%;
   height: 100%;
-  border-radius: 8rpx;
+  border-radius: 0;
   background-color: #F0F0F0;
+  border: 2rpx solid #000;
 }
 
 .dj-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 20rpx;
 }
 
 .dj-name {
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: 700;
   color: #000;
-  line-height: 1.3;
-  padding-right: 40rpx;
+  line-height: 1.2;
+  padding-right: 60rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .dj-city {
-  font-size: 24rpx;
-  color: #666;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .rating-row {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  font-size: 24rpx;
+  gap: 16rpx;
+  font-size: 20rpx;
 }
 
 .rating-row .stars {
   display: flex;
-  gap: 2rpx;
-  font-size: 24rpx;
+  gap: 4rpx;
+  font-size: 20rpx;
 }
 
 .rating-row .stars .star {
-  color: #FFD700;
+  color: #000;
 }
 
 .rating-row .stars .star.empty {
-  color: #DDD;
+  color: #CCCCCC;
 }
 
 .rating-row .rating-value {
   font-weight: 700;
   color: #000;
-  font-size: 28rpx;
+  font-size: 32rpx;
+  padding: 0;
+  border-radius: 0;
+  line-height: 1;
+  letter-spacing: -1rpx;
+}
+
+.rating-row .rating-value.rating-high {
+  background-color: transparent;
+  color: #000;
+}
+
+.rating-row .rating-value.rating-medium {
+  background-color: transparent;
+  color: #000;
+}
+
+.rating-row .rating-value.rating-low {
+  background-color: transparent;
+  color: #000;
 }
 
 .rating-row .review-count {
-  color: #999;
+  color: #000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.would-choose-row {
+  margin-top: 8rpx;
+}
+
+.would-choose-text {
+  font-size: 20rpx;
+}
+
+.would-choose-percent {
+  color: #000;
+  font-weight: 700;
+  font-size: 24rpx;
+}
+
+.would-choose-label {
+  color: #666;
+  font-weight: 600;
+  margin-left: 4rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .style-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8rpx;
+  gap: 16rpx;
 }
 
 .style-tags .tag {
-  padding: 6rpx 16rpx;
-  background-color: #FFD700;
+  padding: 12rpx 24rpx;
+  background-color: #FFF;
   color: #000;
   font-size: 20rpx;
-  border-radius: 4rpx;
-  font-weight: 500;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 /* 取消收藏按钮 */
 .unfavorite-btn {
   position: absolute;
-  top: 30rpx;
-  right: 30rpx;
-  width: 50rpx;
-  height: 50rpx;
+  top: 48rpx;
+  right: 48rpx;
+  width: 60rpx;
+  height: 60rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .unfavorite-btn .icon {
-  font-size: 40rpx;
-  color: #FFD700;
+  font-size: 48rpx;
+  color: #000;
 }
 
 /* 加载更多 */
 .load-more {
   text-align: center;
-  padding: 40rpx 0;
+  padding: 64rpx 0;
 }
 
 .load-more .loading-text,
 .load-more .no-more {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .load-more .more-btn {
   display: inline-block;
-  padding: 16rpx 60rpx;
-  background-color: #FFD700;
-  color: #000;
-  font-size: 28rpx;
-  font-weight: 600;
-  border-radius: 8rpx;
+  padding: 28rpx 80rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 /* 空状态 */
 .empty-state {
-  padding: 150rpx 40rpx;
+  padding: 200rpx 48rpx;
   text-align: center;
 }
 
 .empty-state .icon {
   display: block;
   font-size: 120rpx;
-  margin-bottom: 30rpx;
-  opacity: 0.3;
+  margin-bottom: 48rpx;
+  opacity: 0.2;
 }
 
 .empty-state .text {
   display: block;
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 50rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 64rpx;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .explore-btn {
   width: 400rpx;
   margin: 0 auto;
-  padding: 24rpx;
-  background-color: #FFD700;
-  color: #000;
-  font-size: 28rpx;
-  font-weight: 600;
-  border-radius: 12rpx;
+  padding: 32rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .explore-btn::after {

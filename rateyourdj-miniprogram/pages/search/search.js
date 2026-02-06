@@ -146,7 +146,7 @@ Page({
       this.setData({ searching: true });
 
       const page = append ? this.data.currentPage + 1 : 1;
-      const res = await djAPI.search(keyword.trim(), page, 20);
+      const res = await djAPI.search(keyword.trim(), page, 10);
 
       if (res.success) {
         // 处理搜索结果

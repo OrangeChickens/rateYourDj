@@ -5,6 +5,8 @@ App({
   globalData: {
     userInfo: null,
     token: null,
+    // 页面刷新标记
+    needRefreshDJDetail: false,
     // 生产环境：使用域名
     apiBaseUrl: 'https://rateyourdj.pbrick.cn/api',
     // 真机调试：使用电脑局域网 IP（手机无法访问 localhost）
@@ -155,7 +157,8 @@ App({
         header,
         success: (res) => {
           console.log(`[响应] ${method} ${fullUrl}`, res);
-          if (res.statusCode === 200) {
+          // 2xx 状态码都视为成功
+          if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(res.data);
           } else if (res.statusCode === 401) {
             // token 过期，清除登录信息

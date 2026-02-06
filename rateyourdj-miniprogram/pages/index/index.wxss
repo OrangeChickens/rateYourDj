@@ -1,104 +1,129 @@
-/* 首页样式 */
+/* 首页样式 - NTS 风格 */
 .container {
-  padding-bottom: 32rpx;
+  padding-bottom: 48rpx;
 }
 
 /* 搜索区域 */
 .search-section {
-  padding: 32rpx;
+  padding: 48rpx 32rpx;
   background-color: #FFFFFF;
+  border-bottom: 2rpx solid #000000;
 }
 
 .search-bar {
-  background-color: #F5F5F5;
-  border-radius: 12rpx;
-  padding: 20rpx 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 0;
+  padding: 24rpx 32rpx;
   display: flex;
   align-items: center;
+  border: 2rpx solid #000000;
 }
 
 .search-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
+  font-size: 20rpx;
+  margin-right: 16rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .search-placeholder {
   flex: 1;
-  font-size: 28rpx;
-  color: #999999;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 /* 城市选择 */
 .city-section {
   background-color: #FFFFFF;
-  padding: 24rpx 32rpx;
+  padding: 32rpx;
   display: flex;
   align-items: center;
-  border-top: 1rpx solid #E0E0E0;
-  margin-bottom: 24rpx;
+  border-bottom: 2rpx solid #000000;
+  margin-bottom: 48rpx;
 }
 
 .city-icon {
-  font-size: 32rpx;
-  margin-right: 8rpx;
+  font-size: 20rpx;
+  margin-right: 16rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .city-name {
   flex: 1;
-  font-size: 28rpx;
-  color: #1A1A1A;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 .city-arrow {
   font-size: 24rpx;
-  color: #999999;
+  font-weight: 700;
+  color: #000000;
 }
 
 /* 区块 */
 .section {
   padding: 0 32rpx;
-  margin-bottom: 48rpx;
+  margin-bottom: 64rpx;
 }
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24rpx;
+  margin-bottom: 48rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 3rpx solid #000000;
 }
 
 .section-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #1A1A1A;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 /* DJ卡片列表 */
 .dj-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 32rpx;
 }
 
 .dj-card {
   background-color: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  padding: 48rpx;
+  box-shadow: none;
+  border: 2rpx solid #000000;
 }
 
 .dj-card-header {
   display: flex;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: 32rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid #E0E0E0;
 }
 
 .dj-avatar {
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 50%;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 0;
   background-color: #F5F5F5;
-  margin-right: 24rpx;
+  margin-right: 32rpx;
+  border: 2rpx solid #000000;
 }
 
 .dj-info {
@@ -106,47 +131,73 @@
 }
 
 .dj-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #1A1A1A;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #000000;
   display: block;
-  margin-bottom: 8rpx;
+  margin-bottom: 12rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 .dj-meta {
   display: flex;
-  align-items: center;
-  gap: 16rpx;
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.dj-city {
+  flex-direction: column;
+  gap: 8rpx;
+  font-size: 22rpx;
   color: #666666;
 }
 
+.dj-city {
+  color: #000000;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
 .dj-label {
-  color: #999999;
+  color: #666666;
+  font-weight: 500;
 }
 
 /* 评分区域 */
 .rating-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16rpx;
+  margin-bottom: 32rpx;
+  padding-top: 24rpx;
 }
 
 .overall-rating {
   display: flex;
-  align-items: center;
-  gap: 12rpx;
+  flex-direction: column;
+  gap: 16rpx;
 }
 
 .rating-number {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #FFD700;
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #000000;
+  padding: 0;
+  border-radius: 0;
+  line-height: 1;
+  letter-spacing: -1rpx;
+}
+
+.rating-number.rating-high {
+  background-color: transparent;
+  color: #000000;
+}
+
+.rating-number.rating-medium {
+  background-color: transparent;
+  color: #000000;
+}
+
+.rating-number.rating-low {
+  background-color: transparent;
+  color: #000000;
 }
 
 .rating-stars {
@@ -154,35 +205,117 @@
 }
 
 .star {
-  font-size: 24rpx;
-  margin-right: 2rpx;
+  font-size: 20rpx;
+  margin-right: 4rpx;
 }
 
 .star-filled {
-  color: #FFD700;
+  color: #000000;
 }
 
 .star-empty {
-  color: #E0E0E0;
+  color: #CCCCCC;
+}
+
+.rating-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
 }
 
 .review-count {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.would-choose {
+  font-size: 20rpx;
+  line-height: 1.6;
+  text-align: right;
+}
+
+.would-choose-percent {
+  color: #000;
+  font-weight: 700;
   font-size: 24rpx;
-  color: #999999;
+}
+
+.would-choose-label {
+  color: #666;
+  font-weight: 600;
+  margin-left: 4rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
 }
 
 /* 标签 */
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
+  gap: 16rpx;
 }
 
 .tag {
   display: inline-block;
-  padding: 8rpx 16rpx;
-  background-color: #F5F5F5;
-  border-radius: 8rpx;
-  font-size: 24rpx;
+  padding: 12rpx 24rpx;
+  background-color: #FFFFFF;
+  border: 2rpx solid #000000;
+  border-radius: 0;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+/* 加载状态 */
+.loading {
+  text-align: center;
+  padding: 120rpx 0;
+  color: #000000;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 160rpx 0;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+  opacity: 0.2;
+}
+
+.empty-text {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
   color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 底部加载更多 */
+.load-more {
+  text-align: center;
+  padding: 64rpx 0;
+}
+
+.load-more .loading-text,
+.load-more .no-more {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }

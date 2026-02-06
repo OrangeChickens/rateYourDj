@@ -97,28 +97,18 @@ INSERT INTO preset_tags (category, tag_name, tag_name_en) VALUES
 ('style', 'Bass House', 'Bass House'),
 ('style', 'Melodic Techno', 'Melodic Techno'),
 ('style', 'Deep House', 'Deep House'),
--- 表现力标签
-('performance', '有张力', 'Energetic'),
-('performance', '舞台表现力强', 'Great Stage Presence'),
-('performance', '互动性好', 'Interactive'),
-('performance', '控场能力强', 'Crowd Control'),
+-- 表现力标签（5个：2正面+1中性+2负面）
 ('performance', '技术精湛', 'Technically Skilled'),
-('performance', '创意十足', 'Creative'),
-('performance', '气氛营造好', 'Great Atmosphere'),
-('performance', '专业', 'Professional'),
-('performance', '激情四溢', 'Passionate'),
-('performance', '稳定发挥', 'Consistent'),
--- 性格标签
-('personality', '热情', 'Enthusiastic'),
+('performance', '控场能力强', 'Great Crowd Control'),
+('performance', '稳定发挥', 'Consistent Performance'),
+('performance', '失误较多', 'Frequent Mistakes'),
+('performance', '气氛平淡', 'Lackluster Atmosphere'),
+-- 性格标签（5个：2正面+1中性+2负面）
 ('personality', '友好', 'Friendly'),
 ('personality', '专业', 'Professional'),
 ('personality', '低调', 'Humble'),
-('personality', '幽默', 'Humorous'),
-('personality', '认真', 'Serious'),
-('personality', '亲和力强', 'Approachable'),
-('personality', '好沟通', 'Communicative'),
-('personality', '守时', 'Punctual'),
-('personality', '靠谱', 'Reliable');
+('personality', '难沟通', 'Hard to Communicate'),
+('personality', '不守时', 'Often Late');
 
 -- 6. 收藏表 (favorites)
 CREATE TABLE favorites (

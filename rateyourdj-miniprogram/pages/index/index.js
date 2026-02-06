@@ -11,7 +11,11 @@ Page({
     searchPlaceholder: '',
     hotDJsTitle: '',
     loadingText: '',
-    noDataText: ''
+    noDataText: '',
+
+    // 分页
+    currentPage: 1,
+    hasMore: true
   },
 
   onLoad() {
@@ -20,6 +24,13 @@ Page({
   },
 
   onShow() {
+    // 设置 TabBar 选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 0
+      });
+    }
+
     // 从城市列表页返回时可能需要刷新
     const selectedCity = wx.getStorageSync('selectedCity');
     if (selectedCity && selectedCity !== this.data.selectedCity) {
@@ -39,9 +50,11 @@ Page({
   },
 
   // 加载热门DJ
-  async loadHotDJs() {
+  async loadHotDJs(append = false) {
     try {
-      this.setData({ loading: true });
+      if (!append) {
+        this.setData({ loading: true });
+      }
 
       // 调试信息
       const app = getApp();
@@ -50,8 +63,10 @@ Page({
       console.log('选中城市:', this.data.selectedCity);
 
       // 根据选中城市加载DJ列表
+      const page = append ? this.data.currentPage + 1 : 1;
       const params = {
-        limit: 20,
+        page,
+        limit: 10,
         sort: 'overall_rating',
         order: 'DESC'
       };
@@ -76,7 +91,11 @@ Page({
           };
         });
 
-        this.setData({ hotDJs });
+        this.setData({
+          hotDJs: append ? [...this.data.hotDJs, ...hotDJs] : hotDJs,
+          currentPage: page,
+          hasMore: page < res.pagination.totalPages
+        });
       } else {
         showToast(res.message);
       }
@@ -115,5 +134,12 @@ Page({
     this.loadHotDJs().then(() => {
       wx.stopPullDownRefresh();
     });
+  },
+
+  // 触底加载更多
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading) {
+      this.loadHotDJs(true);
+    }
   }
 });

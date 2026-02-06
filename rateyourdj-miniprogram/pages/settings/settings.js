@@ -23,6 +23,13 @@ Page({
   },
 
   onShow() {
+    // 设置 TabBar 选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 2
+      });
+    }
+
     this.checkLoginStatus();
     if (this.data.isLoggedIn) {
       this.loadUserProfile();

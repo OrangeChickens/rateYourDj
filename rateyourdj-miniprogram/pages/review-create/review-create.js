@@ -15,7 +15,7 @@ Page({
     personalityRating: 0,
 
     // 是否会再选
-    wouldChooseAgain: true,
+    wouldChooseAgain: false,
 
     // 评论内容
     comment: '',
@@ -61,9 +61,14 @@ Page({
         ratePersonality: i18n.t('review.ratePersonality'),
         wouldChooseAgain: i18n.t('review.wouldChooseAgain'),
         selectTags: i18n.t('review.selectTags'),
+        styleTags: i18n.t('review.styleTags'),
+        performanceTags: i18n.t('review.performanceTags'),
+        personalityTags: i18n.t('review.personalityTags'),
         writeComment: i18n.t('review.writeComment'),
         commentPlaceholder: i18n.t('review.commentPlaceholder'),
         anonymous: i18n.t('review.anonymous'),
+        tagsSelected: i18n.t('review.tagsSelected'),
+        submitting: i18n.t('review.submitting'),
         submit: i18n.t('common.submit'),
         pleaseRate: i18n.t('review.pleaseRate'),
         commentTooShort: i18n.t('review.commentTooShort')
@@ -78,12 +83,45 @@ Page({
       const res = await tagAPI.getPresets();
 
       if (res.success) {
-        // 按类别分组标签
-        const tags = res.data.map(tag => ({
-          id: tag.id,
-          name: tag.tag_name,
-          category: tag.category
-        }));
+        // 后端返回的是分组格式: { style: [...], performance: [...], personality: [...] }
+        // 需要转换成扁平数组，每个标签带 category 字段
+        const tags = [];
+
+        // 处理音乐风格标签
+        if (res.data.style) {
+          res.data.style.forEach(tag => {
+            tags.push({
+              id: tag.id,
+              name: tag.name,
+              category: 'style',
+              selected: false
+            });
+          });
+        }
+
+        // 处理表现力标签
+        if (res.data.performance) {
+          res.data.performance.forEach(tag => {
+            tags.push({
+              id: tag.id,
+              name: tag.name,
+              category: 'performance',
+              selected: false
+            });
+          });
+        }
+
+        // 处理性格标签
+        if (res.data.personality) {
+          res.data.personality.forEach(tag => {
+            tags.push({
+              id: tag.id,
+              name: tag.name,
+              category: 'personality',
+              selected: false
+            });
+          });
+        }
 
         this.setData({ presetTags: tags });
       } else {
@@ -110,23 +148,42 @@ Page({
 
   // 切换标签选择
   toggleTag(e) {
-    const { name } = e.currentTarget.dataset;
-    const selectedTags = [...this.data.selectedTags];
-    const index = selectedTags.indexOf(name);
+    const { name, index } = e.currentTarget.dataset;
+    console.log('点击标签:', name, 'index:', index);
 
-    if (index > -1) {
-      // 取消选择
-      selectedTags.splice(index, 1);
-    } else {
-      // 选择标签
-      if (selectedTags.length >= this.data.maxTags) {
-        showToast(`最多选择${this.data.maxTags}个标签`);
-        return;
-      }
-      selectedTags.push(name);
+    const presetTags = [...this.data.presetTags];
+    const tag = presetTags[index];
+
+    if (!tag) {
+      console.error('找不到标签:', index);
+      return;
     }
 
-    this.setData({ selectedTags });
+    // 切换选中状态
+    const isCurrentlySelected = tag.selected || false;
+
+    if (isCurrentlySelected) {
+      // 取消选择
+      tag.selected = false;
+      console.log('取消选择:', name);
+    } else {
+      // 检查是否已达到最大数量
+      const selectedCount = presetTags.filter(t => t.selected).length;
+      if (selectedCount >= this.data.maxTags) {
+        showToast(i18n.t('review.maxTagsReached').replace('{n}', this.data.maxTags));
+        return;
+      }
+      tag.selected = true;
+      console.log('添加选择:', name);
+    }
+
+    // 更新数据
+    this.setData({
+      presetTags,
+      selectedTags: presetTags.filter(t => t.selected).map(t => t.name)
+    }, () => {
+      console.log('已选标签:', this.data.selectedTags);
+    });
   },
 
   // 评论输入
@@ -185,21 +242,13 @@ Page({
       if (res.success) {
         showToast(i18n.t('review.submitSuccess'));
 
+        // 设置全局刷新标记，让DJ详情页在onShow时自动刷新
+        const app = getApp();
+        app.globalData.needRefreshDJDetail = true;
+
         // 延迟返回，让用户看到成功提示
         setTimeout(() => {
-          wx.navigateBack({
-            success: () => {
-              // 通知上一页刷新
-              const pages = getCurrentPages();
-              if (pages.length > 1) {
-                const prevPage = pages[pages.length - 2];
-                if (prevPage.route === 'pages/dj-detail/dj-detail') {
-                  prevPage.loadReviews && prevPage.loadReviews();
-                  prevPage.loadDJDetail && prevPage.loadDJDetail();
-                }
-              }
-            }
-          });
+          wx.navigateBack();
         }, 1500);
       } else {
         showToast(res.message);
