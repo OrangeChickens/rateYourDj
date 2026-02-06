@@ -95,17 +95,9 @@
           data-name="{{item.name}}"
         >
           {{item.name}}
-          <text style="font-size: 20rpx; color: red;">[{{tools.isSelected(selectedStyles, item.name) ? 'Y' : 'N'}}]</text>
         </view>
       </view>
       <view class="hint-text">最多选择 5 个标签</view>
-      <!-- 调试信息 -->
-      <view class="hint-text" style="color: red; margin-top: 10rpx;">
-        调试: 已选择 {{selectedStyles.length}} 个标签: {{selectedStyles}}
-      </view>
-      <view class="hint-text" style="color: blue; margin-top: 5rpx;">
-        第一个标签数据: {{styleTagOptions[0]}}
-      </view>
     </view>
 
     <!-- 提交按钮 -->

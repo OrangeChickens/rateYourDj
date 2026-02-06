@@ -89,9 +89,6 @@ Page({
         tagAPI.getPresets()
       ]);
 
-      console.log('厂牌数据:', labelsRes);
-      console.log('标签数据:', tagsRes);
-
       // 处理厂牌数据
       if (labelsRes.success) {
         const labelList = labelsRes.data || [];
@@ -106,12 +103,9 @@ Page({
       // 处理标签数据 - 只使用 style 类别的标签
       if (tagsRes.success) {
         const styleTagOptions = tagsRes.data.style || [];
-        console.log('音乐风格标签数量:', styleTagOptions.length);
-        console.log('音乐风格标签:', styleTagOptions);
         this.setData({
           styleTagOptions
         });
-        console.log('setData 后 styleTagOptions:', this.data.styleTagOptions);
       }
 
     } catch (error) {
@@ -129,7 +123,6 @@ Page({
 
   // 城市选择变化
   onCityChange(e) {
-    console.log('城市选择:', e.detail.value);
     const cityRegion = e.detail.value;
     // 使用市级城市，如果没有则使用省级
     const city = cityRegion[1] || cityRegion[0];
@@ -144,8 +137,6 @@ Page({
   onLabelChange(e) {
     const index = e.detail.value;
     const selectedLabel = this.data.labelOptions[index];
-
-    console.log('厂牌选择:', selectedLabel);
 
     if (selectedLabel === '自定义') {
       // 显示自定义输入框
@@ -176,21 +167,13 @@ Page({
 
   // 音乐风格标签点击
   onStyleTagTap(e) {
-    console.log('标签点击事件触发');
-    console.log('event:', e);
-    console.log('dataset:', e.currentTarget.dataset);
-
     const tagName = e.currentTarget.dataset.name;
-    console.log('点击的标签:', tagName);
-    console.log('当前已选择:', this.data.selectedStyles);
-
     const selectedStyles = [...this.data.selectedStyles];
     const index = selectedStyles.indexOf(tagName);
 
     if (index > -1) {
       // 已选中，取消选择
       selectedStyles.splice(index, 1);
-      console.log('取消选择:', tagName);
     } else {
       // 未选中，添加选择
       if (selectedStyles.length >= 5) {
@@ -198,17 +181,9 @@ Page({
         return;
       }
       selectedStyles.push(tagName);
-      console.log('添加选择:', tagName);
     }
 
-    this.setData({
-      selectedStyles: selectedStyles
-    }, () => {
-      console.log('setData 完成');
-      console.log('setData 后 this.data.selectedStyles:', this.data.selectedStyles);
-      console.log('视图应该已更新');
-    });
-    console.log('更新后已选择:', selectedStyles);
+    this.setData({ selectedStyles });
   },
 
   // 选择图片
