@@ -117,8 +117,16 @@ async function createDJ(req, res, next) {
   try {
     const { name, city, label, music_style, photo_url } = req.body;
 
+    console.log('🎵 创建DJ请求:');
+    console.log('  - 名称:', name);
+    console.log('  - 城市:', city);
+    console.log('  - 厂牌:', label || '无');
+    console.log('  - 音乐风格:', music_style || '无');
+    console.log('  - 照片URL:', photo_url || '无');
+
     // 验证必填字段
     if (!name || !city) {
+      console.log('❌ 缺少必填字段');
       return res.status(400).json({
         success: false,
         message: '缺少必填字段：name 和 city'
@@ -126,6 +134,7 @@ async function createDJ(req, res, next) {
     }
 
     // 创建DJ
+    console.log('💾 开始保存到数据库...');
     const dj = await DJ.create({
       name,
       city,
@@ -134,12 +143,16 @@ async function createDJ(req, res, next) {
       photo_url: photo_url || null
     });
 
+    console.log('✅ DJ创建成功:', dj.id);
+    console.log('  - 保存的photo_url:', dj.photo_url);
+
     res.json({
       success: true,
       message: 'DJ创建成功',
       data: dj
     });
   } catch (error) {
+    console.error('❌ 创建DJ失败:', error);
     next(error);
   }
 }

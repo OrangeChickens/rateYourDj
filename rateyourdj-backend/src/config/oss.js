@@ -12,6 +12,11 @@ function createOSSClient() {
 
 // 上传文件到OSS
 async function uploadToOSS(file, filename) {
+  console.log('🔧 创建OSS客户端...');
+  console.log('  - Region:', process.env.OSS_REGION);
+  console.log('  - Bucket:', process.env.OSS_BUCKET);
+  console.log('  - AccessKeyId:', process.env.OSS_ACCESS_KEY_ID ? '已配置' : '未配置');
+
   const client = createOSSClient();
 
   // 构建文件路径：dj-photos/2024/02/filename.jpg
@@ -20,21 +25,35 @@ async function uploadToOSS(file, filename) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const objectName = `dj-photos/${year}/${month}/${filename}`;
 
+  console.log('📂 OSS路径:', objectName);
+  console.log('📄 本地文件:', file.path);
+
   try {
     // 上传文件
+    console.log('⏳ 开始上传到OSS...');
     const result = await client.put(objectName, file.path);
+    console.log('✅ OSS上传成功');
+    console.log('  - OSS返回URL:', result.url);
 
     // 返回可访问的URL
     // 如果配置了自定义域名，使用自定义域名；否则使用OSS默认域名
     const cdnDomain = process.env.OSS_CDN_DOMAIN;
+    let finalUrl;
+
     if (cdnDomain) {
-      return `https://${cdnDomain}/${objectName}`;
+      finalUrl = `https://${cdnDomain}/${objectName}`;
+      console.log('  - 使用CDN域名:', finalUrl);
     } else {
-      return result.url;
+      finalUrl = result.url;
+      console.log('  - 使用OSS默认域名:', finalUrl);
     }
+
+    return finalUrl;
   } catch (error) {
-    console.error('OSS上传失败:', error);
-    throw new Error('图片上传失败');
+    console.error('❌ OSS上传失败:', error);
+    console.error('  - 错误信息:', error.message);
+    console.error('  - 错误代码:', error.code);
+    throw new Error('图片上传失败: ' + error.message);
   }
 }
 
