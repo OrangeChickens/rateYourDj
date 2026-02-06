@@ -73,11 +73,19 @@ Page({
     try {
       const res = await userAPI.getProfile();
       if (res.success) {
+        // 更新本地数据
         this.setData({
           userInfo: res.data,
           reviewCount: res.data.review_count || 0,
-          favoriteCount: res.data.favorite_count || 0
+          favoriteCount: res.data.favorite_count || 0,
+          isAdmin: res.data.role === 'admin'
         });
+
+        // 同步更新globalData和storage（包含role字段）
+        app.globalData.userInfo = res.data;
+        wx.setStorageSync('userInfo', res.data);
+
+        console.log('用户信息已更新:', res.data);
         // 更新全局用户信息
         app.globalData.userInfo = res.data;
       }

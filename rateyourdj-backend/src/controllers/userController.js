@@ -31,6 +31,7 @@ async function getUserProfile(req, res, next) {
         id: user.id,
         nickname: user.nickname,
         avatar_url: user.avatar_url,
+        role: user.role || 'user',
         review_count: reviewCount[0].count,
         favorite_count: favoriteCount[0].count,
         created_at: user.created_at

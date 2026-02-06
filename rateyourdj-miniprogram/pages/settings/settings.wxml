@@ -15,6 +15,8 @@
           <text class="separator">·</text>
           <text class="stat-item">{{favoriteCount}} {{texts.favoriteCount}}</text>
         </view>
+        <!-- 调试：显示用户角色 -->
+        <text class="role-debug" style="font-size: 24rpx; color: #999; margin-top: 10rpx;">角色: {{userInfo.role || '无'}}</text>
       </view>
     </view>
 
