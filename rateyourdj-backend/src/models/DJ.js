@@ -74,16 +74,16 @@ class DJ {
 
     const [rows] = await pool.query(
       `SELECT * FROM djs
-       WHERE name LIKE ? OR city LIKE ? OR label LIKE ?
+       WHERE name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?
        ORDER BY overall_rating DESC
        LIMIT ? OFFSET ?`,
-      [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, parseInt(limit), parseInt(offset)]
+      [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, parseInt(limit), parseInt(offset)]
     );
 
     const [countResult] = await pool.query(
       `SELECT COUNT(*) as total FROM djs
-       WHERE name LIKE ? OR city LIKE ? OR label LIKE ?`,
-      [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`]
+       WHERE name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?`,
+      [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`]
     );
 
     return {

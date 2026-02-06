@@ -112,10 +112,43 @@ async function getCities(req, res, next) {
   }
 }
 
+// 创建DJ（仅管理员）
+async function createDJ(req, res, next) {
+  try {
+    const { name, city, label, music_style, photo_url } = req.body;
+
+    // 验证必填字段
+    if (!name || !city) {
+      return res.status(400).json({
+        success: false,
+        message: '缺少必填字段：name 和 city'
+      });
+    }
+
+    // 创建DJ
+    const dj = await DJ.create({
+      name,
+      city,
+      label: label || null,
+      music_style: music_style || null,
+      photo_url: photo_url || null
+    });
+
+    res.json({
+      success: true,
+      message: 'DJ创建成功',
+      data: dj
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getDJList,
   getDJDetail,
   searchDJs,
   getHotDJs,
-  getCities
+  getCities,
+  createDJ
 };

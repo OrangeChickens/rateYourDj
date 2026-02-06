@@ -12,3 +12,18 @@ dist/
 .eslintcache
 data/
 mysql-data/
+logs/
+uploads/
+
+# PM2
+.pm2/
+pids/
+
+# SSL certificates (if stored locally)
+*.pem
+*.key
+*.crt
+
+# Backup files
+*.sql.backup
+*.sql.gz

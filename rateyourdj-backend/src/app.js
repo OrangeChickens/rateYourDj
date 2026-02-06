@@ -11,6 +11,7 @@ const djRoutes = require('./routes/dj');
 const reviewRoutes = require('./routes/review');
 const userRoutes = require('./routes/user');
 const tagRoutes = require('./routes/tags');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 静态文件服务（用于访问上传的图片）
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // 日志中间件
 app.use((req, res, next) => {
@@ -41,6 +46,7 @@ app.use('/api/dj', djRoutes);
 app.use('/api/review', reviewRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 404 处理
 app.use(notFoundHandler);
@@ -54,9 +60,11 @@ async function startServer() {
     // 测试数据库连接
     await testConnection();
 
-    // 启动服务器
-    app.listen(PORT, () => {
-      console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    // 启动服务器（监听所有网络接口，支持局域网访问）
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server is running on:`);
+      console.log(`   - Local:   http://localhost:${PORT}`);
+      console.log(`   - Network: http://192.168.101.4:${PORT}`);
       console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {

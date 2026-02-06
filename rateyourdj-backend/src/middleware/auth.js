@@ -54,4 +54,44 @@ async function optionalAuth(req, res, next) {
   }
 }
 
-module.exports = { authenticate, optionalAuth };
+// 管理员验证中间件
+async function requireAdmin(req, res, next) {
+  try {
+    // 先验证登录
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: '未提供认证令牌'
+      });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    req.user = {
+      userId: decoded.userId,
+      openid: decoded.openid
+    };
+
+    // 查询用户角色
+    const User = require('../models/User');
+    const user = await User.findById(decoded.userId);
+
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: '权限不足，需要管理员权限'
+      });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: '认证失败：' + error.message
+    });
+  }
+}
+
+module.exports = { authenticate, optionalAuth, requireAdmin };

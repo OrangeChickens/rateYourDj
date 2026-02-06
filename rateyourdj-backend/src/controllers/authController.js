@@ -50,7 +50,8 @@ async function wechatLogin(req, res, next) {
         user: {
           id: user.id,
           nickname: user.nickname,
-          avatar_url: user.avatar_url
+          avatar_url: user.avatar_url,
+          role: user.role || 'user'
         }
       }
     });

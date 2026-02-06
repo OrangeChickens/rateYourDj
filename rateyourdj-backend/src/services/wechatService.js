@@ -3,9 +3,21 @@ require('dotenv').config();
 
 const WECHAT_APP_ID = process.env.WECHAT_APP_ID;
 const WECHAT_APP_SECRET = process.env.WECHAT_APP_SECRET;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // 微信登录 - code 换取 session_key 和 openid
 async function code2Session(code) {
+  // 开发环境：使用模拟数据
+  if (NODE_ENV === 'development') {
+    console.log('⚠️  Development mode: Using mock WeChat login');
+    return {
+      openid: `mock_openid_${Date.now()}`,
+      session_key: 'mock_session_key',
+      unionid: null
+    };
+  }
+
+  // 生产环境：调用微信 API
   try {
     const response = await axios.get('https://api.weixin.qq.com/sns/jscode2session', {
       params: {
