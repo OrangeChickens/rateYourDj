@@ -201,7 +201,13 @@ Page({
       console.log('添加选择:', tagName);
     }
 
-    this.setData({ selectedStyles });
+    this.setData({
+      selectedStyles: selectedStyles
+    }, () => {
+      console.log('setData 完成');
+      console.log('setData 后 this.data.selectedStyles:', this.data.selectedStyles);
+      console.log('视图应该已更新');
+    });
     console.log('更新后已选择:', selectedStyles);
   },
 

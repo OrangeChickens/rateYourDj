@@ -81,6 +81,10 @@
         </view>
       </view>
       <view class="hint-text">最多选择 5 个标签</view>
+      <!-- 调试信息 -->
+      <view class="hint-text" style="color: red; margin-top: 10rpx;">
+        调试: 已选择 {{selectedStyles.length}} 个标签: {{selectedStyles}}
+      </view>
     </view>
 
     <!-- 提交按钮 -->
