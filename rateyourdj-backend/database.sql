@@ -11,6 +11,7 @@ CREATE TABLE users (
   wx_unionid VARCHAR(100),
   nickname VARCHAR(50),
   avatar_url VARCHAR(500),
+  role VARCHAR(20) DEFAULT 'user',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_openid (wx_openid)
