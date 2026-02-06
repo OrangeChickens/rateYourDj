@@ -109,19 +109,11 @@ Page({
   },
 
   // 登录
-  async handleLogin() {
-    try {
-      await app.login();
-      // 登录成功后刷新页面状态
-      this.checkLoginStatus();
-      this.loadUserProfile();
-    } catch (error) {
-      console.error('登录失败:', error);
-      // 用户取消授权不需要提示
-      if (error.errMsg && !error.errMsg.includes('cancel')) {
-        showToast('登录失败，请重试');
-      }
-    }
+  handleLogin() {
+    // 跳转到登录页面
+    wx.navigateTo({
+      url: '/pages/login/login'
+    });
   },
 
   // 切换语言

@@ -56,7 +56,6 @@
     <view class="load-more">
       <text wx:if="{{loading}}" class="loading-text">{{texts.loading}}</text>
       <text wx:elif="{{hasMore}}" class="more-btn" bindtap="loadFavorites">{{texts.loadMore}}</text>
-      <text wx:else class="no-more">{{texts.noMore}}</text>
     </view>
   </view>
 

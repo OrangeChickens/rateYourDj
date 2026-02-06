@@ -19,7 +19,6 @@
   font-size: 48rpx;
   font-weight: 700;
   color: #000;
-  margin-bottom: 16rpx;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
 }
@@ -37,15 +36,20 @@
 .form-content {
   flex: 1;
   padding: 0;
+  padding-top: 64rpx;
 }
 
 /* 评分区域 */
 .rating-section {
   background: #FFF;
   padding: 64rpx 48rpx;
-  margin: 32rpx 32rpx 32rpx 32rpx;
+  margin: 0 32rpx 32rpx 32rpx;
   border: 2rpx solid #000;
   border-radius: 0;
+}
+
+.rating-section:first-child {
+  margin-top: 0;
 }
 
 .section-title {
@@ -180,9 +184,9 @@
 .comment-input {
   width: 100%;
   min-height: 240rpx;
-  padding: 32rpx;
+  padding: 0;
   background-color: #FFF;
-  border: 2rpx solid #000;
+  border: none;
   border-radius: 0;
   font-size: 26rpx;
   font-weight: 500;

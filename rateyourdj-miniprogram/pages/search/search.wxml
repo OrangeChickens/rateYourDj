@@ -100,7 +100,6 @@
         <view class="load-more">
           <text wx:if="{{searching}}" class="loading">{{texts.loading}}</text>
           <text wx:elif="{{hasMore}}" class="more-btn" bindtap="loadMore">加载更多</text>
-          <text wx:else class="no-more">没有更多了</text>
         </view>
       </view>
 

@@ -86,7 +86,6 @@
     <!-- 底部加载状态 -->
     <view class="load-more" wx:if="{{hotDJs.length > 0}}">
       <text wx:if="{{loading}}" class="loading-text">{{loadingText}}</text>
-      <text wx:elif="{{!hasMore}}" class="no-more">没有更多了</text>
     </view>
   </view>
 </view>

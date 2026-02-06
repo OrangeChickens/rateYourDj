@@ -49,12 +49,11 @@
 /* 内容区域 */
 .content {
   flex: 1;
-  padding: 48rpx 32rpx;
 }
 
 /* 搜索建议 */
 .search-suggestions {
-  padding: 0;
+  padding: 48rpx 32rpx;
 }
 
 .section-header {
@@ -114,7 +113,7 @@
 
 /* 搜索结果 */
 .search-results {
-  padding: 0;
+  padding: 48rpx 32rpx;
 }
 
 .results-header {

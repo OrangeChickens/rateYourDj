@@ -1,0 +1,44 @@
+<!--pages/login/login.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">烂u盘</text>
+    <text class="subtitle">RATE YOUR DJ</text>
+  </view>
+
+  <view class="login-form">
+    <!-- 头像选择 -->
+    <view class="avatar-section">
+      <text class="label">头像</text>
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image
+          src="{{avatarUrl || '/images/default-avatar.png'}}"
+          class="avatar"
+          mode="aspectFill"
+        />
+        <text class="avatar-tip">点击选择头像</text>
+      </button>
+    </view>
+
+    <!-- 昵称输入 -->
+    <view class="nickname-section">
+      <text class="label">昵称 *</text>
+      <input
+        class="nickname-input"
+        type="nickname"
+        placeholder="请输入昵称"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 登录按钮 -->
+    <button class="login-btn" bindtap="handleLogin" disabled="{{!nickname}}">
+      登录
+    </button>
+
+    <view class="tips">
+      <text>登录即表示同意用户协议和隐私政策</text>
+    </view>
+  </view>
+</view>

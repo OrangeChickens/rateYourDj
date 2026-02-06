@@ -154,7 +154,6 @@
             {{texts.loadMore}}
           </text>
           <text wx:elif="{{reviewsLoading}}" class="loading-text">{{texts.loading}}</text>
-          <text wx:else class="no-more">{{texts.noMore}}</text>
         </view>
       </view>
 
