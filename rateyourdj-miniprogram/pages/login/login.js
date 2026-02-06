@@ -8,10 +8,10 @@ Page({
   },
 
   onLoad(options) {
-    // 如果已经登录，跳转回首页
+    // 如果已经登录，跳转回我的页面
     if (app.globalData.token) {
-      wx.reLaunch({
-        url: '/pages/index/index'
+      wx.switchTab({
+        url: '/pages/settings/settings'
       });
     }
   },
@@ -97,10 +97,10 @@ Page({
           icon: 'success'
         });
 
-        // 跳转回首页
+        // 跳转回我的页面
         setTimeout(() => {
-          wx.reLaunch({
-            url: '/pages/index/index'
+          wx.switchTab({
+            url: '/pages/settings/settings'
           });
         }, 1500);
       } else {

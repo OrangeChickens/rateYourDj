@@ -1,0 +1,76 @@
+<!--pages/my-reviews/my-reviews.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>{{texts.loading}}</text>
+  </view>
+
+  <!-- 评论列表 -->
+  <view wx:elif="{{reviews.length > 0}}" class="reviews-list">
+    <view
+      wx:for="{{reviews}}"
+      wx:key="id"
+      class="review-card"
+      bindtap="goToDJDetail"
+      data-id="{{item.dj_id}}"
+    >
+      <!-- DJ 信息 -->
+      <view class="dj-info">
+        <text class="dj-name">{{item.dj_name}}</text>
+        <text class="review-date">{{item.formattedDate}}</text>
+      </view>
+
+      <!-- 评分 -->
+      <view class="rating-section">
+        <view class="overall-rating">
+          <view class="stars">
+            <text wx:for="{{item.stars.full}}" wx:key="index" class="star">★</text>
+            <text wx:for="{{item.stars.empty}}" wx:key="index" class="star empty">☆</text>
+          </view>
+          <text class="rating-value">{{item.overall_rating}}</text>
+        </view>
+
+        <view class="detail-ratings">
+          <text class="detail-item">{{texts.set}}: {{item.set_rating}}</text>
+          <text class="detail-item">{{texts.performance}}: {{item.performance_rating}}</text>
+          <text class="detail-item">{{texts.personality}}: {{item.personality_rating}}</text>
+        </view>
+      </view>
+
+      <!-- 标签 -->
+      <view wx:if="{{item.tagList.length > 0}}" class="tags">
+        <text wx:for="{{item.tagList}}" wx:key="index" class="tag">{{item}}</text>
+      </view>
+
+      <!-- 评论内容 -->
+      <text wx:if="{{item.comment}}" class="comment">{{item.comment}}</text>
+
+      <!-- 操作区域 -->
+      <view class="actions">
+        <view class="action-item">
+          <text class="icon">👍</text>
+          <text class="count">{{item.helpful_count}}</text>
+        </view>
+        <button
+          class="delete-btn"
+          catchtap="deleteReview"
+          data-id="{{item.id}}"
+        >
+          删除
+        </button>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more">
+      <text wx:if="{{loadingMore}}" class="loading-text">{{texts.loading}}</text>
+      <text wx:elif="{{hasMore}}" class="more-btn" bindtap="loadMore">加载更多</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state">
+    <text class="icon">—</text>
+    <text class="text">{{texts.noReviews}}</text>
+  </view>
+</view>

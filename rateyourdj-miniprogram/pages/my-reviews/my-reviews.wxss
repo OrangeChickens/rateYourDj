@@ -1,0 +1,224 @@
+/* pages/my-reviews/my-reviews.wxss - NTS 风格 */
+
+.container {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  padding: 32rpx;
+}
+
+/* 加载状态 */
+.loading {
+  padding: 200rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 评论列表 */
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+/* 评论卡片 */
+.review-card {
+  background: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  padding: 48rpx;
+}
+
+/* DJ 信息 */
+.dj-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #000;
+}
+
+.dj-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.review-date {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+/* 评分区域 */
+.rating-section {
+  margin-bottom: 24rpx;
+}
+
+.overall-rating {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.stars {
+  display: flex;
+  gap: 4rpx;
+}
+
+.star {
+  font-size: 32rpx;
+  color: #000;
+}
+
+.star.empty {
+  color: #CCCCCC;
+}
+
+.rating-value {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: -1rpx;
+}
+
+.detail-ratings {
+  display: flex;
+  gap: 24rpx;
+}
+
+.detail-item {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+/* 标签 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.tag {
+  padding: 12rpx 24rpx;
+  background-color: #FFF;
+  color: #000;
+  font-size: 20rpx;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+/* 评论内容 */
+.comment {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #000;
+  line-height: 1.8;
+  margin-bottom: 24rpx;
+}
+
+/* 操作区域 */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #E0E0E0;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.action-item .icon {
+  font-size: 32rpx;
+}
+
+.action-item .count {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.delete-btn {
+  padding: 16rpx 32rpx;
+  background-color: #FFF;
+  color: #000;
+  font-size: 20rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.delete-btn::after {
+  border: none;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 64rpx 0;
+}
+
+.load-more .loading-text,
+.load-more .more-btn {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.load-more .more-btn {
+  display: inline-block;
+  padding: 28rpx 80rpx;
+  background-color: #000;
+  color: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 200rpx 0;
+  text-align: center;
+}
+
+.empty-state .icon {
+  display: block;
+  font-size: 120rpx;
+  margin-bottom: 48rpx;
+  opacity: 0.2;
+}
+
+.empty-state .text {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  color: #999;
+}

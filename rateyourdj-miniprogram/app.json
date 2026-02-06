@@ -6,6 +6,7 @@
     "pages/dj-detail/dj-detail",
     "pages/review-create/review-create",
     "pages/my-favorites/my-favorites",
+    "pages/my-reviews/my-reviews",
     "pages/settings/settings",
     "pages/city-list/city-list",
     "pages/dj-upload/dj-upload"
