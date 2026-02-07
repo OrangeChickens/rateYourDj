@@ -26,7 +26,7 @@ function processDJArray(djs) {
 class DJ {
   // 获取DJ列表（支持筛选、排序、分页）
   static async getList(filters = {}) {
-    const { city, style, sort = 'overall_rating', order = 'DESC', page = 1, limit = 20 } = filters;
+    const { city, style, letter, sort = 'overall_rating', order = 'DESC', page = 1, limit = 20 } = filters;
 
     let query = 'SELECT * FROM djs WHERE 1=1';
     const params = [];
@@ -41,6 +41,18 @@ class DJ {
     if (style) {
       query += ' AND music_style LIKE ?';
       params.push(`%${style}%`);
+    }
+
+    // 首字母筛选
+    if (letter) {
+      if (letter === '#') {
+        // 数字开头
+        query += ' AND (name REGEXP \'^[0-9]\' OR SUBSTRING(name, 1, 1) BETWEEN \'0\' AND \'9\')';
+      } else {
+        // 字母开头（不区分大小写）
+        query += ' AND UPPER(SUBSTRING(name, 1, 1)) = ?';
+        params.push(letter.toUpperCase());
+      }
     }
 
     // 排序
@@ -66,6 +78,14 @@ class DJ {
     if (style) {
       countQuery += ' AND music_style LIKE ?';
       countParams.push(`%${style}%`);
+    }
+    if (letter) {
+      if (letter === '#') {
+        countQuery += ' AND (name REGEXP \'^[0-9]\' OR SUBSTRING(name, 1, 1) BETWEEN \'0\' AND \'9\')';
+      } else {
+        countQuery += ' AND UPPER(SUBSTRING(name, 1, 1)) = ?';
+        countParams.push(letter.toUpperCase());
+      }
     }
 
     const [countResult] = await pool.query(countQuery, countParams);

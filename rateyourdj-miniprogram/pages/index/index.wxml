@@ -15,6 +15,28 @@
     <text class="city-arrow">▼</text>
   </view>
 
+  <!-- A-Z 筛选 -->
+  <view class="letter-filter">
+    <scroll-view scroll-x="{{true}}" class="letter-scroll">
+      <view class="letter-list">
+        <text
+          class="letter-item {{selectedLetter === '' ? 'active' : ''}}"
+          bindtap="selectLetter"
+          data-letter="">
+          ALL
+        </text>
+        <text
+          wx:for="{{letters}}"
+          wx:key="*this"
+          class="letter-item {{selectedLetter === item ? 'active' : ''}}"
+          bindtap="selectLetter"
+          data-letter="{{item}}">
+          {{item}}
+        </text>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- 热门DJ -->
   <view class="section">
     <view class="section-header">

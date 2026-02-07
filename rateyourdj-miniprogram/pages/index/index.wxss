@@ -71,6 +71,44 @@
   color: #000000;
 }
 
+/* 字母筛选 */
+.letter-filter {
+  background-color: #FFFFFF;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #000000;
+  margin-bottom: 48rpx;
+}
+
+.letter-scroll {
+  white-space: nowrap;
+}
+
+.letter-list {
+  display: inline-flex;
+  gap: 16rpx;
+  padding: 0 32rpx;
+}
+
+.letter-item {
+  display: inline-block;
+  padding: 16rpx 24rpx;
+  background-color: #FFFFFF;
+  border: 2rpx solid #000000;
+  border-radius: 0;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.letter-item.active {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
 /* 区块 */
 .section {
   padding: 0 32rpx;

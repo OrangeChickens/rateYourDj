@@ -7,6 +7,8 @@ Page({
   data: {
     hotDJs: [],
     selectedCity: '全部城市',
+    selectedLetter: '', // 选中的字母，空字符串表示全部
+    letters: ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
     loading: true,
     searchPlaceholder: '',
     hotDJsTitle: '',
@@ -76,6 +78,11 @@ Page({
         params.city = this.data.selectedCity;
       }
 
+      // 如果选中了字母，添加字母过滤
+      if (this.data.selectedLetter) {
+        params.letter = this.data.selectedLetter;
+      }
+
       const res = await djAPI.getList(params);
       console.log('API 响应:', res);
 
@@ -119,6 +126,17 @@ Page({
     wx.navigateTo({
       url: '/pages/city-list/city-list'
     });
+  },
+
+  // 选择字母筛选
+  selectLetter(e) {
+    const { letter } = e.currentTarget.dataset;
+    this.setData({
+      selectedLetter: letter,
+      currentPage: 1,
+      hasMore: true
+    });
+    this.loadHotDJs();
   },
 
   // 跳转到DJ详情
