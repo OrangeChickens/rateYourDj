@@ -224,13 +224,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 240rpx;
+  height: 280rpx;
   background: #FFF;
-  border-top: 3rpx solid #000;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 48rpx;
   z-index: 100;
   transition: background-color 0.3s;
 }
@@ -243,12 +243,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
-  transition: transform 0.2s, opacity 0.2s;
+  gap: 24rpx;
+  transition: transform 0.2s;
 }
 
 .swipe-icon {
-  font-size: 64rpx;
+  font-size: 80rpx;
   font-weight: 700;
   color: #000;
   line-height: 1;
@@ -260,7 +260,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10rpx);
+    transform: translateY(-12rpx);
   }
 }
 

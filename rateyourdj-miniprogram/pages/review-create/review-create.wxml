@@ -171,12 +171,12 @@
     bindtouchmove="handleTouchMove"
     bindtouchend="handleTouchEnd"
   >
-    <view class="swipe-indicator" style="transform: translateY({{-swipeProgress}}rpx); opacity: {{swipeProgress / 100}}">
+    <view class="swipe-indicator" style="transform: translateY({{-swipeProgress * 0.3}}rpx)">
       <text class="swipe-icon">↑</text>
       <text class="swipe-text">{{swipeProgress >= 100 ? '松手提交' : '向上滑动提交'}}</text>
     </view>
     <view class="swipe-progress-bar">
-      <view class="swipe-progress-fill" style="width: {{Math.min(swipeProgress, 100)}}%"></view>
+      <view class="swipe-progress-fill" style="width: {{swipeProgress}}%"></view>
     </view>
   </view>
 </view>
