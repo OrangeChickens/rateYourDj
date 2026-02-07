@@ -119,16 +119,15 @@
             wx:if="{{expandedCategories[item.name]}}"
             class="category-tags"
           >
-            <view
-              wx:for="{{item.tags}}"
-              wx:for-item="tag"
-              wx:key="id"
-              class="tag-item {{selectedStyles.indexOf(tag.name) > -1 ? 'selected' : ''}}"
-              bindtap="onStyleTagTap"
-              data-name="{{tag.name}}"
-            >
-              {{tag.name}}
-            </view>
+            <block wx:for="{{item.tags}}" wx:for-item="tag" wx:key="id">
+              <view
+                class="tag-item {{tools.isSelected(selectedStyles, tag.name) ? 'selected' : ''}}"
+                bindtap="onStyleTagTap"
+                data-name="{{tag.name}}"
+              >
+                {{tag.name}}
+              </view>
+            </block>
           </view>
         </view>
       </view>

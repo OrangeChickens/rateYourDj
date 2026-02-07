@@ -267,12 +267,15 @@ Page({
   // 音乐风格标签点击
   onStyleTagTap(e) {
     const tagName = e.currentTarget.dataset.name;
+    console.log('点击标签:', tagName);
+
     const selectedStyles = [...this.data.selectedStyles];
     const index = selectedStyles.indexOf(tagName);
 
     if (index > -1) {
       // 已选中，取消选择
       selectedStyles.splice(index, 1);
+      console.log('取消选择，剩余:', selectedStyles);
     } else {
       // 未选中，添加选择
       if (selectedStyles.length >= 5) {
@@ -280,9 +283,12 @@ Page({
         return;
       }
       selectedStyles.push(tagName);
+      console.log('添加选择，当前:', selectedStyles);
     }
 
-    this.setData({ selectedStyles });
+    this.setData({ selectedStyles }, () => {
+      console.log('setData完成，selectedStyles:', this.data.selectedStyles);
+    });
   },
 
   // 选择图片
