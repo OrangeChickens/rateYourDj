@@ -15,11 +15,15 @@ Page({
 
   onLoad() {
     this.updateLanguage();
-    this.loadCities();
 
     // 获取当前选中的城市
     const selectedCity = wx.getStorageSync('selectedCity') || '全部城市';
     this.setData({ selectedCity });
+  },
+
+  onShow() {
+    // 每次显示页面时都刷新城市列表数据
+    this.loadCities();
   },
 
   // 更新语言
@@ -69,21 +73,9 @@ Page({
 
     this.setData({ selectedCity: city });
 
-    // 返回上一页
+    // 返回上一页（让首页的 onShow 自动处理刷新）
     setTimeout(() => {
-      wx.navigateBack({
-        success: () => {
-          // 通知首页刷新
-          const pages = getCurrentPages();
-          if (pages.length > 1) {
-            const prevPage = pages[pages.length - 2];
-            if (prevPage.route === 'pages/index/index' && prevPage.loadHotDJs) {
-              prevPage.setData({ selectedCity: city });
-              prevPage.loadHotDJs();
-            }
-          }
-        }
-      });
+      wx.navigateBack();
     }, 300);
   }
 });

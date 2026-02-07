@@ -21,6 +21,10 @@ Page({
   },
 
   onLoad() {
+    // 从 storage 读取上次选择的城市（如果有）
+    const selectedCity = wx.getStorageSync('selectedCity') || '全部城市';
+    this.setData({ selectedCity });
+
     this.updateLanguage();
     this.loadHotDJs();
   },
@@ -33,11 +37,37 @@ Page({
       });
     }
 
-    // 从城市列表页返回时可能需要刷新
+    // 从城市列表页返回时刷新
     const selectedCity = wx.getStorageSync('selectedCity');
-    if (selectedCity && selectedCity !== this.data.selectedCity) {
-      this.setData({ selectedCity });
-      this.loadHotDJs();
+    if (selectedCity) {
+      // 如果 storage 中有城市且与当前不同，更新并刷新
+      if (selectedCity !== this.data.selectedCity) {
+        console.log('城市变更，从', this.data.selectedCity, '到', selectedCity);
+        console.log('重置字母筛选:', this.data.selectedLetter, '-> 空');
+        this.setData({
+          selectedCity,
+          selectedLetter: '', // 重置字母筛选
+          currentPage: 1,
+          hasMore: true
+        }, () => {
+          console.log('setData 完成，当前 selectedLetter:', this.data.selectedLetter);
+        });
+        this.loadHotDJs();
+      }
+    } else {
+      // 如果 storage 中没有城市，确保显示"全部城市"
+      if (this.data.selectedCity !== '全部城市') {
+        console.log('重置为全部城市');
+        this.setData({
+          selectedCity: '全部城市',
+          selectedLetter: '', // 重置字母筛选
+          currentPage: 1,
+          hasMore: true
+        }, () => {
+          console.log('setData 完成，当前 selectedLetter:', this.data.selectedLetter);
+        });
+        this.loadHotDJs();
+      }
     }
   },
 
@@ -63,7 +93,7 @@ Page({
       console.log('=== 开始加载热门DJ ===');
       console.log('API Base URL:', app.globalData.apiBaseUrl);
       console.log('选中城市:', this.data.selectedCity);
-      console.log('选中字母:', this.data.selectedLetter);
+      console.log('选中字母:', this.data.selectedLetter, '(类型:', typeof this.data.selectedLetter, ')');
 
       // 根据选中城市加载DJ列表
       const page = append ? this.data.currentPage + 1 : 1;
@@ -133,8 +163,16 @@ Page({
   // 选择字母筛选
   selectLetter(e) {
     const { letter } = e.currentTarget.dataset;
+    // 处理空字符串和 undefined 的情况
+    const clickedLetter = letter || '';
+
+    // 如果点击的是当前已选中的字母，取消筛选
+    const newLetter = this.data.selectedLetter === clickedLetter ? '' : clickedLetter;
+
+    console.log('字母筛选: 点击', clickedLetter, '当前', this.data.selectedLetter, '-> 新值', newLetter);
+
     this.setData({
-      selectedLetter: letter,
+      selectedLetter: newLetter,
       currentPage: 1,
       hasMore: true
     });
