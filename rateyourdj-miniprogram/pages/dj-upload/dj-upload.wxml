@@ -83,20 +83,57 @@
       />
     </view>
 
-    <!-- 音乐风格选择 - 多选标签 -->
+    <!-- 音乐风格选择 - 分类折叠 + 搜索 -->
     <view class="form-item">
-      <text class="label">音乐风格</text>
-      <view class="tag-selector">
+      <text class="label">音乐风格 (已选{{selectedStyles.length}}/5)</text>
+
+      <!-- 搜索框 -->
+      <view class="search-box">
+        <input
+          class="search-input"
+          placeholder="🔍 搜索风格..."
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+        />
+      </view>
+
+      <!-- 分类标签 -->
+      <view class="style-categories">
         <view
-          class="tag-item {{tools.isSelected(selectedStyles, item.name) ? 'selected' : ''}}"
-          wx:for="{{styleTagOptions}}"
-          wx:key="id"
-          bindtap="onStyleTagTap"
-          data-name="{{item.name}}"
+          wx:for="{{styleCategories}}"
+          wx:key="name"
+          class="category-group"
         >
-          {{item.name}}
+          <!-- 分类标题（可点击展开/折叠） -->
+          <view
+            class="category-header"
+            bindtap="toggleCategory"
+            data-name="{{item.name}}"
+          >
+            <text class="category-icon">{{expandedCategories[item.name] ? '▼' : '▶'}}</text>
+            <text class="category-title">{{item.name}} ({{item.count}})</text>
+          </view>
+
+          <!-- 标签列表（展开时显示） -->
+          <view
+            wx:if="{{expandedCategories[item.name]}}"
+            class="category-tags"
+          >
+            <view
+              wx:for="{{item.tags}}"
+              wx:for-item="tag"
+              wx:key="id"
+              wx:if="{{!searchKeyword || tag.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) > -1 || (tag.name_en && tag.name_en.toLowerCase().indexOf(searchKeyword.toLowerCase()) > -1)}}"
+              class="tag-item {{selectedStyles.indexOf(tag.name) > -1 ? 'selected' : ''}}"
+              bindtap="onStyleTagTap"
+              data-name="{{tag.name}}"
+            >
+              {{tag.name}}
+            </view>
+          </view>
         </view>
       </view>
+
       <view class="hint-text">最多选择 5 个标签</view>
     </view>
 

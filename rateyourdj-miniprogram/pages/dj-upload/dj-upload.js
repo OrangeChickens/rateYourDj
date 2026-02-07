@@ -22,7 +22,10 @@ Page({
     customLabel: '',
 
     selectedStyles: [], // 选中的音乐风格
-    styleTagOptions: [], // 可选的风格标签
+    styleTagOptions: [], // 可选的风格标签（原始列表）
+    styleCategories: [], // 分类后的风格标签
+    searchKeyword: '', // 搜索关键词
+    expandedCategories: {}, // 展开/折叠状态 {categoryName: true/false}
 
     photo_url: '',
     localImagePath: '',
@@ -148,8 +151,20 @@ Page({
       // 处理标签数据 - 只使用 style 类别的标签
       if (tagsRes.success) {
         const styleTagOptions = tagsRes.data.style || [];
+
+        // 对标签进行分类
+        const styleCategories = this.categorizeStyles(styleTagOptions);
+
+        // 默认展开第一个分类
+        const expandedCategories = {};
+        if (styleCategories.length > 0) {
+          expandedCategories[styleCategories[0].name] = true;
+        }
+
         this.setData({
-          styleTagOptions
+          styleTagOptions,
+          styleCategories,
+          expandedCategories
         });
       }
 
@@ -524,5 +539,99 @@ Page({
       this.setData({ uploading: false });
       hideLoading();
     }
+  },
+
+  // 对音乐风格进行分类
+  categorizeStyles(styles) {
+    // 定义分类规则
+    const categoryRules = {
+      '主流 EDM': ['EDM', 'Future Bass', 'Electro House', 'Melbourne Bounce', 'Hardstyle', 'Drum & Bass', 'Future House'],
+      'Techno/House': ['Techno', 'House', 'Tech House', 'Minimal Techno', 'Industrial Techno', 'Acid Techno', 'Breakbeat', 'Garage', 'UK Garage', 'Disco House', 'Afro House', 'Micro House', 'Progressive House', 'Deep House', 'Bass House', 'Melodic Techno'],
+      'Trance': ['Trance', 'Psytrance', 'Progressive Trance', 'Uplifting Trance', 'Tech Trance'],
+      'Bass 音乐': ['Dubstep', 'Future Garage', 'Riddim', 'Halftime', 'Neurofunk'],
+      '实验性/小众': ['Hyperpop', 'Glitch Hop', 'IDM', 'Vaporwave', 'Footwork', 'Jungle', 'Breakcore', 'Ambient', 'Downtempo', 'Trip Hop', 'Wave', 'Jersey Club'],
+      '其他流行': ['Trap', 'Moombahton', 'Hardwave', 'Phonk', 'UK Drill', 'Slap House', 'Bassline', 'Grime', 'Electro Swing', 'Big Room'],
+      '中国/亚洲': ['国风电音', 'J-Core', 'K-House', 'Bounce', 'Hands Up']
+    };
+
+    // 构建分类数据结构
+    const categories = [];
+    const categorizedTags = new Set();
+
+    // 按预定义顺序添加分类
+    Object.entries(categoryRules).forEach(([categoryName, tagNames]) => {
+      const categoryTags = [];
+
+      tagNames.forEach(tagName => {
+        const tag = styles.find(t => t.name === tagName);
+        if (tag) {
+          categoryTags.push(tag);
+          categorizedTags.add(tag.name);
+        }
+      });
+
+      if (categoryTags.length > 0) {
+        categories.push({
+          name: categoryName,
+          tags: categoryTags,
+          count: categoryTags.length
+        });
+      }
+    });
+
+    // 添加未分类的标签
+    const uncategorized = styles.filter(t => !categorizedTags.has(t.name));
+    if (uncategorized.length > 0) {
+      categories.push({
+        name: '其他',
+        tags: uncategorized,
+        count: uncategorized.length
+      });
+    }
+
+    return categories;
+  },
+
+  // 切换分类展开/折叠
+  toggleCategory(e) {
+    const { name } = e.currentTarget.dataset;
+    const expandedCategories = { ...this.data.expandedCategories };
+    expandedCategories[name] = !expandedCategories[name];
+
+    this.setData({ expandedCategories });
+  },
+
+  // 搜索风格
+  onSearchInput(e) {
+    const keyword = e.detail.value.trim().toLowerCase();
+    this.setData({ searchKeyword: keyword });
+
+    if (!keyword) {
+      // 清空搜索，恢复分类显示
+      return;
+    }
+
+    // 搜索时展开所有包含匹配结果的分类
+    const expandedCategories = {};
+    this.data.styleCategories.forEach(category => {
+      const hasMatch = category.tags.some(tag =>
+        tag.name.toLowerCase().includes(keyword) ||
+        tag.name_en?.toLowerCase().includes(keyword)
+      );
+      if (hasMatch) {
+        expandedCategories[category.name] = true;
+      }
+    });
+
+    this.setData({ expandedCategories });
+  },
+
+  // 判断标签是否匹配搜索
+  matchesSearch(tag) {
+    const keyword = this.data.searchKeyword.toLowerCase();
+    if (!keyword) return true;
+
+    return tag.name.toLowerCase().includes(keyword) ||
+           (tag.name_en && tag.name_en.toLowerCase().includes(keyword));
   }
 });
