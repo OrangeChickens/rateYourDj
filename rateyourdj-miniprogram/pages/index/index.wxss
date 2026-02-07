@@ -171,6 +171,8 @@
 
 .dj-info {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .dj-name {
@@ -181,6 +183,9 @@
   margin-bottom: 12rpx;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dj-meta {
