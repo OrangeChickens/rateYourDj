@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "烂u盘",
   "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark"
+  "backgroundTextStyle": "dark",
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true
 }

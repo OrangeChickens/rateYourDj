@@ -2,5 +2,7 @@
   "navigationBarTitleText": "DJ Detail",
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark",
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true,
   "usingComponents": {}
 }

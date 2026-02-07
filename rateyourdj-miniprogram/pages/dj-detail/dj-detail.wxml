@@ -33,10 +33,16 @@
         </view>
       </view>
 
-      <!-- 收藏按钮 -->
-      <view class="favorite-btn" bindtap="toggleFavorite">
-        <text class="icon">{{isFavorited ? '★' : '☆'}}</text>
-        <text class="text">{{isFavorited ? texts.unfavorite : texts.favorite}}</text>
+      <!-- 操作按钮组 -->
+      <view class="action-btns">
+        <view class="favorite-btn" bindtap="toggleFavorite">
+          <text class="icon">{{isFavorited ? '★' : '☆'}}</text>
+          <text class="text">{{isFavorited ? texts.unfavorite : texts.favorite}}</text>
+        </view>
+        <button class="share-btn" open-type="share">
+          <text class="icon">→</text>
+          <text class="text">推荐</text>
+        </button>
       </view>
     </view>
 

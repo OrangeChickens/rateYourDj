@@ -96,22 +96,40 @@
 }
 
 /* 收藏按钮 */
-.favorite-btn {
+/* 操作按钮组 */
+.action-btns {
   position: absolute;
   top: 64rpx;
   right: 48rpx;
   display: flex;
   flex-direction: column;
+  gap: 32rpx;
+}
+
+.favorite-btn,
+.share-btn {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 12rpx;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
-.favorite-btn .icon {
+.share-btn::after {
+  border: none;
+}
+
+.favorite-btn .icon,
+.share-btn .icon {
   font-size: 48rpx;
   color: #000;
+  font-weight: 700;
 }
 
-.favorite-btn .text {
+.favorite-btn .text,
+.share-btn .text {
   font-size: 20rpx;
   color: #000;
   font-weight: 700;

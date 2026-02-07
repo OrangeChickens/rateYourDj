@@ -353,11 +353,45 @@ Page({
     wx.stopPullDownRefresh();
   },
 
-  // 分享
+  // 分享给好友
   onShareAppMessage() {
+    const { dj } = this.data;
+    if (!dj) {
+      return {
+        title: 'RateYourDJ - 发现宝藏DJ',
+        path: '/pages/index/index'
+      };
+    }
+
+    // 构建分享标题
+    const rating = dj.overall_rating > 0 ? `⭐${dj.overall_rating}分` : '';
+    const reviewCount = dj.review_count > 0 ? `${dj.review_count}条评论` : '';
+    const title = `${dj.name} | ${dj.city} ${rating} ${reviewCount}`.trim();
+
     return {
-      title: `${this.data.dj.name} - RateYourDJ`,
-      path: `/pages/dj-detail/dj-detail?id=${this.data.djId}`
+      title: title,
+      path: `/pages/dj-detail/dj-detail?id=${this.data.djId}`,
+      imageUrl: dj.photo_url || '' // 推荐5:4比例图片
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    const { dj } = this.data;
+    if (!dj) {
+      return {
+        title: 'RateYourDJ - 发现宝藏DJ',
+        query: ''
+      };
+    }
+
+    const rating = dj.overall_rating > 0 ? `⭐${dj.overall_rating}分` : '';
+    const title = `推荐DJ：${dj.name} ${rating}`.trim();
+
+    return {
+      title: title,
+      query: `id=${this.data.djId}`,
+      imageUrl: dj.photo_url || ''
     };
   }
 });
