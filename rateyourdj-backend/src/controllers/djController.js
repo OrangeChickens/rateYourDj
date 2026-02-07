@@ -6,6 +6,7 @@ async function getDJList(req, res, next) {
     const filters = {
       city: req.query.city,
       style: req.query.style,
+      letter: req.query.letter,
       sort: req.query.sort || 'overall_rating',
       order: req.query.order || 'DESC',
       page: parseInt(req.query.page) || 1,

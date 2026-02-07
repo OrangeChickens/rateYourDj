@@ -63,6 +63,7 @@ Page({
       console.log('=== 开始加载热门DJ ===');
       console.log('API Base URL:', app.globalData.apiBaseUrl);
       console.log('选中城市:', this.data.selectedCity);
+      console.log('选中字母:', this.data.selectedLetter);
 
       // 根据选中城市加载DJ列表
       const page = append ? this.data.currentPage + 1 : 1;
@@ -83,6 +84,7 @@ Page({
         params.letter = this.data.selectedLetter;
       }
 
+      console.log('请求参数:', params);
       const res = await djAPI.getList(params);
       console.log('API 响应:', res);
 
