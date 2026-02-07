@@ -7,6 +7,7 @@ App({
     token: null,
     // 页面刷新标记
     needRefreshDJDetail: false,
+    needRefreshFavorites: false,
     // 生产环境：使用域名
     apiBaseUrl: 'https://rateyourdj.pbrick.cn/api',
     // 真机调试：使用电脑局域网 IP（手机无法访问 localhost）

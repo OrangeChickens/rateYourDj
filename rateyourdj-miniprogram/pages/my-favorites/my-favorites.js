@@ -18,6 +18,13 @@ Page({
 
   onLoad() {
     this.updateLanguage();
+
+    // 首次加载时检查登录状态并加载数据
+    if (requireLogin()) {
+      this.loadFavorites();
+    } else {
+      this.setData({ loading: false });
+    }
   },
 
   onShow() {
@@ -28,11 +35,11 @@ Page({
       });
     }
 
-    // 每次显示时检查登录状态并加载数据
-    if (requireLogin()) {
+    // 检查是否需要刷新收藏列表（从DJ详情页收藏/取消收藏后）
+    if (app.globalData.needRefreshFavorites) {
+      console.log('检测到收藏变化，刷新列表');
       this.loadFavorites();
-    } else {
-      this.setData({ loading: false });
+      app.globalData.needRefreshFavorites = false; // 清除标记
     }
   },
 

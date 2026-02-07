@@ -121,7 +121,8 @@ export default {
     reviewCount: 'Reviews',
     favoriteCount: 'Favorites',
     logout: 'Logout',
-    logoutConfirm: 'Confirm logout?'
+    logoutConfirm: 'Confirm logout?',
+    noReviews: 'No reviews yet'
   },
 
   settings: {

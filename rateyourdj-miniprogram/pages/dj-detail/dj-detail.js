@@ -196,6 +196,10 @@ Page({
 
       if (res.success) {
         this.setData({ isFavorited: !this.data.isFavorited });
+
+        // 设置全局刷新标记，通知收藏页面需要更新
+        app.globalData.needRefreshFavorites = true;
+
         showToast(res.message);
       } else {
         showToast(res.message);

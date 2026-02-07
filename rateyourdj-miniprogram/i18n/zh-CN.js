@@ -121,7 +121,8 @@ export default {
     reviewCount: '条评论',
     favoriteCount: '个收藏',
     logout: '退出登录',
-    logoutConfirm: '确认退出登录？'
+    logoutConfirm: '确认退出登录？',
+    noReviews: '还没有写过评论'
   },
 
   settings: {
