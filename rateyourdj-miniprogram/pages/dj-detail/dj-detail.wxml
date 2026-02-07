@@ -20,11 +20,10 @@
 
       <view class="dj-info">
         <view class="dj-name">{{dj.name}}</view>
-        <view class="dj-meta">
+        <view class="dj-meta-line">
           <text class="city">{{dj.city}}</text>
-        </view>
-        <view class="dj-meta" wx:if="{{dj.label}}">
-          <text class="label">厂牌：{{dj.label}}</text>
+          <text wx:if="{{dj.label}}" class="separator">|</text>
+          <text wx:if="{{dj.label}}" class="label">{{dj.label}}</text>
         </view>
       </view>
 

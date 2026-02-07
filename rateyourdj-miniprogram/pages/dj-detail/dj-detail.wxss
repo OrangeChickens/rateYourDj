@@ -22,7 +22,8 @@
   background: #FFF;
   padding: 80rpx 48rpx 48rpx 48rpx;
   display: flex;
-  gap: 48rpx;
+  align-items: flex-start;
+  gap: 32rpx;
   position: relative;
 }
 
@@ -44,8 +45,10 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  justify-content: space-between;
   padding-right: 80rpx;
+  min-width: 0;
+  height: 200rpx;
 }
 
 .dj-name {
@@ -55,32 +58,43 @@
   line-height: 1.1;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+  word-break: break-word;
 }
 
-.dj-meta {
+.dj-meta-line {
   display: flex;
-  flex-direction: column;
-  gap: 8rpx;
+  align-items: center;
+  gap: 16rpx;
   font-size: 24rpx;
-  color: #666;
+  line-height: 1;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
-.dj-meta .city {
+.dj-meta-line .city {
   font-weight: 700;
   color: #000;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+  flex-shrink: 0;
 }
 
-.dj-meta .label {
+.dj-meta-line .separator {
+  color: #CCCCCC;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+.dj-meta-line .label {
   color: #666;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 /* 风格标签区域 */
 .style-tags-section {
   background: #FFF;
-  padding: 24rpx 48rpx;
+  padding: 16rpx 48rpx 24rpx 48rpx;
   border-bottom: 2rpx solid #000;
 }
 
