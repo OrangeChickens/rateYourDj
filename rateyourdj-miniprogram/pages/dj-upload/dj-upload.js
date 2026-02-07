@@ -23,7 +23,8 @@ Page({
 
     selectedStyles: [], // 选中的音乐风格
     styleTagOptions: [], // 可选的风格标签（原始列表）
-    styleCategories: [], // 分类后的风格标签
+    styleCategories: [], // 分类后的风格标签（当前显示的，可能被搜索过滤）
+    originalCategories: [], // 原始完整的分类数据（不变）
     searchKeyword: '', // 搜索关键词
     expandedCategories: {}, // 展开/折叠状态 {categoryName: true/false}
 
@@ -164,6 +165,7 @@ Page({
         this.setData({
           styleTagOptions,
           styleCategories,
+          originalCategories: JSON.parse(JSON.stringify(styleCategories)), // 深拷贝保存原始数据
           expandedCategories
         });
       }
@@ -608,6 +610,7 @@ Page({
 
     if (!keyword) {
       // 清空搜索，恢复分类显示
+      this.updateFilteredCategories();
       return;
     }
 
@@ -624,14 +627,35 @@ Page({
     });
 
     this.setData({ expandedCategories });
+    this.updateFilteredCategories();
   },
 
-  // 判断标签是否匹配搜索
-  matchesSearch(tag) {
+  // 更新过滤后的分类数据
+  updateFilteredCategories() {
     const keyword = this.data.searchKeyword.toLowerCase();
-    if (!keyword) return true;
 
-    return tag.name.toLowerCase().includes(keyword) ||
-           (tag.name_en && tag.name_en.toLowerCase().includes(keyword));
+    if (!keyword) {
+      // 没有搜索关键词，恢复原始数据
+      this.setData({
+        styleCategories: JSON.parse(JSON.stringify(this.data.originalCategories))
+      });
+      return;
+    }
+
+    // 有搜索关键词，基于原始数据进行过滤
+    const filteredCategories = this.data.originalCategories.map(category => {
+      const filteredTags = category.tags.filter(tag =>
+        tag.name.toLowerCase().includes(keyword) ||
+        (tag.name_en && tag.name_en.toLowerCase().includes(keyword))
+      );
+
+      return {
+        ...category,
+        tags: filteredTags,
+        count: filteredTags.length
+      };
+    }).filter(category => category.count > 0); // 移除没有匹配标签的分类
+
+    this.setData({ styleCategories: filteredCategories });
   }
 });

@@ -123,7 +123,6 @@
               wx:for="{{item.tags}}"
               wx:for-item="tag"
               wx:key="id"
-              wx:if="{{!searchKeyword || tag.name.toLowerCase().indexOf(searchKeyword.toLowerCase()) > -1 || (tag.name_en && tag.name_en.toLowerCase().indexOf(searchKeyword.toLowerCase()) > -1)}}"
               class="tag-item {{selectedStyles.indexOf(tag.name) > -1 ? 'selected' : ''}}"
               bindtap="onStyleTagTap"
               data-name="{{tag.name}}"
