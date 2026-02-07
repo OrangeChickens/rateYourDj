@@ -113,11 +113,35 @@ Page({
       // 处理厂牌数据
       if (labelsRes.success) {
         const labelList = labelsRes.data || [];
-        const labelOptions = [...labelList.map(item => item.label), '自定义'];
+
+        // 自定义排序：
+        // 1. "自定义" 放第一
+        // 2. "独立" 放第二
+        // 3. 剩余按 A-Z 排序
+        const labels = labelList.map(item => item.label);
+        const sortedLabels = [];
+
+        // 1. 先添加"自定义"
+        sortedLabels.push('自定义');
+
+        // 2. 如果存在"独立"，添加到第二位
+        const independentIndex = labels.indexOf('独立');
+        if (independentIndex > -1) {
+          sortedLabels.push('独立');
+          labels.splice(independentIndex, 1);
+        }
+
+        // 3. 剩余的按字母/拼音 A-Z 排序
+        // 中文按拼音首字母，英文按字母，统一排序
+        const remaining = labels.sort((a, b) => {
+          return a.localeCompare(b, 'zh-CN', { sensitivity: 'base' });
+        });
+
+        sortedLabels.push(...remaining);
 
         this.setData({
           labelList,
-          labelOptions
+          labelOptions: sortedLabels
         });
       }
 
@@ -143,8 +167,8 @@ Page({
           if (index > -1) {
             labelIndex = index;
           } else {
-            // 自定义厂牌
-            labelIndex = this.data.labelOptions.length - 1; // "自定义"的索引
+            // 自定义厂牌（"自定义"现在在索引0）
+            labelIndex = 0;
             showCustomLabel = true;
             customLabel = dj.label;
           }
