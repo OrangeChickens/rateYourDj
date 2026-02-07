@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
-const pool = require('../src/config/database');
+const { pool } = require('../src/config/database');
 const { uploadToOSS } = require('../src/config/oss');
 
 // 简单的CSV解析函数

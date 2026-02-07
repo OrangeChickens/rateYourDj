@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const pool = require('../src/config/database');
+const { pool } = require('../src/config/database');
 
 // 简单的CSV解析函数
 function parseCSV(csvContent) {
