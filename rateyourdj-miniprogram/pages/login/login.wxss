@@ -79,6 +79,11 @@
   border: 2rpx solid #000;
   border-radius: 0;
   background-color: #F0F0F0;
+  transition: opacity 0.3s;
+}
+
+.avatar.uploading {
+  opacity: 0.5;
 }
 
 .avatar-tip {
@@ -87,6 +92,16 @@
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+}
+
+.avatar-tip.uploading {
+  color: #000;
+  font-weight: 700;
+}
+
+.avatar-tip.success {
+  color: #000;
+  font-weight: 700;
 }
 
 /* 昵称区域 */

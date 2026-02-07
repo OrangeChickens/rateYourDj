@@ -53,13 +53,31 @@ class User {
   // 更新用户信息
   static async update(id, userData) {
     const { nickname, avatar_url } = userData;
-    // 转换 avatar_url 为 HTTPS
-    const httpsAvatarUrl = convertToHttps(avatar_url);
 
-    await pool.query(
-      'UPDATE users SET nickname = ?, avatar_url = ? WHERE id = ?',
-      [nickname, httpsAvatarUrl, id]
-    );
+    // 构建动态更新语句
+    const updates = [];
+    const values = [];
+
+    if (nickname !== undefined) {
+      updates.push('nickname = ?');
+      values.push(nickname);
+    }
+
+    if (avatar_url !== undefined) {
+      // 转换 avatar_url 为 HTTPS
+      const httpsAvatarUrl = convertToHttps(avatar_url);
+      updates.push('avatar_url = ?');
+      values.push(httpsAvatarUrl);
+    }
+
+    if (updates.length > 0) {
+      values.push(id);
+      await pool.query(
+        `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+        values
+      );
+    }
+
     return this.findById(id);
   }
 }

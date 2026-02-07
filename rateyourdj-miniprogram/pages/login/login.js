@@ -4,7 +4,9 @@ const app = getApp();
 Page({
   data: {
     avatarUrl: '',
-    nickname: ''
+    uploadedAvatarUrl: '', // OSS上传后的URL
+    nickname: '',
+    uploading: false
   },
 
   onLoad(options) {
@@ -17,11 +19,49 @@ Page({
   },
 
   // 选择头像
-  onChooseAvatar(e) {
+  async onChooseAvatar(e) {
     const { avatarUrl } = e.detail;
     this.setData({
-      avatarUrl
+      avatarUrl,
+      uploading: true
     });
+
+    // 立即上传头像到OSS
+    wx.showLoading({
+      title: '上传头像中...',
+      mask: true
+    });
+
+    try {
+      const uploadedUrl = await this.uploadAvatarToOSS(avatarUrl);
+      console.log('头像上传成功，URL:', uploadedUrl);
+
+      this.setData({
+        uploadedAvatarUrl: uploadedUrl,
+        uploading: false
+      });
+
+      wx.hideLoading();
+      wx.showToast({
+        title: '头像上传成功',
+        icon: 'success',
+        duration: 1500
+      });
+    } catch (error) {
+      console.error('头像上传失败:', error);
+      this.setData({
+        uploading: false,
+        avatarUrl: '',
+        uploadedAvatarUrl: ''
+      });
+
+      wx.hideLoading();
+      wx.showToast({
+        title: '头像上传失败，请重试',
+        icon: 'none',
+        duration: 2000
+      });
+    }
   },
 
   // 输入昵称
@@ -68,11 +108,20 @@ Page({
 
   // 登录
   async handleLogin() {
-    const { avatarUrl, nickname } = this.data;
+    const { uploadedAvatarUrl, nickname, uploading } = this.data;
 
     if (!nickname) {
       wx.showToast({
         title: '请输入昵称',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 如果头像还在上传中，等待
+    if (uploading) {
+      wx.showToast({
+        title: '头像上传中，请稍候...',
         icon: 'none'
       });
       return;
@@ -96,23 +145,7 @@ Page({
         throw new Error('获取登录凭证失败');
       }
 
-      // 第二步：上传头像到OSS（如果有选择头像）
-      let uploadedAvatarUrl = '';
-      if (avatarUrl) {
-        wx.showLoading({
-          title: '上传头像中...',
-          mask: true
-        });
-        uploadedAvatarUrl = await this.uploadAvatarToOSS(avatarUrl);
-        console.log('头像上传成功，URL:', uploadedAvatarUrl);
-      }
-
-      // 第三步：发送到后端登录
-      wx.showLoading({
-        title: '登录中...',
-        mask: true
-      });
-
+      // 第二步：发送到后端登录（使用已上传的头像URL）
       const apiRes = await app.request({
         url: '/auth/login',
         method: 'POST',

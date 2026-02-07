@@ -29,11 +29,17 @@ async function wechatLogin(req, res, next) {
         avatar_url: userInfo?.avatarUrl || null
       });
     } else if (userInfo) {
-      // 更新用户信息
-      user = await User.update(user.id, {
-        nickname: userInfo.nickName,
-        avatar_url: userInfo.avatarUrl
-      });
+      // 老用户：只在有新头像时才更新头像
+      const updateData = {
+        nickname: userInfo.nickName
+      };
+
+      // 只有提供了新头像URL时才更新（避免每次登录都重新上传）
+      if (userInfo.avatarUrl) {
+        updateData.avatar_url = userInfo.avatarUrl;
+      }
+
+      user = await User.update(user.id, updateData);
     }
 
     // 生成 JWT token
