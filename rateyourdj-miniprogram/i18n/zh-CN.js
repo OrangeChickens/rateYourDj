@@ -91,6 +91,7 @@ export default {
     submitSuccess: '评论提交成功',
     submitFailed: '评论提交失败',
     pleaseRate: '请完成所有评分',
+    commentRequired: '请填写评论内容',
     commentTooShort: '评论至少10个字',
     helpful: '有帮助',
     notHelpful: '没帮助',

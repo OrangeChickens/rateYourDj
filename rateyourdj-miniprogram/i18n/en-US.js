@@ -91,6 +91,7 @@ export default {
     submitSuccess: 'Review submitted',
     submitFailed: 'Submit failed',
     pleaseRate: 'Please complete all ratings',
+    commentRequired: 'Please write a comment',
     commentTooShort: 'Comment must be at least 10 characters',
     helpful: 'Helpful',
     notHelpful: 'Not Helpful',

@@ -138,7 +138,7 @@
 
     <!-- 文字评论 -->
     <view class="comment-section">
-      <view class="section-title">{{texts.writeComment}}</view>
+      <view class="section-title">{{texts.writeComment}} *</view>
       <textarea
         class="comment-input"
         placeholder="{{texts.commentPlaceholder}}"

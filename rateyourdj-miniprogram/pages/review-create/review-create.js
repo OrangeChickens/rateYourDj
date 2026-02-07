@@ -76,6 +76,7 @@ Page({
         submitting: i18n.t('review.submitting'),
         submit: i18n.t('common.submit'),
         pleaseRate: i18n.t('review.pleaseRate'),
+        commentRequired: i18n.t('review.commentRequired'),
         commentTooShort: i18n.t('review.commentTooShort')
       }
     });
@@ -211,8 +212,14 @@ Page({
       return false;
     }
 
-    // 检查评论长度（可选，但如果填写则至少10字）
-    if (comment && comment.trim().length < 10) {
+    // 检查评论是否为空（必填）
+    if (!comment || comment.trim().length === 0) {
+      showToast(this.data.texts.commentRequired);
+      return false;
+    }
+
+    // 检查评论长度（至少10字）
+    if (comment.trim().length < 10) {
       showToast(this.data.texts.commentTooShort);
       return false;
     }
