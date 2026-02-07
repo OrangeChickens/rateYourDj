@@ -9,6 +9,7 @@
           class="avatar"
           mode="aspectFill"
           lazy-load="{{true}}"
+          binderror="onAvatarError"
         />
       </view>
       <view class="user-details">

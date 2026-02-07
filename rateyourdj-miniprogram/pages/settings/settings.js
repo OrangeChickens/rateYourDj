@@ -177,6 +177,15 @@ Page({
     });
   },
 
+  // 头像加载失败
+  onAvatarError(e) {
+    console.error('头像加载失败:', e.detail);
+    // 使用默认头像
+    this.setData({
+      'userInfo.avatar_url': '/images/default-avatar.png'
+    });
+  },
+
   // 退出登录
   async handleLogout() {
     const confirmed = await showConfirm(

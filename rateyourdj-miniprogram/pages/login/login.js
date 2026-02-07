@@ -31,6 +31,41 @@ Page({
     });
   },
 
+  // 上传头像到OSS
+  async uploadAvatarToOSS(avatarUrl) {
+    return new Promise((resolve, reject) => {
+      wx.uploadFile({
+        url: `${app.globalData.apiBaseUrl}/upload/image`,
+        filePath: avatarUrl,
+        name: 'file',
+        formData: {
+          dj_name: 'user_avatar',
+          dj_label: 'avatars'
+        },
+        success: (res) => {
+          if (res.statusCode !== 200) {
+            reject(new Error(`上传失败：${res.statusCode}`));
+            return;
+          }
+
+          try {
+            const data = JSON.parse(res.data);
+            if (data.success) {
+              resolve(data.data.url);
+            } else {
+              reject(new Error(data.message || '上传失败'));
+            }
+          } catch (e) {
+            reject(new Error('服务器响应格式错误'));
+          }
+        },
+        fail: (error) => {
+          reject(new Error(error.errMsg || '网络请求失败'));
+        }
+      });
+    });
+  },
+
   // 登录
   async handleLogin() {
     const { avatarUrl, nickname } = this.data;
@@ -61,15 +96,23 @@ Page({
         throw new Error('获取登录凭证失败');
       }
 
-      // 第二步：上传头像到服务器（如果有选择头像）
+      // 第二步：上传头像到OSS（如果有选择头像）
       let uploadedAvatarUrl = '';
       if (avatarUrl) {
-        // 注意：这里需要后端提供上传接口
-        // 临时方案：直接使用微信临时路径
-        uploadedAvatarUrl = avatarUrl;
+        wx.showLoading({
+          title: '上传头像中...',
+          mask: true
+        });
+        uploadedAvatarUrl = await this.uploadAvatarToOSS(avatarUrl);
+        console.log('头像上传成功，URL:', uploadedAvatarUrl);
       }
 
       // 第三步：发送到后端登录
+      wx.showLoading({
+        title: '登录中...',
+        mask: true
+      });
+
       const apiRes = await app.request({
         url: '/auth/login',
         method: 'POST',
@@ -77,7 +120,7 @@ Page({
           code: loginRes.code,
           userInfo: {
             nickName: nickname,
-            avatarUrl: uploadedAvatarUrl || '/images/default-avatar.png'
+            avatarUrl: uploadedAvatarUrl || ''
           }
         }
       });
