@@ -51,13 +51,23 @@
           <text class="icon">👍</text>
           <text class="count">{{item.helpful_count}}</text>
         </view>
-        <button
-          class="delete-btn"
-          catchtap="deleteReview"
-          data-id="{{item.id}}"
-        >
-          删除
-        </button>
+        <view class="action-btns">
+          <button
+            class="action-btn share-btn"
+            open-type="share"
+            data-review="{{item}}"
+            catchtap="preventBubble"
+          >
+            分享
+          </button>
+          <button
+            class="action-btn delete-btn"
+            catchtap="deleteReview"
+            data-id="{{item.id}}"
+          >
+            删除
+          </button>
+        </view>
       </view>
     </view>
 

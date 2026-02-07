@@ -161,8 +161,20 @@
   letter-spacing: 0.5rpx;
 }
 
-.delete-btn {
-  padding: 16rpx 32rpx;
+.action-btns {
+  display: flex;
+  gap: 12rpx;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* 操作按钮统一样式 */
+.action-btn {
+  width: 120rpx !important;
+  height: 60rpx !important;
+  line-height: 60rpx !important;
+  padding: 0 !important;
+  margin: 0 !important;
   background-color: #FFF;
   color: #000;
   font-size: 20rpx;
@@ -171,9 +183,11 @@
   border-radius: 0;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.delete-btn::after {
+.action-btn::after {
   border: none;
 }
 

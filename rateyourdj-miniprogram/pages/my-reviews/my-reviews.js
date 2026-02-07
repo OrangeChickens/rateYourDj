@@ -124,5 +124,46 @@ Page({
   // 触底加载
   onReachBottom() {
     this.loadMore();
+  },
+
+  // 阻止事件冒泡（用于分享按钮）
+  preventBubble() {
+    // 空函数，只用于阻止事件冒泡到父元素
+  },
+
+  // 分享评论给好友
+  onShareAppMessage(options) {
+    // 从按钮的 dataset 中获取评论信息
+    const review = options.target.dataset.review;
+
+    if (!review) {
+      return {
+        title: '我的DJ评价 - RateYourDJ',
+        path: '/pages/index/index'
+      };
+    }
+
+    // 构建星星显示
+    const stars = '⭐'.repeat(review.overall_rating);
+
+    // 构建分享标题
+    const title = `我给${review.dj_name}的评价：${stars} ${review.overall_rating}分`;
+
+    // 构建分享路径，跳转到DJ详情页
+    const path = `/pages/dj-detail/dj-detail?id=${review.dj_id}`;
+
+    return {
+      title: title,
+      path: path,
+      imageUrl: '' // 可以使用DJ的照片
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '我的DJ评价 - RateYourDJ',
+      query: ''
+    };
   }
 });

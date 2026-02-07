@@ -26,23 +26,20 @@
         <view class="dj-meta" wx:if="{{dj.label}}">
           <text class="label">厂牌：{{dj.label}}</text>
         </view>
-
-        <!-- 音乐风格标签 -->
-        <view class="style-tags">
-          <text wx:for="{{dj.styleList}}" wx:key="index" class="tag">{{item}}</text>
-        </view>
       </view>
 
       <!-- 操作按钮组 -->
       <view class="action-btns">
         <view class="favorite-btn" bindtap="toggleFavorite">
           <text class="icon">{{isFavorited ? '★' : '☆'}}</text>
-          <text class="text">{{isFavorited ? texts.unfavorite : texts.favorite}}</text>
         </view>
-        <button class="share-btn" open-type="share">
-          <text class="icon">→</text>
-          <text class="text">推荐</text>
-        </button>
+      </view>
+    </view>
+
+    <!-- 音乐风格标签 -->
+    <view class="style-tags-section">
+      <view class="style-tags">
+        <text wx:for="{{dj.styleList}}" wx:key="index" class="tag">{{item}}</text>
       </view>
     </view>
 
@@ -129,10 +126,7 @@
               <text class="item">{{texts.set}}: {{item.set_rating}}</text>
               <text class="item">{{texts.performance}}: {{item.performance_rating}}</text>
               <text class="item">{{texts.personality}}: {{item.personality_rating}}</text>
-            </view>
-
-            <view wx:if="{{item.would_choose_again !== null}}" class="would-choose">
-              <text class="{{item.would_choose_again ? 'yes' : 'no'}}">
+              <text wx:if="{{item.would_choose_again !== null}}" class="item {{item.would_choose_again ? 'would-choose-yes' : 'would-choose-no'}}">
                 {{item.would_choose_again ? '✓' : '✗'}} {{texts.wouldChooseAgain}}
               </text>
             </view>

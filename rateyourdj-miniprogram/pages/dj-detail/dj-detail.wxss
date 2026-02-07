@@ -20,11 +20,10 @@
 /* DJ头部 */
 .dj-header {
   background: #FFF;
-  padding: 64rpx 48rpx;
+  padding: 80rpx 48rpx 48rpx 48rpx;
   display: flex;
   gap: 48rpx;
   position: relative;
-  border-bottom: 3rpx solid #000;
 }
 
 .dj-photo {
@@ -45,14 +44,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 20rpx;
+  padding-right: 80rpx;
 }
 
 .dj-name {
-  font-size: 52rpx;
+  font-size: 64rpx;
   font-weight: 700;
   color: #000;
-  line-height: 1.2;
+  line-height: 1.1;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
 }
@@ -60,7 +60,7 @@
 .dj-meta {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 8rpx;
   font-size: 24rpx;
   color: #666;
 }
@@ -75,6 +75,13 @@
 .dj-meta .label {
   color: #666;
   font-weight: 600;
+}
+
+/* 风格标签区域 */
+.style-tags-section {
+  background: #FFF;
+  padding: 24rpx 48rpx;
+  border-bottom: 2rpx solid #000;
 }
 
 .style-tags {
@@ -95,54 +102,32 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 收藏按钮 */
 /* 操作按钮组 */
 .action-btns {
-  position: absolute;
-  top: 64rpx;
+  position: absolute !important;
+  top: 80rpx;
   right: 48rpx;
-  display: flex;
-  flex-direction: column;
-  gap: 32rpx;
+  z-index: 10;
 }
 
-.favorite-btn,
-.share-btn {
+.favorite-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12rpx;
-  background: transparent;
-  border: none;
-  padding: 0;
+  justify-content: center;
 }
 
-.share-btn::after {
-  border: none;
-}
-
-.favorite-btn .icon,
-.share-btn .icon {
-  font-size: 48rpx;
+.favorite-btn .icon {
+  font-size: 56rpx;
   color: #000;
-  font-weight: 700;
-}
-
-.favorite-btn .text,
-.share-btn .text {
-  font-size: 20rpx;
-  color: #000;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5rpx;
+  font-weight: 400;
+  line-height: 1;
+  display: block;
 }
 
 /* 评分统计 */
 .rating-section {
   background: #FFF;
-  margin-top: 32rpx;
   padding: 64rpx 48rpx;
-  border-top: 2rpx solid #000;
   border-bottom: 2rpx solid #000;
 }
 
@@ -342,31 +327,36 @@
 }
 
 .rating-row {
-  display: flex;
-  gap: 48rpx;
   font-size: 22rpx;
   color: #666;
   font-weight: 600;
+  line-height: 1;
 }
 
 .rating-row .item {
-  display: flex;
-  align-items: center;
+  display: inline-block;
+  margin-right: 24rpx;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+  vertical-align: baseline;
 }
 
-.would-choose {
-  font-size: 22rpx;
-  font-weight: 700;
-}
-
-.would-choose .yes {
+.rating-row .would-choose-yes {
+  display: inline-block;
+  margin-right: 24rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  vertical-align: baseline;
   color: #000;
   font-weight: 700;
 }
 
-.would-choose .no {
+.rating-row .would-choose-no {
+  display: inline-block;
+  margin-right: 24rpx;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  vertical-align: baseline;
   color: #666;
   font-weight: 700;
 }
