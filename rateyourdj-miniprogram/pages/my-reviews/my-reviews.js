@@ -134,11 +134,11 @@ Page({
   // 分享评论给好友
   onShareAppMessage(options) {
     // 从按钮的 dataset 中获取评论信息
-    const review = options.target.dataset.review;
+    const review = options && options.target && options.target.dataset ? options.target.dataset.review : null;
 
     if (!review) {
       return {
-        title: '我的DJ评价 - RateYourDJ',
+        title: '我的DJ评价 - 烂u盘',
         path: '/pages/index/index'
       };
     }
@@ -162,7 +162,7 @@ Page({
   // 分享到朋友圈
   onShareTimeline() {
     return {
-      title: '我的DJ评价 - RateYourDJ',
+      title: '我的DJ评价 - 烂u盘',
       query: ''
     };
   }

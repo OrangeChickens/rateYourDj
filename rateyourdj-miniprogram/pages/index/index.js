@@ -145,27 +145,17 @@ Page({
 
   // 分享给好友
   onShareAppMessage() {
-    const city = this.data.selectedCity;
-    const title = city && city !== '全部城市'
-      ? `${city}的宝藏DJ - RateYourDJ`
-      : '发现宝藏DJ - RateYourDJ';
-
     return {
-      title: title,
+      title: '查看DJ评分 - 烂u盘',
       path: '/pages/index/index',
-      imageUrl: '' // 可以设置一个默认的分享图片
+      imageUrl: ''
     };
   },
 
   // 分享到朋友圈
   onShareTimeline() {
-    const city = this.data.selectedCity;
-    const title = city && city !== '全部城市'
-      ? `${city}的宝藏DJ`
-      : '发现宝藏DJ';
-
     return {
-      title: title,
+      title: '查看DJ评分 - 烂u盘',
       query: ''
     };
   }
