@@ -40,6 +40,11 @@
       <view class="style-tags">
         <text wx:for="{{dj.styleList}}" wx:key="index" class="tag">{{item}}</text>
       </view>
+      <!-- 管理员编辑按钮 -->
+      <view wx:if="{{isAdmin}}" class="edit-btn" bindtap="goToEdit">
+        <text class="edit-icon">✎</text>
+        <text class="edit-text">编辑</text>
+      </view>
     </view>
 
     <!-- 评分统计 -->

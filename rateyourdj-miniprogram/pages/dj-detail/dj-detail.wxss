@@ -96,12 +96,17 @@
   background: #FFF;
   padding: 16rpx 48rpx 24rpx 48rpx;
   border-bottom: 2rpx solid #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24rpx;
 }
 
 .style-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
+  flex: 1;
 }
 
 .style-tags .tag {
@@ -114,6 +119,31 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 20rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  flex-shrink: 0;
+}
+
+.edit-icon {
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+.edit-text {
+  line-height: 1;
 }
 
 /* 操作按钮组 */

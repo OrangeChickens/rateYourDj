@@ -64,6 +64,16 @@ export const djAPI = {
       data,
       needAuth: true
     });
+  },
+
+  // 更新DJ（管理员）
+  update(id, data) {
+    return app.request({
+      url: `/dj/${id}`,
+      method: 'PUT',
+      data,
+      needAuth: true
+    });
   }
 };
 

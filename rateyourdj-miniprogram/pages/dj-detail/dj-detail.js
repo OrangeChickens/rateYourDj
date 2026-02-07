@@ -13,6 +13,7 @@ Page({
     loading: true,
     reviewsLoading: false,
     isFavorited: false,
+    isAdmin: false, // 是否是管理员
 
     // 分页
     currentPage: 1,
@@ -38,6 +39,7 @@ Page({
     }
 
     this.setData({ djId });
+    this.checkAdminStatus();
     this.updateLanguage();
     this.loadDJDetail();
     this.loadReviews();
@@ -393,5 +395,20 @@ Page({
       query: `id=${this.data.djId}`,
       imageUrl: dj.photo_url || ''
     };
+  },
+
+  // 检查管理员权限
+  checkAdminStatus() {
+    const userInfo = app.globalData.userInfo;
+    if (userInfo && userInfo.role === 'admin') {
+      this.setData({ isAdmin: true });
+    }
+  },
+
+  // 跳转到编辑页面
+  goToEdit() {
+    wx.navigateTo({
+      url: `/pages/dj-upload/dj-upload?id=${this.data.djId}`
+    });
   }
 });

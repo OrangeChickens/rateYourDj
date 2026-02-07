@@ -6,6 +6,9 @@ const app = getApp();
 
 Page({
   data: {
+    djId: null, // DJ ID（编辑模式）
+    isEditMode: false, // 是否编辑模式
+
     name: '',
     city: '',
     cityRegion: ['', '', ''], // 省、市、区
@@ -26,7 +29,17 @@ Page({
     uploading: false
   },
 
-  async onLoad() {
+  async onLoad(options) {
+    // 检查是否是编辑模式
+    if (options.id) {
+      this.setData({
+        djId: options.id,
+        isEditMode: true
+      });
+      wx.setNavigationBarTitle({
+        title: '编辑DJ资料'
+      });
+    }
     // 检查管理员权限
     const userInfo = app.globalData.userInfo;
     const token = app.globalData.token;
@@ -84,10 +97,18 @@ Page({
       showLoading('加载中...');
 
       // 并行加载厂牌和标签数据
-      const [labelsRes, tagsRes] = await Promise.all([
+      const promises = [
         djAPI.getLabels(),
         tagAPI.getPresets()
-      ]);
+      ];
+
+      // 如果是编辑模式，加载DJ详情
+      if (this.data.isEditMode) {
+        promises.push(djAPI.getDetail(this.data.djId));
+      }
+
+      const results = await Promise.all(promises);
+      const [labelsRes, tagsRes, djRes] = results;
 
       // 处理厂牌数据
       if (labelsRes.success) {
@@ -105,6 +126,43 @@ Page({
         const styleTagOptions = tagsRes.data.style || [];
         this.setData({
           styleTagOptions
+        });
+      }
+
+      // 编辑模式：填充现有数据
+      if (this.data.isEditMode && djRes && djRes.success) {
+        const dj = djRes.data;
+
+        // 处理厂牌
+        let labelIndex = 0;
+        let showCustomLabel = false;
+        let customLabel = '';
+
+        if (dj.label) {
+          const index = this.data.labelOptions.indexOf(dj.label);
+          if (index > -1) {
+            labelIndex = index;
+          } else {
+            // 自定义厂牌
+            labelIndex = this.data.labelOptions.length - 1; // "自定义"的索引
+            showCustomLabel = true;
+            customLabel = dj.label;
+          }
+        }
+
+        // 处理音乐风格
+        const selectedStyles = dj.music_style ? dj.music_style.split(',') : [];
+
+        this.setData({
+          name: dj.name || '',
+          city: dj.city || '',
+          label: dj.label || '',
+          labelIndex,
+          showCustomLabel,
+          customLabel,
+          selectedStyles,
+          photo_url: dj.photo_url || '',
+          localImagePath: dj.photo_url || '' // 显示现有图片
         });
       }
 
@@ -364,44 +422,61 @@ Page({
       return;
     }
 
-    if (!this.data.localImagePath) {
+    // 新建模式必须选择图片
+    if (!this.data.isEditMode && !this.data.localImagePath) {
       showToast('请选择DJ照片');
       return;
     }
 
     try {
       this.setData({ uploading: true });
-      showLoading('正在上传图片...');
 
       console.log('开始提交DJ信息...');
 
-      // 先上传图片
-      const photoUrl = await this.uploadImageToAliyun(this.data.localImagePath);
-      console.log('图片上传成功，URL:', photoUrl);
+      let photoUrl = this.data.photo_url; // 使用现有URL
 
-      showLoading('正在创建DJ...');
+      // 如果选择了新图片，先上传
+      if (this.data.localImagePath && this.data.localImagePath !== this.data.photo_url) {
+        showLoading('正在上传图片...');
+        photoUrl = await this.uploadImageToAliyun(this.data.localImagePath);
+        console.log('图片上传成功，URL:', photoUrl);
+      }
+
+      const actionText = this.data.isEditMode ? '更新' : '创建';
+      showLoading(`正在${actionText}DJ...`);
 
       // 组装音乐风格字符串
       const music_style = this.data.selectedStyles.join(',') || null;
 
       // 提交DJ信息
-      const res = await djAPI.create({
-        name: this.data.name,
-        city: this.data.city,
-        label: this.data.label || null,
-        music_style: music_style,
-        photo_url: photoUrl
-      });
+      let res;
+      if (this.data.isEditMode) {
+        res = await djAPI.update(this.data.djId, {
+          name: this.data.name,
+          city: this.data.city,
+          label: this.data.label || null,
+          music_style: music_style,
+          photo_url: photoUrl
+        });
+      } else {
+        res = await djAPI.create({
+          name: this.data.name,
+          city: this.data.city,
+          label: this.data.label || null,
+          music_style: music_style,
+          photo_url: photoUrl
+        });
+      }
 
-      console.log('创建DJ响应:', res);
+      console.log(`${actionText}DJ响应:`, res);
 
       if (res.success) {
-        showToast('DJ创建成功');
+        showToast(`DJ${actionText}成功`);
         setTimeout(() => {
           wx.navigateBack();
         }, 1500);
       } else {
-        showToast(res.message || '创建失败');
+        showToast(res.message || `${actionText}失败`);
       }
     } catch (error) {
       console.error('提交失败:', error);

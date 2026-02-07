@@ -219,6 +219,25 @@ class DJ {
     );
     return this.findById(result.insertId);
   }
+
+  // 更新DJ（管理功能）
+  static async update(id, djData) {
+    const { name, city, label, photo_url, music_style } = djData;
+    // 转换 photo_url 为 HTTPS
+    const httpsPhotoUrl = convertToHttps(photo_url);
+
+    await pool.query(
+      `UPDATE djs SET
+       name = ?,
+       city = ?,
+       label = ?,
+       photo_url = ?,
+       music_style = ?
+       WHERE id = ?`,
+      [name, city, label || null, httpsPhotoUrl || null, music_style || null, id]
+    );
+    return this.findById(id);
+  }
 }
 
 module.exports = DJ;

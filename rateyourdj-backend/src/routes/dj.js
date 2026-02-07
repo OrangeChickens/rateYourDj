@@ -8,7 +8,8 @@ const {
   getHotDJs,
   getCities,
   getLabels,
-  createDJ
+  createDJ,
+  updateDJ
 } = require('../controllers/djController');
 
 // 获取DJ列表（支持筛选、排序）
@@ -31,5 +32,8 @@ router.get('/labels/all', getLabels);
 
 // 创建DJ（仅管理员）
 router.post('/create', requireAdmin, createDJ);
+
+// 更新DJ（仅管理员）
+router.put('/:id', requireAdmin, updateDJ);
 
 module.exports = router;
