@@ -145,11 +145,13 @@ Page({
 
   // 分享给好友
   onShareAppMessage() {
-    return {
+    const shareConfig = {
       title: '查看DJ评分 - 烂u盘',
-      path: '/pages/index/index',
-      imageUrl: ''
+      path: '/pages/index/index'
     };
+
+    console.log('分享配置:', shareConfig);
+    return shareConfig;
   },
 
   // 分享到朋友圈
