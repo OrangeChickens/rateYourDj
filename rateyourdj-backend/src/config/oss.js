@@ -51,8 +51,10 @@ async function uploadToOSS(file, filename, djName = 'unknown', djLabel = 'indepe
       finalUrl = `https://${cdnDomain}/${objectName}`;
       console.log('  - 使用CDN域名:', finalUrl);
     } else {
-      finalUrl = result.url;
-      console.log('  - 使用OSS默认域名:', finalUrl);
+      // 强制使用HTTPS（微信小程序要求）
+      // OSS默认返回HTTP，需要手动替换为HTTPS
+      finalUrl = result.url.replace('http://', 'https://');
+      console.log('  - 使用OSS默认域名(HTTPS):', finalUrl);
     }
 
     return finalUrl;
