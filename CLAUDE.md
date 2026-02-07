@@ -511,6 +511,30 @@ SELECT * FROM djs LIMIT 10;
 SELECT * FROM reviews WHERE dj_id = 1 ORDER BY created_at DESC;
 ```
 
+### Git Workflow
+
+**IMPORTANT: Always ask before pushing to remote repository.**
+
+```bash
+# Make changes and stage files
+git add -A
+
+# Commit with descriptive message
+git commit -m "Your commit message"
+
+# ⚠️ STOP HERE - Ask user before pushing
+# DO NOT run 'git push' automatically
+
+# After user approval:
+git push
+```
+
+**Rules:**
+- ✅ Commit changes automatically when user confirms the work
+- ❌ NEVER push to remote without asking user first
+- ✅ Show commit summary and ask: "Ready to push?"
+- ✅ Wait for explicit user confirmation before running `git push`
+
 ---
 
 ## Architecture Overview
