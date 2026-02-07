@@ -3,11 +3,14 @@
   <!-- 用户信息区域 -->
   <view class="user-section">
     <view wx:if="{{isLoggedIn}}" class="user-info">
-      <image
-        src="{{userInfo.avatar_url || '/images/default-avatar.png'}}"
-        class="avatar"
-        mode="aspectFill"
-      />
+      <view class="avatar-wrapper skeleton">
+        <image
+          src="{{userInfo.avatar_url || '/images/default-avatar.png'}}"
+          class="avatar"
+          mode="aspectFill"
+          lazy-load="{{true}}"
+        />
+      </view>
       <view class="user-details">
         <text class="nickname">{{userInfo.nickname}}</text>
         <view class="stats">

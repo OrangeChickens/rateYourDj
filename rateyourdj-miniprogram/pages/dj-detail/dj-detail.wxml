@@ -9,11 +9,12 @@
   <view wx:else class="dj-detail">
     <!-- DJ头部信息 -->
     <view class="dj-header">
-      <view class="dj-photo">
+      <view class="dj-photo skeleton">
         <image
           src="{{dj.photo_url || '/images/default-avatar.png'}}"
           mode="aspectFill"
           class="photo"
+          lazy-load="{{true}}"
         />
       </view>
 
@@ -99,10 +100,13 @@
       <view wx:if="{{reviews.length > 0}}" class="review-list">
         <view wx:for="{{reviews}}" wx:key="id" class="review-card">
           <view class="review-header">
-            <image
-              src="{{item.is_anonymous ? '/images/anonymous-avatar.png' : item.avatar_url}}"
-              class="avatar"
-            />
+            <view class="avatar-wrapper skeleton">
+              <image
+                src="{{item.is_anonymous ? '/images/anonymous-avatar.png' : item.avatar_url}}"
+                class="avatar"
+                lazy-load="{{true}}"
+              />
+            </view>
             <view class="user-info">
               <text class="nickname">{{item.is_anonymous ? texts.anonymousUser : item.nickname}}</text>
               <text class="date">{{item.formattedDate}}</text>

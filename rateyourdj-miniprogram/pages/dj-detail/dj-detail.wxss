@@ -268,12 +268,17 @@
   margin-bottom: 32rpx;
 }
 
-.review-header .avatar {
+.review-header .avatar-wrapper {
   width: 72rpx;
   height: 72rpx;
-  border-radius: 0;
-  background-color: #F0F0F0;
   border: 2rpx solid #000;
+  flex-shrink: 0;
+}
+
+.review-header .avatar {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .review-header .user-info {

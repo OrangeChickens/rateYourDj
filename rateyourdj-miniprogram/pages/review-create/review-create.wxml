@@ -160,15 +160,23 @@
       />
     </view>
 
-    <!-- 提交按钮 -->
-    <view class="submit-section">
-      <button
-        class="submit-btn {{submitting ? 'disabled' : ''}}"
-        bindtap="submitReview"
-        disabled="{{submitting}}"
-      >
-        {{submitting ? texts.submitting : texts.submit}}
-      </button>
-    </view>
+    <!-- 底部间距 -->
+    <view style="height: 200rpx;"></view>
   </scroll-view>
+
+  <!-- 滑动提交区域 -->
+  <view
+    class="swipe-submit-area {{swipeProgress > 0 ? 'active' : ''}}"
+    bindtouchstart="handleTouchStart"
+    bindtouchmove="handleTouchMove"
+    bindtouchend="handleTouchEnd"
+  >
+    <view class="swipe-indicator" style="transform: translateY({{-swipeProgress}}rpx); opacity: {{swipeProgress / 100}}">
+      <text class="swipe-icon">↑</text>
+      <text class="swipe-text">{{swipeProgress >= 100 ? '松手提交' : '向上滑动提交'}}</text>
+    </view>
+    <view class="swipe-progress-bar">
+      <view class="swipe-progress-fill" style="width: {{Math.min(swipeProgress, 100)}}%"></view>
+    </view>
+  </view>
 </view>

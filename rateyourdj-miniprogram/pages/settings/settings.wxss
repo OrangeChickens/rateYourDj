@@ -20,7 +20,20 @@
   gap: 48rpx;
 }
 
-.avatar {
+.user-info .avatar-wrapper {
+  width: 140rpx;
+  height: 140rpx;
+  border: 2rpx solid #000;
+  flex-shrink: 0;
+}
+
+.user-info .avatar {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.login-prompt .avatar {
   width: 140rpx;
   height: 140rpx;
   border-radius: 0;

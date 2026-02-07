@@ -137,7 +137,8 @@ Page({
           ...review,
           stars: generateStars(review.overall_rating),
           formattedDate: formatDate(review.created_at),
-          tagList: review.tags || []
+          tagList: review.tags || [],
+          avatar_url: review.avatar_url || '/images/default-avatar.png'
         }));
 
         this.setData({

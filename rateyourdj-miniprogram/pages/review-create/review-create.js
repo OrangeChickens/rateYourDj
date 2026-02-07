@@ -32,7 +32,12 @@ Page({
     texts: {},
 
     // 提交中
-    submitting: false
+    submitting: false,
+
+    // 滑动提交相关
+    swipeProgress: 0,
+    touchStartY: 0,
+    touchStartTime: 0
   },
 
   onLoad(options) {
@@ -265,5 +270,51 @@ Page({
   // 按类别获取标签
   getTagsByCategory(category) {
     return this.data.presetTags.filter(tag => tag.category === category);
+  },
+
+  // 触摸开始
+  handleTouchStart(e) {
+    if (this.data.submitting) return;
+
+    this.setData({
+      touchStartY: e.touches[0].pageY,
+      touchStartTime: Date.now()
+    });
+  },
+
+  // 触摸移动
+  handleTouchMove(e) {
+    if (this.data.submitting) return;
+
+    const touchCurrentY = e.touches[0].pageY;
+    const deltaY = this.data.touchStartY - touchCurrentY; // 向上滑动为正值
+
+    if (deltaY > 0) {
+      // 计算进度 (0-100)，最大滑动距离为150rpx
+      const progress = Math.min((deltaY / 150) * 100, 100);
+      this.setData({ swipeProgress: progress });
+    } else {
+      this.setData({ swipeProgress: 0 });
+    }
+  },
+
+  // 触摸结束
+  handleTouchEnd(e) {
+    if (this.data.submitting) return;
+
+    const touchEndY = e.changedTouches[0].pageY;
+    const deltaY = this.data.touchStartY - touchEndY;
+    const deltaTime = Date.now() - this.data.touchStartTime;
+
+    // 如果滑动距离超过100rpx，或者快速滑动（速度够快），触发提交
+    const velocity = deltaY / deltaTime; // 速度：像素/毫秒
+
+    if (this.data.swipeProgress >= 100 || (deltaY > 50 && velocity > 0.5)) {
+      // 触发提交
+      this.submitReview();
+    }
+
+    // 重置进度
+    this.setData({ swipeProgress: 0 });
   }
 });

@@ -31,11 +31,14 @@
       >
         <!-- DJ卡片 -->
         <view class="dj-card-header">
-          <image
-            class="dj-avatar"
-            src="{{item.photo_url || '/images/default-avatar.png'}}"
-            mode="aspectFill"
-          />
+          <view class="image-wrapper skeleton">
+            <image
+              class="dj-avatar"
+              src="{{item.photo_url || '/images/default-avatar.png'}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+            />
+          </view>
           <view class="dj-info">
             <text class="dj-name">{{item.name}}</text>
             <view class="dj-meta">

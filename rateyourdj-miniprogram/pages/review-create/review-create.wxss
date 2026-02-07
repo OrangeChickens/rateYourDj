@@ -37,6 +37,7 @@
   flex: 1;
   padding: 0;
   padding-top: 64rpx;
+  padding-bottom: 240rpx;
 }
 
 /* 评分区域 */
@@ -217,33 +218,71 @@
   align-items: center;
 }
 
-/* 提交按钮 */
-.submit-section {
+/* 滑动提交区域 */
+.swipe-submit-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 240rpx;
   background: #FFF;
-  padding: 48rpx;
-  margin: 0 32rpx 64rpx 32rpx;
-  border-radius: 0;
+  border-top: 3rpx solid #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: background-color 0.3s;
 }
 
-.submit-btn {
-  width: 100%;
-  padding: 32rpx;
-  background-color: #000;
-  color: #FFF;
+.swipe-submit-area.active {
+  background: #F5F5F5;
+}
+
+.swipe-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.swipe-icon {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10rpx);
+  }
+}
+
+.swipe-text {
   font-size: 28rpx;
   font-weight: 700;
-  text-align: center;
-  border: 2rpx solid #000;
-  border-radius: 0;
+  color: #000;
   text-transform: uppercase;
   letter-spacing: 1rpx;
-  border: none;
 }
 
-.submit-btn.disabled {
-  opacity: 0.6;
+.swipe-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: #E0E0E0;
 }
 
-.submit-btn::after {
-  border: none;
+.swipe-progress-fill {
+  height: 100%;
+  background: #000;
+  transition: width 0.1s linear;
 }

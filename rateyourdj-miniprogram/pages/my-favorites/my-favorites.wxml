@@ -13,11 +13,12 @@
       class="dj-card"
     >
       <view class="dj-content" bindtap="goToDJDetail" data-id="{{item.id}}">
-        <view class="dj-photo">
+        <view class="dj-photo skeleton">
           <image
             src="{{item.photo_url || '/images/default-avatar.png'}}"
             mode="aspectFill"
             class="photo"
+            lazy-load="{{true}}"
           />
         </view>
 
