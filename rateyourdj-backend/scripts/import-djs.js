@@ -1,11 +1,22 @@
 /**
  * DJ批量导入脚本
- * 用法：node scripts/import-djs.js <csv文件路径>
- * 示例：node scripts/import-djs.js dj_import_template.csv
+ * 用法：node scripts/import-djs.js <csv文件路径> [环境]
+ * 示例：
+ *   node scripts/import-djs.js dj_import_template.csv          # 使用开发环境
+ *   node scripts/import-djs.js dj_import_template.csv prod     # 使用生产环境
  */
 
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
+
+// 检查是否指定了生产环境
+const useProduction = process.argv[3] === 'prod' || process.argv[3] === 'production';
+if (useProduction) {
+  console.log('⚠️  使用生产环境配置');
+  require('dotenv').config({ path: path.resolve(__dirname, '../.env.production'), override: true });
+}
+
 const { pool } = require('../src/config/database');
 
 // 简单的CSV解析函数
@@ -147,8 +158,10 @@ async function main() {
   const csvFilePath = process.argv[2];
 
   if (!csvFilePath) {
-    console.log('❌ 用法: node scripts/import-djs.js <csv文件路径>');
-    console.log('   示例: node scripts/import-djs.js dj_import_template.csv');
+    console.log('❌ 用法: node scripts/import-djs.js <csv文件路径> [环境]');
+    console.log('   示例:');
+    console.log('     node scripts/import-djs.js dj_import_template.csv          # 开发环境');
+    console.log('     node scripts/import-djs.js dj_import_template.csv prod     # 生产环境');
     process.exit(1);
   }
 
