@@ -1,5 +1,28 @@
 const { pool } = require('../config/database');
 
+// 辅助函数：将 HTTP URL 转换为 HTTPS（微信小程序要求）
+function convertToHttps(url) {
+  if (!url) return url;
+  if (typeof url === 'string' && url.startsWith('http://')) {
+    return url.replace('http://', 'https://');
+  }
+  return url;
+}
+
+// 辅助函数：处理 DJ 对象，转换图片 URL
+function processDJ(dj) {
+  if (!dj) return dj;
+  if (dj.photo_url) {
+    dj.photo_url = convertToHttps(dj.photo_url);
+  }
+  return dj;
+}
+
+// 辅助函数：处理 DJ 数组
+function processDJArray(djs) {
+  return djs.map(dj => processDJ(dj));
+}
+
 class DJ {
   // 获取DJ列表（支持筛选、排序、分页）
   static async getList(filters = {}) {
@@ -49,7 +72,7 @@ class DJ {
     const total = countResult[0].total;
 
     return {
-      data: rows,
+      data: processDJArray(rows),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -65,7 +88,7 @@ class DJ {
       'SELECT * FROM djs WHERE id = ?',
       [id]
     );
-    return rows[0];
+    return processDJ(rows[0]);
   }
 
   // 搜索DJ
@@ -87,7 +110,7 @@ class DJ {
     );
 
     return {
-      data: rows,
+      data: processDJArray(rows),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -105,7 +128,7 @@ class DJ {
        LIMIT ?`,
       [limit]
     );
-    return rows;
+    return processDJArray(rows);
   }
 
   // 获取所有城市及统计
@@ -166,10 +189,13 @@ class DJ {
   // 创建DJ（管理功能）
   static async create(djData) {
     const { name, city, label, photo_url, music_style } = djData;
+    // 转换 photo_url 为 HTTPS
+    const httpsPhotoUrl = convertToHttps(photo_url);
+
     const [result] = await pool.query(
       `INSERT INTO djs (name, city, label, photo_url, music_style)
        VALUES (?, ?, ?, ?, ?)`,
-      [name, city, label, photo_url, music_style]
+      [name, city, label, httpsPhotoUrl, music_style]
     );
     return this.findById(result.insertId);
   }

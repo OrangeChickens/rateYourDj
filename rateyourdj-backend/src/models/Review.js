@@ -1,5 +1,28 @@
 const { pool } = require('../config/database');
 
+// 辅助函数：将 HTTP URL 转换为 HTTPS（微信小程序要求）
+function convertToHttps(url) {
+  if (!url) return url;
+  if (typeof url === 'string' && url.startsWith('http://')) {
+    return url.replace('http://', 'https://');
+  }
+  return url;
+}
+
+// 辅助函数：处理评论对象，转换图片 URL
+function processReview(review) {
+  if (!review) return review;
+  if (review.avatar_url) {
+    review.avatar_url = convertToHttps(review.avatar_url);
+  }
+  return review;
+}
+
+// 辅助函数：处理评论数组
+function processReviewArray(reviews) {
+  return reviews.map(review => processReview(review));
+}
+
 class Review {
   // 创建评论
   static async create(reviewData) {
@@ -96,7 +119,7 @@ class Review {
       review.avatar_url = null;
     }
 
-    return review;
+    return processReview(review);
   }
 
   // 获取DJ的评论列表
@@ -141,7 +164,7 @@ class Review {
     );
 
     return {
-      data: rows,
+      data: processReviewArray(rows),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
