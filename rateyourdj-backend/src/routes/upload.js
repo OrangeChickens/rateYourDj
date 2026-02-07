@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { authenticate } = require('../middleware/auth');
+const { optionalAuth } = require('../middleware/auth');
 const { uploadImage } = require('../controllers/uploadController');
 
 // 确保 uploads 目录存在
@@ -47,7 +47,7 @@ const upload = multer({
   }
 });
 
-// 上传图片（需要登录）
-router.post('/image', authenticate, upload.single('file'), uploadImage);
+// 上传图片（可选登录，支持登录前上传头像）
+router.post('/image', optionalAuth, upload.single('file'), uploadImage);
 
 module.exports = router;
