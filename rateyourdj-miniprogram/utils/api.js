@@ -2,6 +2,20 @@
 const app = getApp();
 
 /**
+ * 认证相关API
+ */
+export const authAPI = {
+  // 预检查用户状态
+  checkUser(code) {
+    return app.request({
+      url: '/auth/check-user',
+      method: 'POST',
+      data: { code }
+    });
+  }
+};
+
+/**
  * DJ相关API
  */
 export const djAPI = {

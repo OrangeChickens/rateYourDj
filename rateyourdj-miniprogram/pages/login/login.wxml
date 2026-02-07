@@ -8,16 +8,16 @@
   <view class="login-form">
     <!-- 头像选择 -->
     <view class="avatar-section">
-      <text class="label">头像</text>
+      <text class="label">头像（可选）</text>
       <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" disabled="{{uploading}}">
         <image
           src="{{avatarUrl || '/images/default-avatar.png'}}"
           class="avatar {{uploading ? 'uploading' : ''}}"
           mode="aspectFill"
         />
-        <text class="avatar-tip" wx:if="{{!uploading && !uploadedAvatarUrl}}">点击选择头像</text>
+        <text class="avatar-tip" wx:if="{{!uploading && !uploadedAvatarUrl}}">{{avatarTip}}</text>
         <text class="avatar-tip uploading" wx:if="{{uploading}}">上传中...</text>
-        <text class="avatar-tip success" wx:if="{{!uploading && uploadedAvatarUrl}}">✓ 已上传</text>
+        <text class="avatar-tip success" wx:if="{{!uploading && uploadedAvatarUrl}}">✓ 已上传新头像</text>
       </button>
     </view>
 

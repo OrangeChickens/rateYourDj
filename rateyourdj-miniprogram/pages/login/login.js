@@ -1,20 +1,70 @@
 // pages/login/login.js
 const app = getApp();
+import { authAPI } from '../../utils/api';
 
 Page({
   data: {
     avatarUrl: '',
-    uploadedAvatarUrl: '', // OSS上传后的URL
+    uploadedAvatarUrl: '', // 新上传的OSS URL
+    existingAvatarUrl: '', // 老用户已有的头像URL
     nickname: '',
-    uploading: false
+    uploading: false,
+    isExistingUser: false,
+    avatarTip: '选择头像（可选）' // 动态提示文案
   },
 
-  onLoad(options) {
+  async onLoad(options) {
     // 如果已经登录，跳转回我的页面
     if (app.globalData.token) {
       wx.switchTab({
         url: '/pages/settings/settings'
       });
+      return;
+    }
+
+    // 预检查用户状态
+    await this.checkUserStatus();
+  },
+
+  // 预检查用户状态
+  async checkUserStatus() {
+    try {
+      // 获取微信登录凭证
+      const loginRes = await new Promise((resolve, reject) => {
+        wx.login({
+          success: resolve,
+          fail: reject
+        });
+      });
+
+      if (!loginRes.code) {
+        console.error('获取登录凭证失败');
+        return;
+      }
+
+      // 调用后端预检查接口
+      const res = await authAPI.checkUser(loginRes.code);
+
+      if (res.success && res.data.isExistingUser) {
+        // 老用户
+        this.setData({
+          isExistingUser: true,
+          existingAvatarUrl: res.data.avatar_url || '',
+          avatarUrl: res.data.avatar_url || '/images/default-avatar.png',
+          nickname: res.data.nickname || '',
+          avatarTip: res.data.avatar_url ? '点击更换头像' : '选择头像（可选）'
+        });
+      } else {
+        // 新用户
+        this.setData({
+          isExistingUser: false,
+          avatarUrl: '/images/default-avatar.png',
+          avatarTip: '选择头像（可选）'
+        });
+      }
+    } catch (error) {
+      console.error('预检查失败:', error);
+      // 预检查失败不影响登录流程，使用默认状态
     }
   },
 
@@ -108,7 +158,7 @@ Page({
 
   // 登录
   async handleLogin() {
-    const { uploadedAvatarUrl, nickname, uploading } = this.data;
+    const { uploadedAvatarUrl, existingAvatarUrl, nickname, uploading, isExistingUser } = this.data;
 
     if (!nickname) {
       wx.showToast({
@@ -145,17 +195,32 @@ Page({
         throw new Error('获取登录凭证失败');
       }
 
-      // 第二步：发送到后端登录（使用已上传的头像URL）
+      // 第二步：构建登录数据
+      const loginData = {
+        code: loginRes.code,
+        userInfo: {
+          nickName: nickname
+        }
+      };
+
+      // 头像逻辑：
+      // 1. 如果用户上传了新头像（uploadedAvatarUrl存在），使用新头像
+      // 2. 如果是老用户且没上传新头像，不传avatarUrl（后端会保持原有头像）
+      // 3. 如果是新用户且没选头像，传空字符串
+      if (uploadedAvatarUrl) {
+        // 用户选择并上传了新头像
+        loginData.userInfo.avatarUrl = uploadedAvatarUrl;
+      } else if (!isExistingUser) {
+        // 新用户没选头像，传空字符串
+        loginData.userInfo.avatarUrl = '';
+      }
+      // 老用户没上传新头像，不传avatarUrl字段
+
+      // 第三步：发送到后端登录
       const apiRes = await app.request({
         url: '/auth/login',
         method: 'POST',
-        data: {
-          code: loginRes.code,
-          userInfo: {
-            nickName: nickname,
-            avatarUrl: uploadedAvatarUrl || ''
-          }
-        }
+        data: loginData
       });
 
       wx.hideLoading();

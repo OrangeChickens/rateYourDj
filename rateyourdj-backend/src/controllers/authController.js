@@ -66,4 +66,48 @@ async function wechatLogin(req, res, next) {
   }
 }
 
-module.exports = { wechatLogin };
+// 预检查用户状态（登录前）
+async function checkUser(req, res, next) {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: '缺少登录凭证'
+      });
+    }
+
+    // 使用 code 换取 openid
+    const { openid } = await code2Session(code);
+
+    // 查询用户是否存在
+    const user = await User.findByOpenid(openid);
+
+    if (user) {
+      // 老用户
+      res.json({
+        success: true,
+        data: {
+          isExistingUser: true,
+          nickname: user.nickname,
+          avatar_url: user.avatar_url
+        }
+      });
+    } else {
+      // 新用户
+      res.json({
+        success: true,
+        data: {
+          isExistingUser: false,
+          nickname: null,
+          avatar_url: null
+        }
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { wechatLogin, checkUser };
