@@ -5,6 +5,11 @@
   background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
+  transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.container.sliding-up {
+  transform: translateY(-100vh);
 }
 
 /* 页面头部 */
@@ -173,6 +178,101 @@
   letter-spacing: 0.5rpx;
 }
 
+/* 搜索框样式 */
+.search-box {
+  margin-bottom: 24rpx;
+}
+
+.search-input {
+  display: block;
+  width: 100%;
+  height: 70rpx;
+  background: #FFF;
+  border-radius: 0;
+  padding: 0 20rpx;
+  font-size: 24rpx;
+  box-sizing: border-box;
+  border: 2rpx solid #000;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* 分类样式 */
+.style-categories {
+  max-height: 800rpx;
+  overflow-y: auto;
+}
+
+.category-group {
+  margin-bottom: 16rpx;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: #F5F5F5;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  cursor: pointer;
+  margin-bottom: 8rpx;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+.category-icon {
+  font-size: 22rpx;
+  color: #000;
+  margin-right: 12rpx;
+  width: 20rpx;
+  font-weight: 700;
+}
+
+.category-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding: 12rpx 20rpx 20rpx 20rpx;
+  background: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+}
+
+/* 分类中的标签样式 */
+.category-tags .tag-item {
+  padding: 12rpx 24rpx;
+  background: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  font-size: 22rpx;
+  color: #000;
+  transition: all 0.2s;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.category-tags .tag-item:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.category-tags .tag-item.selected {
+  background: #000 !important;
+  border-color: #000 !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+}
+
 /* 评论输入区域 */
 .comment-section {
   background: #FFF;
@@ -285,4 +385,219 @@
   height: 100%;
   background: #000;
   transition: width 0.1s linear;
+}
+
+/* 提交动画遮罩层 */
+.submit-animation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #FFFFFF;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.submit-animation-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* 动画内容 */
+.animation-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 向上滑动阶段 */
+.animation-content.slide-up {
+  animation: slideUpPage 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+}
+
+@keyframes slideUpPage {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* 成功阶段 */
+.animation-content.success {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 五彩纸屑容器 */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* 单个纸屑 */
+.confetti {
+  position: absolute;
+  width: 20rpx;
+  height: 20rpx;
+  top: -40rpx;
+  opacity: 0;
+}
+
+/* 不同形状的纸屑 */
+.confetti:nth-child(2n) {
+  border-radius: 50%;
+}
+
+.confetti:nth-child(3n) {
+  width: 12rpx;
+  height: 24rpx;
+}
+
+.confetti:nth-child(5n) {
+  width: 24rpx;
+  height: 12rpx;
+}
+
+.confetti:nth-child(odd) {
+  animation: confettiFallLeft 3s ease-out forwards;
+}
+
+.confetti:nth-child(even) {
+  animation: confettiFallRight 3s ease-out forwards;
+}
+
+.confetti:nth-child(3n) {
+  animation: confettiFallStraight 3s ease-out forwards;
+}
+
+@keyframes confettiFallLeft {
+  0% {
+    top: -40rpx;
+    opacity: 1;
+    transform: translateX(0) rotateZ(0deg) scale(1);
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+    transform: translateX(-200rpx) rotateZ(720deg) scale(0.5);
+  }
+}
+
+@keyframes confettiFallRight {
+  0% {
+    top: -40rpx;
+    opacity: 1;
+    transform: translateX(0) rotateZ(0deg) scale(1);
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+    transform: translateX(200rpx) rotateZ(-720deg) scale(0.5);
+  }
+}
+
+@keyframes confettiFallStraight {
+  0% {
+    top: -40rpx;
+    opacity: 1;
+    transform: translateX(0) rotateZ(0deg) scale(1);
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+    transform: translateX(0) rotateZ(360deg) scale(0.8);
+  }
+}
+
+/* 成功内容 */
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48rpx;
+  animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes successPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 成功图标 */
+.success-icon {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: #000;
+  color: #FFF;
+  font-size: 120rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  animation: checkmark 0.5s ease-in-out 0.3s backwards;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(-45deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* 成功文字 */
+.success-text {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  animation: textSlideUp 0.5s ease-out 0.5s backwards;
+}
+
+@keyframes textSlideUp {
+  from {
+    transform: translateY(40rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

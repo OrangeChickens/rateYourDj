@@ -1,5 +1,22 @@
 <!--pages/review-create/review-create.wxml-->
-<view class="container">
+
+<!-- WXS 模块：用于检查标签是否被选中 -->
+<wxs module="tools">
+  var isSelected = function(selectedTags, tagName) {
+    for (var i = 0; i < selectedTags.length; i++) {
+      if (selectedTags[i] === tagName) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  module.exports = {
+    isSelected: isSelected
+  };
+</wxs>
+
+<view class="container {{animationPhase === 'slide-up' ? 'sliding-up' : ''}}">
   <view class="page-header">
     <text class="dj-name">{{djName}}</text>
   </view>
@@ -81,21 +98,55 @@
 
     <!-- 标签选择 -->
     <view class="tags-section">
-      <view class="section-title">{{texts.selectTags}}</view>
+      <view class="section-title">{{texts.selectTags}} ({{selectedTags.length}}/{{maxTags}})</view>
 
-      <!-- 音乐风格标签 -->
+      <!-- 音乐风格标签 - 分类折叠 + 搜索 -->
       <view class="tag-group">
         <text class="group-title">{{texts.styleTags}}</text>
-        <view class="tag-list">
+
+        <!-- 搜索框 -->
+        <view class="search-box">
+          <input
+            class="search-input"
+            placeholder="🔍 搜索风格..."
+            value="{{searchKeyword}}"
+            bindinput="onSearchInput"
+          />
+        </view>
+
+        <!-- 分类标签 -->
+        <view class="style-categories">
           <view
-            wx:for="{{presetTags}}"
-            wx:if="{{item.category === 'style'}}"
-            wx:key="id"
-            class="tag {{item.selected ? 'selected' : ''}}"
-            bindtap="toggleTag"
-            data-name="{{item.name}}"
-            data-index="{{index}}"
-          >{{item.name}}</view>
+            wx:for="{{styleCategories}}"
+            wx:key="name"
+            class="category-group"
+          >
+            <!-- 分类标题（可点击展开/折叠） -->
+            <view
+              class="category-header"
+              bindtap="toggleCategory"
+              data-name="{{item.name}}"
+            >
+              <text class="category-icon">{{expandedCategories[item.name] ? '▼' : '▶'}}</text>
+              <text class="category-title">{{item.name}} ({{item.count}})</text>
+            </view>
+
+            <!-- 标签列表（展开时显示） -->
+            <view
+              wx:if="{{expandedCategories[item.name]}}"
+              class="category-tags"
+            >
+              <block wx:for="{{item.tags}}" wx:for-item="tag" wx:key="id">
+                <view
+                  class="tag-item {{tools.isSelected(selectedTags, tag.name) ? 'selected' : ''}}"
+                  bindtap="toggleStyleTag"
+                  data-name="{{tag.name}}"
+                >
+                  {{tag.name}}
+                </view>
+              </block>
+            </view>
+          </view>
         </view>
       </view>
 
@@ -129,10 +180,6 @@
             data-index="{{index}}"
           >{{item.name}}</view>
         </view>
-      </view>
-
-      <view class="selected-count">
-        {{texts.tagsSelected}} {{selectedTags.length}}/{{maxTags}}
       </view>
     </view>
 
@@ -177,6 +224,25 @@
     </view>
     <view class="swipe-progress-bar">
       <view class="swipe-progress-fill" style="width: {{swipeProgress}}%"></view>
+    </view>
+  </view>
+</view>
+
+<!-- 提交动画遮罩层 -->
+<view class="submit-animation-overlay {{showSubmitAnimation ? 'show' : ''}}">
+  <view class="animation-content {{animationPhase}}">
+    <!-- 五彩纸屑 -->
+    <view class="confetti-container" wx:if="{{animationPhase === 'success'}}">
+      <view wx:for="{{confettiPieces}}" wx:key="index"
+            class="confetti"
+            style="left: {{item.left}}%; animation-delay: {{item.delay}}s; background-color: {{item.color}}; animation-duration: {{item.duration}}s;">
+      </view>
+    </view>
+
+    <!-- 成功图标和文字 -->
+    <view class="success-content" wx:if="{{animationPhase === 'success'}}">
+      <view class="success-icon">✓</view>
+      <text class="success-text">评价已提交</text>
     </view>
   </view>
 </view>

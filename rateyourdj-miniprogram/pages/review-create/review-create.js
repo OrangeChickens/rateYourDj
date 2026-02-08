@@ -25,6 +25,12 @@ Page({
     selectedTags: [],
     maxTags: 5,
 
+    // 音乐风格标签分类
+    styleCategories: [],
+    originalCategories: [],
+    searchKeyword: '',
+    expandedCategories: {},
+
     // 匿名
     isAnonymous: false,
 
@@ -37,7 +43,12 @@ Page({
     // 滑动提交相关
     swipeProgress: 0,
     touchStartY: 0,
-    touchStartTime: 0
+    touchStartTime: 0,
+
+    // 提交动画相关
+    showSubmitAnimation: false,
+    animationPhase: '', // 'slide-up' 或 'success'
+    confettiPieces: []
   },
 
   onLoad(options) {
@@ -130,6 +141,15 @@ Page({
         }
 
         this.setData({ presetTags: tags });
+
+        // 处理音乐风格分类
+        const styleTags = tags.filter(t => t.category === 'style');
+        const categories = this.categorizeStyles(styleTags);
+
+        this.setData({
+          styleCategories: JSON.parse(JSON.stringify(categories)),
+          originalCategories: categories
+        });
       } else {
         showToast(res.message);
       }
@@ -139,6 +159,145 @@ Page({
     } finally {
       hideLoading();
     }
+  },
+
+  // 音乐风格分类
+  categorizeStyles(styles) {
+    const categoryRules = {
+      '主流 EDM': ['EDM', 'Future Bass', 'Electro House', 'Melbourne Bounce', 'Hardstyle', 'Drum & Bass', 'Future House'],
+      'Techno/House': ['Techno', 'House', 'Tech House', 'Minimal Techno', 'Industrial Techno', 'Acid Techno', 'Breakbeat', 'Garage', 'UK Garage', 'Disco House', 'Afro House', 'Micro House'],
+      'Trance': ['Trance', 'Psytrance', 'Progressive Trance', 'Uplifting Trance', 'Tech Trance'],
+      'Bass 音乐': ['Dubstep', 'Future Garage', 'Riddim', 'Halftime', 'Neurofunk'],
+      '实验性/小众': ['Hyperpop', 'Glitch Hop', 'IDM', 'Vaporwave', 'Footwork', 'Jungle', 'Breakcore', 'Ambient', 'Downtempo', 'Trip Hop', 'Wave', 'Jersey Club'],
+      '其他流行': ['Trap', 'Moombahton', 'Hardwave', 'Phonk', 'UK Drill', 'Slap House', 'Bassline', 'Grime', 'Electro Swing'],
+      '中国/亚洲': ['国风电音', 'J-Core', 'K-House', 'Bounce', 'Hands Up']
+    };
+
+    const categories = [];
+    const assignedTags = new Set();
+
+    // 按规则分类
+    for (const [categoryName, ruleNames] of Object.entries(categoryRules)) {
+      const categoryTags = [];
+
+      for (const style of styles) {
+        if (ruleNames.includes(style.name)) {
+          categoryTags.push(style);
+          assignedTags.add(style.name);
+        }
+      }
+
+      if (categoryTags.length > 0) {
+        categories.push({
+          name: categoryName,
+          tags: categoryTags,
+          count: categoryTags.length
+        });
+      }
+    }
+
+    // 未分类的放入"其他"
+    const uncategorizedTags = styles.filter(s => !assignedTags.has(s.name));
+    if (uncategorizedTags.length > 0) {
+      categories.push({
+        name: '其他',
+        tags: uncategorizedTags,
+        count: uncategorizedTags.length
+      });
+    }
+
+    return categories;
+  },
+
+  // 搜索输入
+  onSearchInput(e) {
+    const keyword = e.detail.value;
+    this.setData({ searchKeyword: keyword });
+    this.updateFilteredCategories();
+  },
+
+  // 更新过滤后的分类
+  updateFilteredCategories() {
+    const keyword = this.data.searchKeyword.toLowerCase();
+
+    if (!keyword) {
+      // 清空搜索，恢复原始数据
+      this.setData({
+        styleCategories: JSON.parse(JSON.stringify(this.data.originalCategories))
+      });
+      return;
+    }
+
+    // 过滤标签
+    const filteredCategories = this.data.originalCategories.map(category => {
+      const filteredTags = category.tags.filter(tag =>
+        tag.name.toLowerCase().includes(keyword) ||
+        (tag.name_en && tag.name_en.toLowerCase().includes(keyword))
+      );
+      return {
+        ...category,
+        tags: filteredTags,
+        count: filteredTags.length
+      };
+    }).filter(category => category.count > 0);
+
+    // 自动展开有结果的分类
+    const expandedCategories = {};
+    filteredCategories.forEach(category => {
+      expandedCategories[category.name] = true;
+    });
+
+    this.setData({
+      styleCategories: filteredCategories,
+      expandedCategories
+    });
+  },
+
+  // 切换分类展开/折叠
+  toggleCategory(e) {
+    const categoryName = e.currentTarget.dataset.name;
+    const key = `expandedCategories.${categoryName}`;
+    this.setData({
+      [key]: !this.data.expandedCategories[categoryName]
+    });
+  },
+
+  // 音乐风格标签点击
+  toggleStyleTag(e) {
+    const tagName = e.currentTarget.dataset.name;
+    console.log('点击音乐风格标签:', tagName);
+
+    let selectedTags = [...this.data.selectedTags];
+    const index = selectedTags.indexOf(tagName);
+
+    if (index > -1) {
+      // 取消选择
+      selectedTags.splice(index, 1);
+      console.log('取消选择，剩余:', selectedTags);
+    } else {
+      // 添加选择
+      if (selectedTags.length >= this.data.maxTags) {
+        showToast(i18n.t('review.maxTagsReached').replace('{n}', this.data.maxTags));
+        return;
+      }
+      selectedTags.push(tagName);
+      console.log('添加选择，当前:', selectedTags);
+    }
+
+    // 同步更新 presetTags 的 selected 状态
+    const presetTags = this.data.presetTags.map(tag => {
+      if (tag.name === tagName) {
+        return { ...tag, selected: !tag.selected };
+      }
+      return tag;
+    });
+
+    this.setData({
+      selectedTags,
+      presetTags
+    }, () => {
+      console.log('已选标签:', this.data.selectedTags);
+    });
   },
 
   // 设置评分
@@ -235,8 +394,17 @@ Page({
 
     try {
       this.setData({ submitting: true });
-      showLoading(i18n.t('common.loading'));
 
+      // 第一阶段：页面向上滑动
+      this.setData({
+        showSubmitAnimation: true,
+        animationPhase: 'slide-up'
+      });
+
+      // 等待滑动动画完成（500ms）
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 发送请求
       const data = {
         dj_id: this.data.djId,
         overall_rating: this.data.overallRating,
@@ -252,26 +420,60 @@ Page({
       const res = await reviewAPI.create(data);
 
       if (res.success) {
-        showToast(i18n.t('review.submitSuccess'));
+        // 第二阶段：显示成功动画
+        this.generateConfetti();
+        this.setData({
+          animationPhase: 'success'
+        });
 
-        // 设置全局刷新标记，让DJ详情页在onShow时自动刷新
+        // 成功触觉反馈
+        wx.vibrateShort({
+          type: 'heavy'
+        });
+
+        // 设置全局刷新标记
         const app = getApp();
         app.globalData.needRefreshDJDetail = true;
 
-        // 延迟返回，让用户看到成功提示
+        // 延迟返回（2.5秒后）
         setTimeout(() => {
           wx.navigateBack();
-        }, 1500);
+        }, 2500);
       } else {
+        // 失败时隐藏动画并显示错误
+        this.setData({
+          showSubmitAnimation: false,
+          animationPhase: ''
+        });
         showToast(res.message);
       }
     } catch (error) {
       console.error('提交评论失败:', error);
+      this.setData({
+        showSubmitAnimation: false,
+        animationPhase: ''
+      });
       showToast(i18n.t('review.submitFailed'));
     } finally {
       this.setData({ submitting: false });
-      hideLoading();
     }
+  },
+
+  // 生成五彩纸屑
+  generateConfetti() {
+    const confettiPieces = [];
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+
+    for (let i = 0; i < 50; i++) {
+      confettiPieces.push({
+        left: Math.random() * 100,
+        delay: Math.random() * 0.5,
+        duration: 2 + Math.random() * 2, // 2-4秒随机
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+
+    this.setData({ confettiPieces });
   },
 
   // 按类别获取标签
@@ -317,6 +519,11 @@ Page({
     const velocity = deltaY / deltaTime; // 速度：像素/毫秒
 
     if (this.data.swipeProgress >= 100 || (deltaY > 50 && velocity > 0.5)) {
+      // 触觉反馈
+      wx.vibrateShort({
+        type: 'medium'
+      });
+
       // 触发提交
       this.submitReview();
     }
