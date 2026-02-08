@@ -1,0 +1,37 @@
+<view class="comment-list">
+  <view wx:for="{{comments}}" wx:key="id" class="comment-item" style="padding-left: {{item.depth * 40}}rpx">
+    <!-- 评论头部 -->
+    <view class="comment-header">
+      <image class="avatar" src="{{item.avatar_url || '/images/default-avatar.png'}}" lazy-load />
+      <view class="user-info">
+        <text class="nickname">{{item.nickname}}</text>
+        <text class="time">{{item.timeAgo}}</text>
+      </view>
+    </view>
+
+    <!-- 评论内容 -->
+    <view class="comment-content">{{item.content}}</view>
+
+    <!-- 投票和操作 -->
+    <view class="comment-actions">
+      <view class="vote-section">
+        <view class="vote-btn upvote" bindtap="onUpvote" data-id="{{item.id}}">▲</view>
+        <text class="vote-score">{{item.vote_score}}</text>
+        <view class="vote-btn downvote" bindtap="onDownvote" data-id="{{item.id}}">▼</view>
+      </view>
+
+      <view class="reply-btn" bindtap="onReply" data-id="{{item.id}}" data-nickname="{{item.nickname}}" wx:if="{{item.depth < 2}}">
+        回复
+      </view>
+
+      <view class="delete-btn" bindtap="onDelete" data-id="{{item.id}}" wx:if="{{item.canDelete}}">
+        删除
+      </view>
+    </view>
+
+    <!-- 嵌套回复（递归） -->
+    <view wx:if="{{item.replies && item.replies.length > 0}}" class="nested-replies">
+      <comment-list comments="{{item.replies}}" bind:upvote="onUpvote" bind:downvote="onDownvote" bind:reply="onReply" bind:delete="onDelete" />
+    </view>
+  </view>
+</view>

@@ -104,6 +104,21 @@ export default {
     reportConfirm: 'Report this review? We will review it soon.'
   },
 
+  comment: {
+    reply: 'Reply',
+    comments: 'comments',
+    writeComment: 'Write a comment...',
+    upvote: 'Upvote',
+    downvote: 'Downvote',
+    delete: 'Delete',
+    noComments: 'No comments yet, be the first!',
+    replyTo: 'Reply to @{nickname}...',
+    maxDepth: 'Reply depth limit reached',
+    minLength: 'Comment must be at least 10 characters',
+    submitSuccess: 'Comment posted',
+    submitFailed: 'Failed to post comment'
+  },
+
   favorites: {
     title: 'My Favorites',
     empty: 'No favorites yet',

@@ -9,6 +9,7 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth');
 const djRoutes = require('./routes/dj');
 const reviewRoutes = require('./routes/review');
+const commentRoutes = require('./routes/comment');
 const userRoutes = require('./routes/user');
 const tagRoutes = require('./routes/tags');
 const uploadRoutes = require('./routes/upload');
@@ -46,6 +47,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/dj', djRoutes);
 app.use('/api/review', reviewRoutes);
+app.use('/api/comment', commentRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/upload', uploadRoutes);

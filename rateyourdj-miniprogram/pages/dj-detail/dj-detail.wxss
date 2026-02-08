@@ -522,3 +522,73 @@
   text-transform: uppercase;
   letter-spacing: 1rpx;
 }
+
+/* ========== 评论区样式 ========== */
+
+.comments-section {
+  margin-top: 32rpx;
+  padding-top: 32rpx;
+  border-top: 2rpx solid #E0E0E0;
+}
+
+.comments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  cursor: pointer;
+}
+
+.comment-count {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #666;
+}
+
+.toggle-icon {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.comments-content {
+  margin-top: 24rpx;
+}
+
+.write-comment {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+  padding: 20rpx;
+  background: #F5F5F5;
+  border: 2rpx solid #E0E0E0;
+}
+
+.comment-input {
+  flex: 1;
+  font-size: 26rpx;
+  min-height: 60rpx;
+  line-height: 1.4;
+}
+
+.submit-comment-btn {
+  padding: 12rpx 24rpx;
+  background: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: none;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.submit-comment-btn::after {
+  border: none;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 80rpx 48rpx;
+  font-size: 24rpx;
+  color: #999;
+}

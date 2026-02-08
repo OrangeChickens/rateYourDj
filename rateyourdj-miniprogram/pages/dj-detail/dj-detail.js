@@ -1,5 +1,5 @@
 // pages/dj-detail/dj-detail.js
-import { djAPI, reviewAPI, userAPI } from '../../utils/api';
+import { djAPI, reviewAPI, commentAPI, userAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, showConfirm, generateStars, formatDate, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
@@ -25,6 +25,13 @@ Page({
     sortOrder: 'DESC',
     sortOptions: [],
     selectedSortIndex: 0,
+
+    // 评论相关
+    expandedComments: {},      // 展开的评论区（key: reviewId, value: boolean）
+    reviewComments: {},        // 各评价的评论列表（key: reviewId, value: comments[]）
+    commentInputs: {},         // 评论输入内容（key: reviewId, value: string）
+    replyingTo: null,          // 正在回复的评论ID
+    replyingToNickname: '',    // 正在回复的用户昵称
 
     // 国际化文本
     texts: {}
@@ -355,6 +362,260 @@ Page({
     } catch (error) {
       console.error('举报失败:', error);
       showToast(i18n.t('error.operationFailed'));
+    } finally {
+      hideLoading();
+    }
+  },
+
+  // ========== 评论功能 ==========
+
+  // 切换评论区展开/折叠
+  toggleComments(e) {
+    const { reviewId } = e.currentTarget.dataset;
+    const expanded = this.data.expandedComments[reviewId];
+
+    this.setData({
+      [`expandedComments.${reviewId}`]: !expanded
+    });
+
+    // 首次展开时加载评论
+    if (!expanded && !this.data.reviewComments[reviewId]) {
+      this.loadComments(reviewId);
+    }
+  },
+
+  // 加载评论列表
+  async loadComments(reviewId) {
+    try {
+      const res = await commentAPI.getList(reviewId, 1, 20);
+      if (res.success) {
+        // 格式化评论数据
+        const formattedComments = this.formatComments(res.data);
+
+        this.setData({
+          [`reviewComments.${reviewId}`]: formattedComments
+        });
+
+        // 更新评论计数
+        const reviews = this.data.reviews.map(review => {
+          if (review.id === parseInt(reviewId)) {
+            return { ...review, comment_count: res.data.length };
+          }
+          return review;
+        });
+        this.setData({ reviews });
+      }
+    } catch (error) {
+      console.error('加载评论失败:', error);
+      showToast('加载评论失败');
+    }
+  },
+
+  // 格式化评论数据
+  formatComments(comments) {
+    const userId = app.globalData.userInfo?.id;
+
+    return comments.map(comment => {
+      return {
+        ...comment,
+        timeAgo: this.formatTimeAgo(comment.created_at),
+        canDelete: comment.user_id === userId
+      };
+    });
+  },
+
+  // 格式化时间（"3分钟前"）
+  formatTimeAgo(timestamp) {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diff = now - past;
+
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}小时前`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}天前`;
+
+    return past.toLocaleDateString();
+  },
+
+  // 评论输入
+  onCommentInput(e) {
+    const { reviewId } = e.currentTarget.dataset;
+    this.setData({
+      [`commentInputs.${reviewId}`]: e.detail.value
+    });
+  },
+
+  // 提交评论
+  async submitComment(e) {
+    const { reviewId } = e.currentTarget.dataset;
+    const content = this.data.commentInputs[reviewId];
+
+    if (!app.globalData.token) {
+      const confirmed = await showConfirm(
+        i18n.t('common.loginRequired'),
+        i18n.t('common.loginConfirm')
+      );
+      if (confirmed) {
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
+      }
+      return;
+    }
+
+    if (!content || content.trim().length < 10) {
+      showToast(i18n.t('comment.minLength'));
+      return;
+    }
+
+    if (content.trim().length > 500) {
+      showToast('评论最多 500 字');
+      return;
+    }
+
+    try {
+      showLoading('发送中...');
+
+      const res = await commentAPI.create(
+        parseInt(reviewId),
+        content.trim(),
+        this.data.replyingTo
+      );
+
+      if (res.success) {
+        showToast(i18n.t('comment.submitSuccess') || '评论成功');
+
+        // 清空输入和回复状态
+        this.setData({
+          [`commentInputs.${reviewId}`]: '',
+          replyingTo: null,
+          replyingToNickname: ''
+        });
+
+        // 刷新评论列表
+        this.loadComments(reviewId);
+      } else {
+        showToast(res.message || '评论失败');
+      }
+    } catch (error) {
+      console.error('提交评论失败:', error);
+      showToast(i18n.t('comment.submitFailed') || '评论失败');
+    } finally {
+      hideLoading();
+    }
+  },
+
+  // 点赞评论
+  async handleCommentUpvote(e) {
+    const { commentId } = e.detail;
+
+    if (!app.globalData.token) {
+      const confirmed = await showConfirm(
+        i18n.t('common.loginRequired'),
+        i18n.t('common.loginConfirm')
+      );
+      if (confirmed) {
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
+      }
+      return;
+    }
+
+    try {
+      await commentAPI.vote(commentId, 'upvote');
+
+      // 刷新当前展开的评论
+      const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
+        id => this.data.expandedComments[id]
+      );
+      expandedReviewIds.forEach(id => this.loadComments(id));
+    } catch (error) {
+      console.error('投票失败:', error);
+      showToast('投票失败');
+    }
+  },
+
+  // 点踩评论
+  async handleCommentDownvote(e) {
+    const { commentId } = e.detail;
+
+    if (!app.globalData.token) {
+      const confirmed = await showConfirm(
+        i18n.t('common.loginRequired'),
+        i18n.t('common.loginConfirm')
+      );
+      if (confirmed) {
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
+      }
+      return;
+    }
+
+    try {
+      await commentAPI.vote(commentId, 'downvote');
+
+      // 刷新当前展开的评论
+      const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
+        id => this.data.expandedComments[id]
+      );
+      expandedReviewIds.forEach(id => this.loadComments(id));
+    } catch (error) {
+      console.error('投票失败:', error);
+      showToast('投票失败');
+    }
+  },
+
+  // 回复评论
+  handleCommentReply(e) {
+    const { commentId, nickname } = e.detail;
+
+    this.setData({
+      replyingTo: commentId,
+      replyingToNickname: nickname
+    });
+
+    // 可选：聚焦输入框（微信小程序需要用户主动触发）
+    showToast(`回复 @${nickname}`);
+  },
+
+  // 删除评论
+  async handleCommentDelete(e) {
+    const { commentId } = e.detail;
+
+    const confirmed = await showConfirm(
+      '确认删除',
+      '删除后无法恢复，是否继续？'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      showLoading('删除中...');
+
+      const res = await commentAPI.delete(commentId);
+
+      if (res.success) {
+        showToast('删除成功');
+
+        // 刷新当前展开的评论
+        const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
+          id => this.data.expandedComments[id]
+        );
+        expandedReviewIds.forEach(id => this.loadComments(id));
+      } else {
+        showToast(res.message || '删除失败');
+      }
+    } catch (error) {
+      console.error('删除评论失败:', error);
+      showToast('删除失败');
     } finally {
       hideLoading();
     }

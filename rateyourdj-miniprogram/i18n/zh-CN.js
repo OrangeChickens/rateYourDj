@@ -104,6 +104,21 @@ export default {
     reportConfirm: '确认举报这条评论吗？我们会尽快处理。'
   },
 
+  comment: {
+    reply: '回复',
+    comments: '条评论',
+    writeComment: '写评论...',
+    upvote: '赞同',
+    downvote: '反对',
+    delete: '删除',
+    noComments: '暂无评论，来说点什么吧',
+    replyTo: '回复 @{nickname}...',
+    maxDepth: '回复层级已达上限',
+    minLength: '评论至少 10 个字',
+    submitSuccess: '评论成功',
+    submitFailed: '评论失败'
+  },
+
   favorites: {
     title: '我的收藏',
     empty: '还没有收藏任何DJ',

@@ -157,6 +157,41 @@
               <text>{{texts.report}}</text>
             </view>
           </view>
+
+          <!-- 评论区 -->
+          <view class="comments-section">
+            <view class="comments-header" bindtap="toggleComments" data-review-id="{{item.id}}">
+              <text class="comment-count">💬 {{item.comment_count || 0}} 条评论</text>
+              <text class="toggle-icon">{{expandedComments[item.id] ? '▼' : '▶'}}</text>
+            </view>
+
+            <view wx:if="{{expandedComments[item.id]}}" class="comments-content">
+              <!-- 写评论输入框 -->
+              <view class="write-comment">
+                <input class="comment-input"
+                       placeholder="{{replyingTo ? '回复 @' + replyingToNickname + '...' : '写评论...'}}"
+                       bindinput="onCommentInput"
+                       bindconfirm="submitComment"
+                       data-review-id="{{item.id}}"
+                       value="{{commentInputs[item.id]}}"
+                       maxlength="500" />
+                <button class="submit-comment-btn" bindtap="submitComment" data-review-id="{{item.id}}">发送</button>
+              </view>
+
+              <!-- 评论列表 -->
+              <comment-list
+                wx:if="{{reviewComments[item.id] && reviewComments[item.id].length > 0}}"
+                comments="{{reviewComments[item.id]}}"
+                bind:upvote="handleCommentUpvote"
+                bind:downvote="handleCommentDownvote"
+                bind:reply="handleCommentReply"
+                bind:delete="handleCommentDelete" />
+
+              <view wx:if="{{!reviewComments[item.id] || reviewComments[item.id].length === 0}}" class="no-comments">
+                暂无评论，来说点什么吧
+              </view>
+            </view>
+          </view>
         </view>
 
         <!-- 加载更多 -->

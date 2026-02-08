@@ -152,6 +152,49 @@ export const reviewAPI = {
 };
 
 /**
+ * 评论相关API
+ */
+export const commentAPI = {
+  // 创建评论
+  create(reviewId, content, parentCommentId = null) {
+    return app.request({
+      url: '/comment/create',
+      method: 'POST',
+      data: { reviewId, content, parentCommentId },
+      needAuth: true
+    });
+  },
+
+  // 获取评论列表
+  getList(reviewId, page = 1, limit = 20) {
+    return app.request({
+      url: `/comment/review/${reviewId}`,
+      method: 'GET',
+      data: { page, limit }
+    });
+  },
+
+  // 删除评论
+  delete(commentId) {
+    return app.request({
+      url: `/comment/${commentId}`,
+      method: 'DELETE',
+      needAuth: true
+    });
+  },
+
+  // 投票
+  vote(commentId, voteType) {
+    return app.request({
+      url: `/comment/${commentId}/vote`,
+      method: 'POST',
+      data: { voteType },
+      needAuth: true
+    });
+  }
+};
+
+/**
  * 用户相关API
  */
 export const userAPI = {

@@ -4,5 +4,7 @@
   "backgroundTextStyle": "dark",
   "enableShareAppMessage": true,
   "enableShareTimeline": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "comment-list": "/components/comment-list/comment-list"
+  }
 }
