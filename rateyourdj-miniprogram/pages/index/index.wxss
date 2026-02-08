@@ -7,8 +7,6 @@
 .slogan-section {
   text-align: center;
   padding: 64rpx 48rpx 48rpx 48rpx;
-  background: #FFFFFF;
-  border-bottom: 3rpx solid #000;
 }
 
 .slogan-section .tagline {
