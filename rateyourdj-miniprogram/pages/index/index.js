@@ -239,21 +239,21 @@ Page({
     }));
   },
 
-  // 格式化时间（"3分钟前"）
+  // 格式化时间
   formatTimeAgo(timestamp) {
     const now = new Date();
     const past = new Date(timestamp);
     const diff = now - past;
 
     const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return '刚刚';
-    if (minutes < 60) return `${minutes}分钟前`;
+    if (minutes < 1) return i18n.t('common.justNow');
+    if (minutes < 60) return `${minutes}${i18n.t('common.minutesAgo')}`;
 
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}小时前`;
+    if (hours < 24) return `${hours}${i18n.t('common.hoursAgo')}`;
 
     const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}天前`;
+    if (days < 7) return `${days}${i18n.t('common.daysAgo')}`;
 
     return past.toLocaleDateString();
   },

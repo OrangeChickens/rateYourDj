@@ -17,7 +17,11 @@ export default {
     noMore: '没有更多了',
     loginRequired: '需要登录',
     loginConfirm: '是否前往登录？',
-    operationFailed: '操作失败'
+    operationFailed: '操作失败',
+    justNow: '刚刚',
+    minutesAgo: '分钟前',
+    hoursAgo: '小时前',
+    daysAgo: '天前'
   },
 
   tabBar: {
@@ -108,6 +112,8 @@ export default {
     helpful: '有帮助',
     notHelpful: '没帮助',
     report: '举报',
+    reply: '回复',
+    share: '分享',
     deleteConfirm: '确认删除这条评论？',
     deleteSuccess: '评论已删除',
     helpfulMarked: '已标记有帮助',

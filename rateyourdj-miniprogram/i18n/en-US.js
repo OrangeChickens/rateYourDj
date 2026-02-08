@@ -17,7 +17,11 @@ export default {
     noMore: 'No More',
     loginRequired: 'Login Required',
     loginConfirm: 'Go to login?',
-    operationFailed: 'Operation failed'
+    operationFailed: 'Operation failed',
+    justNow: 'Just now',
+    minutesAgo: 'm ago',
+    hoursAgo: 'h ago',
+    daysAgo: 'd ago'
   },
 
   tabBar: {
@@ -108,6 +112,8 @@ export default {
     helpful: 'Helpful',
     notHelpful: 'Not Helpful',
     report: 'Report',
+    reply: 'Reply',
+    share: 'Share',
     deleteConfirm: 'Delete this review?',
     deleteSuccess: 'Review deleted',
     helpfulMarked: 'Marked as helpful',

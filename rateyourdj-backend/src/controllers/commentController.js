@@ -17,10 +17,17 @@ exports.createComment = async (req, res, next) => {
       });
     }
 
-    if (!content || content.trim().length < 10 || content.trim().length > 500) {
+    if (!content || content.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: '评论长度需在 10-500 字之间'
+        message: '评论内容不能为空'
+      });
+    }
+
+    if (content.trim().length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: '评论内容不能超过500字'
       });
     }
 

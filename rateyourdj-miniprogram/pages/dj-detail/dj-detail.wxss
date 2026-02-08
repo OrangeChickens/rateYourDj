@@ -423,32 +423,125 @@
   font-weight: 500;
 }
 
-/* 评论操作 */
-.review-actions {
-  display: flex;
-  gap: 48rpx;
+/* 互动区域 - Reddit 风格 */
+.review-interactions {
   margin-top: 32rpx;
   padding-top: 32rpx;
   border-top: 2rpx solid #E0E0E0;
 }
 
+/* 第一行：Vote, Reply, Report, Share */
+.review-actions {
+  display: flex;
+  gap: 24rpx;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
 .review-actions .action {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 8rpx;
   font-size: 22rpx;
   font-weight: 700;
-  color: #000;
+  color: #666;
+  padding: 8rpx 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.review-actions .action text {
   text-transform: uppercase;
   letter-spacing: 0.5rpx;
+  white-space: nowrap;
 }
 
 .review-actions .action .icon {
-  font-size: 28rpx;
+  font-size: 24rpx;
+  color: #666;
 }
 
-.review-actions .action.report {
-  margin-left: auto;
+/* Vote 按钮特殊样式（上下箭头 + 数字） */
+.review-actions .action.vote {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 0;
+}
+
+.review-actions .action.vote .icon {
+  font-size: 28rpx;
+  padding: 4rpx;
+  color: #999;
+}
+
+.review-actions .action.vote .icon.up:active {
+  color: #FF6600;
+}
+
+.review-actions .action.vote .icon.down:active {
+  color: #0066FF;
+}
+
+.review-actions .action.vote .count {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000;
+  min-width: 40rpx;
+  text-align: center;
+}
+
+/* 分享按钮特殊样式（去除 button 默认样式） */
+.review-actions .share-btn {
+  margin: 0;
+  padding: 8rpx 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.review-actions .share-btn::after {
+  border: none;
+}
+
+.review-actions .share-btn .icon {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.review-actions .share-btn text {
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  white-space: nowrap;
+}
+
+/* 第二行：展开评论数 */
+.comments-expand {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  padding: 12rpx 0;
+}
+
+.comments-expand .expand-icon {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 700;
+}
+
+.comments-expand .expand-text {
+  font-size: 22rpx;
+  font-weight: 700;
   color: #666;
 }
 
@@ -526,32 +619,13 @@
 /* ========== 评论区样式 ========== */
 
 .comments-section {
-  margin-top: 32rpx;
-  padding-top: 32rpx;
-  border-top: 2rpx solid #E0E0E0;
+  margin-top: 0;
 }
 
-.comments-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16rpx 0;
-  cursor: pointer;
-}
-
-.comment-count {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: #666;
-}
-
-.toggle-icon {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.comments-content {
+.comments-content-wrapper {
   margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #F0F0F0;
 }
 
 .write-comment {
@@ -572,7 +646,7 @@
 }
 
 .submit-comment-btn {
-  padding: 12rpx 24rpx;
+  padding: 12rpx 20rpx;
   background: #000;
   color: #FFF;
   font-size: 24rpx;
@@ -580,6 +654,8 @@
   border: none;
   border-radius: 0;
   flex-shrink: 0;
+  min-width: 80rpx;
+  max-width: 100rpx;
 }
 
 .submit-comment-btn::after {

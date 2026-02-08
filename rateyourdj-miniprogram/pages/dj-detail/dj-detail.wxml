@@ -143,29 +143,42 @@
             <text wx:if="{{item.comment}}" class="comment">{{item.comment}}</text>
           </view>
 
-          <view class="review-actions">
-            <view class="action" bindtap="markHelpful" data-id="{{item.id}}">
-              <text class="icon">👍</text>
-              <text class="count">{{item.helpful_count}}</text>
+          <!-- 互动区域 - Reddit 风格 -->
+          <view class="review-interactions">
+            <!-- 第一行：Vote, Reply, Report, Share -->
+            <view class="review-actions">
+              <view class="action vote">
+                <text class="icon up" bindtap="markHelpful" data-id="{{item.id}}">▲</text>
+                <text class="count">{{item.helpful_count - item.not_helpful_count}}</text>
+                <text class="icon down" bindtap="markNotHelpful" data-id="{{item.id}}">▼</text>
+              </view>
+
+              <view class="action" bindtap="toggleComments" data-review-id="{{item.id}}">
+                <text class="icon">💬</text>
+                <text>{{texts.reply}}</text>
+              </view>
+
+              <view class="action" bindtap="reportReview" data-id="{{item.id}}">
+                <text class="icon">!</text>
+                <text>{{texts.report}}</text>
+              </view>
+
+              <button class="action share-btn" open-type="share" data-dj-id="{{dj.id}}" data-review-id="{{item.id}}">
+                <text class="icon">↗</text>
+                <text>{{texts.share}}</text>
+              </button>
             </view>
-            <view class="action" bindtap="markNotHelpful" data-id="{{item.id}}">
-              <text class="icon">👎</text>
-              <text class="count">{{item.not_helpful_count}}</text>
-            </view>
-            <view class="action report" bindtap="reportReview" data-id="{{item.id}}">
-              <text class="icon">!</text>
-              <text>{{texts.report}}</text>
+
+            <!-- 第二行：展开评论数 -->
+            <view wx:if="{{item.comment_count > 0}}" class="comments-expand" bindtap="toggleComments" data-review-id="{{item.id}}">
+              <text class="expand-icon">{{expandedComments[item.id] ? '⊖' : '⊕'}}</text>
+              <text class="expand-text">{{item.comment_count}} 条评论</text>
             </view>
           </view>
 
           <!-- 评论区 -->
           <view class="comments-section">
-            <view class="comments-header" bindtap="toggleComments" data-review-id="{{item.id}}">
-              <text class="comment-count">💬 {{item.comment_count || 0}} 条评论</text>
-              <text class="toggle-icon">{{expandedComments[item.id] ? '▼' : '▶'}}</text>
-            </view>
-
-            <view wx:if="{{expandedComments[item.id]}}" class="comments-content">
+            <view wx:if="{{expandedComments[item.id]}}" class="comments-content-wrapper">
               <!-- 写评论输入框 -->
               <view class="write-comment">
                 <input class="comment-input"

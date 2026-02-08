@@ -35,6 +35,21 @@ async function createReview(req, res, next) {
       });
     }
 
+    // 验证评价内容（评价必须至少10个字）
+    if (!comment || comment.trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: '评价内容至少需要10个字'
+      });
+    }
+
+    if (comment.trim().length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: '评价内容不能超过500字'
+      });
+    }
+
     // 验证DJ是否存在
     const dj = await DJ.findById(dj_id);
     if (!dj) {

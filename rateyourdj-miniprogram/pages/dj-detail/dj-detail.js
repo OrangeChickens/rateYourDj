@@ -92,6 +92,8 @@ Page({
         personality: i18n.t('djDetail.personality'),
         anonymousUser: i18n.t('review.anonymousUser'),
         report: i18n.t('review.report'),
+        reply: i18n.t('review.reply'),
+        share: i18n.t('review.share'),
         loading: i18n.t('common.loading'),
         noReviews: i18n.t('djDetail.noReviews'),
         loadMore: i18n.t('common.loadMore'),
@@ -367,6 +369,26 @@ Page({
     }
   },
 
+  // 分享给朋友（页面级分享配置）
+  onShareAppMessage(options) {
+    // 如果是从分享按钮触发的
+    if (options.from === 'button') {
+      const { djId, reviewId } = options.target.dataset;
+      return {
+        title: `查看 ${this.data.dj.name} 的评价 - 烂u盘`,
+        path: `/pages/dj-detail/dj-detail?id=${djId}&reviewId=${reviewId}`,
+        imageUrl: this.data.dj.photo_url || ''
+      };
+    }
+
+    // 默认分享（右上角分享）
+    return {
+      title: `${this.data.dj.name} - 烂u盘`,
+      path: `/pages/dj-detail/dj-detail?id=${this.data.djId}`,
+      imageUrl: this.data.dj.photo_url || ''
+    };
+  },
+
   // ========== 评论功能 ==========
 
   // 切换评论区展开/折叠
@@ -469,8 +491,8 @@ Page({
       return;
     }
 
-    if (!content || content.trim().length < 10) {
-      showToast(i18n.t('comment.minLength'));
+    if (!content || content.trim().length === 0) {
+      showToast('请输入评论内容');
       return;
     }
 
