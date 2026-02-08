@@ -18,29 +18,29 @@ echo "                      RateYourDJ - RDS 状态检查"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# 加载 RDS 配置
-if [ ! -f .env.rds ]; then
-    echo -e "${RED}❌ 错误：未找到 .env.rds 文件${NC}"
+# 加载生产环境配置
+if [ ! -f .env.production ]; then
+    echo -e "${RED}❌ 错误：未找到 .env.production 文件${NC}"
     exit 1
 fi
 
-export $(grep -v '^#' .env.rds | xargs)
+export $(grep -v '^#' .env.production | xargs)
 
-if [ -z "$RDS_HOST" ] || [ -z "$RDS_USER" ] || [ -z "$RDS_PASSWORD" ] || [ -z "$RDS_DB_NAME" ]; then
-    echo -e "${RED}❌ 错误：缺少 RDS 配置${NC}"
+if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_NAME" ]; then
+    echo -e "${RED}❌ 错误：缺少数据库配置${NC}"
     exit 1
 fi
 
 echo -e "${YELLOW}📋 配置信息：${NC}"
-echo "  主机:     $RDS_HOST"
-echo "  端口:     ${RDS_PORT:-3306}"
-echo "  数据库:   $RDS_DB_NAME"
-echo "  用户:     $RDS_USER"
+echo "  主机:     $DB_HOST"
+echo "  端口:     ${DB_PORT:-3306}"
+echo "  数据库:   $DB_NAME"
+echo "  用户:     $DB_USER"
 echo ""
 
 # 测试连接
 echo -e "${YELLOW}🔌 测试连接...${NC}"
-if ! mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; then
+if ! mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; then
     echo -e "${RED}❌ 连接失败${NC}"
     echo ""
     echo "请检查："
@@ -54,10 +54,10 @@ echo -e "${GREEN}✅ 连接成功${NC}"
 echo ""
 
 # 检查数据库是否存在
-DB_EXISTS=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" -sN -e "SELECT COUNT(*) FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$RDS_DB_NAME'")
+DB_EXISTS=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" -sN -e "SELECT COUNT(*) FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$DB_NAME'")
 
 if [ "$DB_EXISTS" -eq 0 ]; then
-    echo -e "${YELLOW}⚠️  数据库 '$RDS_DB_NAME' 不存在${NC}"
+    echo -e "${YELLOW}⚠️  数据库 '$DB_NAME' 不存在${NC}"
     echo ""
     echo "运行 sync-to-rds.sh 创建并初始化数据库"
     exit 0
@@ -68,34 +68,34 @@ echo ""
 
 # 显示表信息
 echo -e "${YELLOW}📊 数据表：${NC}"
-TABLE_COUNT=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$RDS_DB_NAME'")
+TABLE_COUNT=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME'")
 echo -e "  总数: ${GREEN}$TABLE_COUNT${NC}"
 echo ""
 
-mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -e "
+mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -e "
 SELECT
   TABLE_NAME as '表名',
   TABLE_ROWS as '行数',
   ROUND(DATA_LENGTH/1024/1024, 2) as '大小(MB)'
 FROM information_schema.TABLES
-WHERE TABLE_SCHEMA = '$RDS_DB_NAME'
+WHERE TABLE_SCHEMA = '$DB_NAME'
 ORDER BY TABLE_NAME
 "
 echo ""
 
 # 检查迁移追踪表是否存在
-MIGRATIONS_EXISTS=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$RDS_DB_NAME' AND table_name = 'schema_migrations'")
+MIGRATIONS_EXISTS=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME' AND table_name = 'schema_migrations'")
 
 if [ "$MIGRATIONS_EXISTS" -eq 0 ]; then
     echo -e "${YELLOW}⚠️  迁移追踪未设置${NC}"
     echo "  运行 sync-to-rds.sh 初始化迁移追踪"
 else
     echo -e "${YELLOW}📝 已应用的迁移：${NC}"
-    MIGRATION_COUNT=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations")
+    MIGRATION_COUNT=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations")
     echo -e "  总数: ${GREEN}$MIGRATION_COUNT${NC}"
     echo ""
 
-    mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -e "
+    mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -e "
     SELECT
       id as 'ID',
       migration_name as '迁移文件',
@@ -118,7 +118,7 @@ is_applied() {
         echo "0"
         return
     fi
-    mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations WHERE migration_name = '$migration'" 2>/dev/null || echo "0"
+    mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations WHERE migration_name = '$migration'" 2>/dev/null || echo "0"
 }
 
 PENDING_COUNT=0

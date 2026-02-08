@@ -17,48 +17,41 @@ echo "                      RateYourDJ - RDS 数据库同步"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# 加载 RDS 配置
-if [ ! -f .env.rds ]; then
-    echo -e "${RED}❌ 错误：未找到 .env.rds 文件${NC}"
+# 加载生产环境配置
+if [ ! -f .env.production ]; then
+    echo -e "${RED}❌ 错误：未找到 .env.production 文件${NC}"
     echo ""
-    echo "请创建 .env.rds 文件并填入 RDS 凭证："
+    echo "请创建 .env.production 文件并填入 RDS 凭证："
     echo ""
     echo "阿里云 RDS 示例："
-    echo "  RDS_HOST=rm-xxxxx.mysql.rds.aliyuncs.com"
-    echo "  RDS_PORT=3306"
-    echo "  RDS_USER=root"
-    echo "  RDS_PASSWORD=你的密码"
-    echo "  RDS_DB_NAME=rateyourdj"
-    echo ""
-    echo "AWS RDS 示例："
-    echo "  RDS_HOST=xxx.rds.amazonaws.com"
-    echo "  RDS_PORT=3306"
-    echo "  RDS_USER=admin"
-    echo "  RDS_PASSWORD=你的密码"
-    echo "  RDS_DB_NAME=rateyourdj"
+    echo "  DB_HOST=rm-xxxxx.mysql.rds.aliyuncs.com"
+    echo "  DB_PORT=3306"
+    echo "  DB_USER=rateyourdj"
+    echo "  DB_PASSWORD=你的密码"
+    echo "  DB_NAME=rateyourdj"
     exit 1
 fi
 
 # 加载环境变量
-export $(grep -v '^#' .env.rds | xargs)
+export $(grep -v '^#' .env.production | xargs)
 
 # 验证必需的变量
-if [ -z "$RDS_HOST" ] || [ -z "$RDS_USER" ] || [ -z "$RDS_PASSWORD" ] || [ -z "$RDS_DB_NAME" ]; then
-    echo -e "${RED}❌ 错误：缺少必需的 RDS 配置${NC}"
-    echo "请确保 .env.rds 包含：RDS_HOST, RDS_USER, RDS_PASSWORD, RDS_DB_NAME"
+if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_NAME" ]; then
+    echo -e "${RED}❌ 错误：缺少必需的数据库配置${NC}"
+    echo "请确保 .env.production 包含：DB_HOST, DB_USER, DB_PASSWORD, DB_NAME"
     exit 1
 fi
 
 echo -e "${YELLOW}📋 配置信息：${NC}"
-echo "  主机:     $RDS_HOST"
-echo "  端口:     ${RDS_PORT:-3306}"
-echo "  数据库:   $RDS_DB_NAME"
-echo "  用户:     $RDS_USER"
+echo "  主机:     $DB_HOST"
+echo "  端口:     ${DB_PORT:-3306}"
+echo "  数据库:   $DB_NAME"
+echo "  用户:     $DB_USER"
 echo ""
 
 # 测试连接
 echo -e "${YELLOW}🔌 测试 RDS 连接...${NC}"
-if ! mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; then
+if ! mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; then
     echo -e "${RED}❌ 连接失败${NC}"
     echo ""
     echo "请检查："
@@ -73,13 +66,13 @@ echo ""
 
 # 创建数据库（如果不存在）
 echo -e "${YELLOW}🗄️  检查数据库...${NC}"
-mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $RDS_DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 echo -e "${GREEN}✅ 数据库就绪${NC}"
 echo ""
 
 # 创建迁移追踪表（如果不存在）
 echo -e "${YELLOW}📝 设置迁移追踪...${NC}"
-mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" <<EOF
+mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" <<EOF
 CREATE TABLE IF NOT EXISTS schema_migrations (
   id INT AUTO_INCREMENT PRIMARY KEY,
   migration_name VARCHAR(255) NOT NULL UNIQUE,
@@ -93,14 +86,14 @@ echo ""
 # 函数：检查迁移是否已应用
 is_migration_applied() {
     local migration_name=$1
-    local result=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations WHERE migration_name = '$migration_name'")
+    local result=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations WHERE migration_name = '$migration_name'")
     [ "$result" -gt 0 ]
 }
 
 # 函数：标记迁移为已应用
 mark_migration_applied() {
     local migration_name=$1
-    mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -e "INSERT INTO schema_migrations (migration_name) VALUES ('$migration_name')"
+    mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -e "INSERT INTO schema_migrations (migration_name) VALUES ('$migration_name')"
 }
 
 # 函数：应用迁移文件
@@ -117,7 +110,7 @@ apply_migration() {
     echo -e "${YELLOW}🔄 应用 $basename...${NC}"
 
     # 执行 SQL 文件
-    if mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" < "$file"; then
+    if mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < "$file"; then
         # 标记为已应用
         mark_migration_applied "$basename"
         echo -e "${GREEN}✅ 已应用 $basename${NC}"
@@ -149,18 +142,18 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # 显示已应用的迁移数量
-MIGRATION_COUNT=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations")
+MIGRATION_COUNT=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM schema_migrations")
 echo -e "${GREEN}已应用的迁移总数: $MIGRATION_COUNT${NC}"
 echo ""
 
 # 显示表数量
-TABLE_COUNT=$(mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$RDS_DB_NAME'")
+TABLE_COUNT=$(mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$DB_NAME'")
 echo -e "${GREEN}数据表总数: $TABLE_COUNT${NC}"
 echo ""
 
 # 显示最近的迁移
 echo -e "${YELLOW}📋 最近的迁移记录：${NC}"
-mysql -h "$RDS_HOST" -P "${RDS_PORT:-3306}" -u "$RDS_USER" -p"$RDS_PASSWORD" "$RDS_DB_NAME" -e "SELECT id, migration_name, applied_at FROM schema_migrations ORDER BY applied_at DESC LIMIT 10"
+mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" -e "SELECT id, migration_name, applied_at FROM schema_migrations ORDER BY applied_at DESC LIMIT 10"
 echo ""
 
 echo -e "${GREEN}✨ 完成！${NC}"
