@@ -53,7 +53,7 @@ class UserTask {
     return rows;
   }
 
-  // 获取用户单个任务
+  // 获取用户单个任务（按 repeat_count 指定）
   static async getUserTask(userId, taskCode, repeatCount = 0) {
     const query = `
       SELECT
@@ -69,6 +69,27 @@ class UserTask {
       WHERE ut.user_id = ? AND ut.task_code = ? AND ut.repeat_count = ?
     `;
     const [rows] = await pool.query(query, [userId, taskCode, repeatCount]);
+    return rows[0];
+  }
+
+  // 获取用户最新的任务实例（优先返回未完成的，按 repeat_count 降序）
+  static async getLatestTask(userId, taskCode) {
+    const query = `
+      SELECT
+        ut.*,
+        tc.task_name,
+        tc.task_desc,
+        tc.task_category,
+        tc.icon,
+        tc.repeatable,
+        tc.max_repeats
+      FROM user_tasks ut
+      JOIN task_configs tc ON ut.task_code = tc.task_code
+      WHERE ut.user_id = ? AND ut.task_code = ?
+      ORDER BY ut.repeat_count DESC
+      LIMIT 1
+    `;
+    const [rows] = await pool.query(query, [userId, taskCode]);
     return rows[0];
   }
 

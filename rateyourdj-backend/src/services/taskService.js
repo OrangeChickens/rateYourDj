@@ -8,17 +8,19 @@ class TaskService {
     try {
       console.log(`🔄 [Task Debug] setProgress 被调用:`, { userId, taskCode, newProgress });
 
-      // 获取当前任务
-      const task = await UserTask.getUserTask(userId, taskCode);
+      // 获取当前最新的未完成任务（按 repeat_count 降序）
+      const task = await UserTask.getLatestTask(userId, taskCode);
 
       console.log(`🔍 [Task Debug] 获取任务信息:`, {
         userId,
         taskCode,
         taskExists: !!task,
+        taskRepeatCount: task?.repeat_count,
         taskProgress: task?.progress,
         taskTarget: task?.target,
         taskCompleted: task?.completed,
-        taskRepeatable: task?.repeatable
+        taskRepeatable: task?.repeatable,
+        taskRewardClaimed: task?.reward_claimed
       });
 
       if (!task) {
@@ -26,8 +28,15 @@ class TaskService {
         return;
       }
 
-      if (task.completed && !task.repeatable) {
-        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成且不可重复`);
+      // 如果任务已完成且已领取，跳过（可能是旧实例）
+      if (task.completed && task.reward_claimed) {
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成且已领取奖励，跳过更新`);
+        return;
+      }
+
+      // 如果任务已完成但未领取，也跳过（等待用户领取）
+      if (task.completed && !task.reward_claimed) {
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成但未领取，跳过更新`);
         return;
       }
 
@@ -54,17 +63,19 @@ class TaskService {
     try {
       console.log(`🔄 [Task Debug] updateProgress 被调用:`, { userId, taskCode, increment });
 
-      // 获取当前任务
-      const task = await UserTask.getUserTask(userId, taskCode);
+      // 获取当前最新的未完成任务（按 repeat_count 降序）
+      const task = await UserTask.getLatestTask(userId, taskCode);
 
       console.log(`🔍 [Task Debug] 获取任务信息:`, {
         userId,
         taskCode,
         taskExists: !!task,
+        taskRepeatCount: task?.repeat_count,
         taskProgress: task?.progress,
         taskTarget: task?.target,
         taskCompleted: task?.completed,
-        taskRepeatable: task?.repeatable
+        taskRepeatable: task?.repeatable,
+        taskRewardClaimed: task?.reward_claimed
       });
 
       if (!task) {
@@ -72,8 +83,15 @@ class TaskService {
         return;
       }
 
-      if (task.completed && !task.repeatable) {
-        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成且不可重复`);
+      // 如果任务已完成且已领取，跳过（可能是旧实例）
+      if (task.completed && task.reward_claimed) {
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成且已领取奖励，跳过更新`);
+        return;
+      }
+
+      // 如果任务已完成但未领取，也跳过（等待用户领取）
+      if (task.completed && !task.reward_claimed) {
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成但未领取，跳过更新`);
         return;
       }
 
