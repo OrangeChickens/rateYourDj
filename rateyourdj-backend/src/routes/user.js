@@ -6,7 +6,8 @@ const {
   getFavorites,
   toggleFavorite,
   getUserReviews,
-  getSearchHistory
+  getSearchHistory,
+  getWaitlistStatus
 } = require('../controllers/userController');
 
 // 获取用户资料（需要登录）
@@ -23,5 +24,8 @@ router.get('/reviews', authenticate, getUserReviews);
 
 // 获取搜索历史（需要登录）
 router.get('/search-history', authenticate, getSearchHistory);
+
+// 获取 Waitlist 状态（需要登录）
+router.get('/waitlist-status', authenticate, getWaitlistStatus);
 
 module.exports = router;

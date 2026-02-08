@@ -160,10 +160,38 @@ async function getSearchHistory(req, res, next) {
   }
 }
 
+// 获取 Waitlist 状态
+async function getWaitlistStatus(req, res, next) {
+  try {
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: '用户不存在' });
+    }
+
+    // 获取总 waitlist 人数
+    const [[{ total }]] = await pool.query(
+      'SELECT COUNT(*) as total FROM users WHERE access_level = "waitlist"'
+    );
+
+    res.json({
+      success: true,
+      data: {
+        position: user.waitlist_position || 0,
+        total: total || 0,
+        joinedAt: user.waitlist_joined_at
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getUserProfile,
   getFavorites,
   toggleFavorite,
   getUserReviews,
-  getSearchHistory
+  getSearchHistory,
+  getWaitlistStatus
 };

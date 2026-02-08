@@ -12,6 +12,8 @@ const reviewRoutes = require('./routes/review');
 const userRoutes = require('./routes/user');
 const tagRoutes = require('./routes/tags');
 const uploadRoutes = require('./routes/upload');
+const taskRoutes = require('./routes/task');
+const inviteRoutes = require('./routes/invite');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,6 +49,8 @@ app.use('/api/review', reviewRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/invite', inviteRoutes);
 
 // 404 处理
 app.use(notFoundHandler);
