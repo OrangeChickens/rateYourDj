@@ -9,6 +9,15 @@ exports.createComment = async (req, res, next) => {
     const { reviewId, content, parentCommentId } = req.body;
     const userId = req.user.userId;
 
+    console.log(`📥 接收到创建评论请求:`, {
+      reviewId,
+      reviewIdType: typeof reviewId,
+      content,
+      parentCommentId,
+      parentCommentIdType: typeof parentCommentId,
+      userId
+    });
+
     // 验证内容
     if (!reviewId) {
       return res.status(400).json({

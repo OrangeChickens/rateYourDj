@@ -10,6 +10,15 @@ class Comment {
     await connection.beginTransaction();
 
     try {
+      console.log(`💾 Comment.create 接收参数:`, {
+        reviewId,
+        reviewIdType: typeof reviewId,
+        userId,
+        content,
+        parentCommentId,
+        parentCommentIdType: typeof parentCommentId
+      });
+
       // 如果是回复评论，检查父评论是否存在
       if (parentCommentId) {
         const [parent] = await connection.query(
@@ -23,6 +32,13 @@ class Comment {
       }
 
       // 插入评论
+      console.log(`💾 准备插入数据库:`, {
+        review_id: reviewId,
+        parent_comment_id: parentCommentId,
+        user_id: userId,
+        content
+      });
+
       const [result] = await connection.query(
         `INSERT INTO review_comments
          (review_id, parent_comment_id, user_id, content)
