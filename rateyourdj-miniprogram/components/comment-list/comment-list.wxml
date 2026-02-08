@@ -31,7 +31,7 @@
 
     <!-- 嵌套回复（递归） -->
     <view wx:if="{{item.replies && item.replies.length > 0}}" class="nested-replies">
-      <comment-list comments="{{item.replies}}" bind:upvote="onUpvote" bind:downvote="onDownvote" bind:reply="onReply" bind:delete="onDelete" />
+      <comment-list comments="{{item.replies}}" reviewId="{{reviewId}}" bind:upvote="onUpvote" bind:downvote="onDownvote" bind:reply="onReply" bind:delete="onDelete" />
     </view>
   </view>
 </view>

@@ -7,6 +7,10 @@ Component({
     comments: {
       type: Array,
       value: []
+    },
+    reviewId: {
+      type: Number,
+      value: null
     }
   },
 
@@ -29,7 +33,7 @@ Component({
     // 回复
     onReply(e) {
       const { id, nickname } = e.currentTarget.dataset;
-      this.triggerEvent('reply', { commentId: id, nickname });
+      this.triggerEvent('reply', { commentId: id, nickname, reviewId: this.properties.reviewId });
     },
 
     // 删除

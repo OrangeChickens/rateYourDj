@@ -74,6 +74,8 @@ class Comment {
       [reviewId, limit, offset]
     );
 
+    console.log(`📝 顶级评论数量: ${comments.length}`);
+
     // 获取所有回复（不分页）
     const [replies] = await pool.query(
       `SELECT c.*, u.nickname, u.avatar_url
@@ -84,8 +86,18 @@ class Comment {
       [reviewId]
     );
 
+    console.log(`💬 回复评论数量: ${replies.length}`);
+    if (replies.length > 0) {
+      console.log(`💬 回复详情:`, replies.map(r => ({
+        id: r.id,
+        parent_comment_id: r.parent_comment_id,
+        content: r.content
+      })));
+    }
+
     // 合并顶级评论和回复
     const allComments = [...comments, ...replies];
+    console.log(`📦 合并后总数: ${allComments.length}`);
 
     // 获取总数（只计算顶级评论）
     const [[{ total }]] = await pool.query(

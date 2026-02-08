@@ -30,8 +30,8 @@ Page({
     expandedComments: {},      // 展开的评论区（key: reviewId, value: boolean）
     reviewComments: {},        // 各评价的评论列表（key: reviewId, value: comments[]）
     commentInputs: {},         // 评论输入内容（key: reviewId, value: string）
-    replyingTo: null,          // 正在回复的评论ID
-    replyingToNickname: '',    // 正在回复的用户昵称
+    replyingTo: {},            // 正在回复的评论ID（key: reviewId, value: commentId）
+    replyingToNickname: {},    // 正在回复的用户昵称（key: reviewId, value: nickname）
 
     // 国际化文本
     texts: {}
@@ -418,11 +418,13 @@ Page({
     try {
       const res = await commentAPI.getList(reviewId, 1, 20);
       console.log('📊 加载评论返回:', res);
+      console.log('📊 评论数据详情:', JSON.stringify(res.data, null, 2));
 
       if (res.success) {
         // 格式化评论数据
         const formattedComments = this.formatComments(res.data);
         console.log('📊 格式化后的评论:', formattedComments);
+        console.log('📊 格式化后详情:', JSON.stringify(formattedComments, null, 2));
 
         this.setData({
           [`reviewComments.${reviewId}`]: formattedComments
@@ -487,6 +489,7 @@ Page({
   async submitComment(e) {
     const { reviewId } = e.currentTarget.dataset;
     const content = this.data.commentInputs[reviewId];
+    const parentCommentId = this.data.replyingTo[reviewId] || null;
 
     if (!app.globalData.token) {
       const confirmed = await showConfirm(
@@ -514,10 +517,12 @@ Page({
     try {
       showLoading('发送中...');
 
+      console.log(`📝 提交评论: reviewId=${reviewId}, parentCommentId=${parentCommentId}, content=${content}`);
+
       const res = await commentAPI.create(
         parseInt(reviewId),
         content.trim(),
-        this.data.replyingTo
+        parentCommentId
       );
 
       if (res.success) {
@@ -526,8 +531,8 @@ Page({
         // 清空输入和回复状态
         this.setData({
           [`commentInputs.${reviewId}`]: '',
-          replyingTo: null,
-          replyingToNickname: ''
+          [`replyingTo.${reviewId}`]: null,
+          [`replyingToNickname.${reviewId}`]: ''
         });
 
         // 刷新评论列表
@@ -616,11 +621,13 @@ Page({
 
   // 回复评论
   handleCommentReply(e) {
-    const { commentId, nickname } = e.detail;
+    const { commentId, nickname, reviewId } = e.detail;
+
+    console.log(`💬 回复评论: reviewId=${reviewId}, commentId=${commentId}, nickname=${nickname}`);
 
     this.setData({
-      replyingTo: commentId,
-      replyingToNickname: nickname
+      [`replyingTo.${reviewId}`]: commentId,
+      [`replyingToNickname.${reviewId}`]: nickname
     });
 
     // 可选：聚焦输入框（微信小程序需要用户主动触发）

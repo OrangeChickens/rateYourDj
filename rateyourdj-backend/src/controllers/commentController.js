@@ -70,8 +70,12 @@ exports.getReviewComments = async (req, res, next) => {
       order
     });
 
+    console.log(`📊 评论原始数据 (reviewId=${reviewId}):`, JSON.stringify(result.data, null, 2));
+
     // 构建嵌套树结构
     const nestedComments = Comment.buildNestedTree(result.data);
+
+    console.log(`🌲 嵌套结构:`, JSON.stringify(nestedComments, null, 2));
 
     res.json({
       success: true,

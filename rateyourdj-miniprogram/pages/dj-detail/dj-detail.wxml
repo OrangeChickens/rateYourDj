@@ -182,7 +182,7 @@
               <!-- 写评论输入框 -->
               <view class="write-comment">
                 <input class="comment-input"
-                       placeholder="{{replyingTo ? '回复 @' + replyingToNickname + '...' : '写评论...'}}"
+                       placeholder="{{replyingTo[item.id] ? '回复 @' + replyingToNickname[item.id] + '...' : '写评论...'}}"
                        bindinput="onCommentInput"
                        bindconfirm="submitComment"
                        data-review-id="{{item.id}}"
@@ -195,6 +195,7 @@
               <comment-list
                 wx:if="{{reviewComments[item.id] && reviewComments[item.id].length > 0}}"
                 comments="{{reviewComments[item.id]}}"
+                reviewId="{{item.id}}"
                 bind:upvote="handleCommentUpvote"
                 bind:downvote="handleCommentDownvote"
                 bind:reply="handleCommentReply"
