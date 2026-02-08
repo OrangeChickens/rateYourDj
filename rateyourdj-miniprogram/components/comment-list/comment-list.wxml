@@ -48,10 +48,11 @@
       </view>
     </view>
 
-    <!-- 嵌套回复（递归） -->
+    <!-- 嵌套回复（递归，带折叠功能） -->
     <view wx:if="{{item.replies && item.replies.length > 0}}" class="nested-replies">
+      <!-- 显示前 3 条或全部回复 -->
       <comment-list
-        comments="{{item.replies}}"
+        comments="{{expandedReplies[item.id] ? item.replies : item.replies.slice(0, defaultReplyLimit)}}"
         reviewId="{{reviewId}}"
         replyingCommentId="{{replyingCommentId}}"
         replyingNickname="{{replyingNickname}}"
@@ -63,7 +64,20 @@
         bind:replyInput="onReplyInput"
         bind:submitReply="onSubmitReply"
         bind:cancelReply="onCancelReply"
-        bind:delete="onDelete" />
+        bind:delete="onDelete"
+        bind:expandReplies="onExpandReplies" />
+
+      <!-- 如果回复超过 3 条且未展开，显示"查看更多"按钮 -->
+      <view wx:if="{{item.replies.length > defaultReplyLimit && !expandedReplies[item.id]}}" class="view-more-replies" bindtap="toggleExpandReplies" data-comment-id="{{item.id}}">
+        <text class="view-more-text">查看更多 {{item.replies.length - defaultReplyLimit}} 条回复</text>
+        <text class="arrow">▼</text>
+      </view>
+
+      <!-- 如果已展开且回复超过 3 条，显示"收起"按钮 -->
+      <view wx:if="{{item.replies.length > defaultReplyLimit && expandedReplies[item.id]}}" class="view-more-replies" bindtap="toggleExpandReplies" data-comment-id="{{item.id}}">
+        <text class="view-more-text">收起回复</text>
+        <text class="arrow">▲</text>
+      </view>
     </view>
   </view>
 </view>

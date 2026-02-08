@@ -173,3 +173,30 @@
 .submit-reply-btn::after {
   border: none;
 }
+
+/* 查看更多回复按钮 */
+.view-more-replies {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 0;
+  margin-top: 16rpx;
+  cursor: pointer;
+}
+
+.view-more-text {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #0066FF;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.view-more-replies .arrow {
+  font-size: 16rpx;
+  color: #0066FF;
+}
+
+.view-more-replies:active {
+  opacity: 0.7;
+}

@@ -26,6 +26,11 @@ Component({
     }
   },
 
+  data: {
+    expandedReplies: {}, // 记录哪些评论的回复被完全展开了
+    defaultReplyLimit: 3 // 默认显示的回复数量
+  },
+
   /**
    * 组件的方法列表
    */
@@ -119,6 +124,24 @@ Component({
     // 传递子组件的取消事件
     onCancelReply(e) {
       this.triggerEvent('cancelReply', e.detail);
+    },
+
+    // 展开/收起回复
+    toggleExpandReplies(e) {
+      const { commentId } = e.currentTarget.dataset;
+      const currentState = this.data.expandedReplies[commentId] || false;
+
+      this.setData({
+        [`expandedReplies.${commentId}`]: !currentState
+      });
+    },
+
+    // 传递子组件的展开事件
+    onExpandReplies(e) {
+      const { commentId } = e.detail;
+      this.setData({
+        [`expandedReplies.${commentId}`]: true
+      });
     }
   }
 });

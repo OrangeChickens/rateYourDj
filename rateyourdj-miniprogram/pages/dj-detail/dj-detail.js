@@ -171,6 +171,20 @@ Page({
           totalPages: res.pagination.totalPages,
           hasMore: page < res.pagination.totalPages
         });
+
+        // 如果是首次加载且有评价，自动展开第一条评价的评论区
+        if (!append && reviews.length > 0 && reviews[0].comment_count > 0) {
+          const firstReviewId = reviews[0].id;
+
+          // 延迟展开，等待 DOM 渲染完成
+          setTimeout(() => {
+            this.setData({
+              [`expandedComments.${firstReviewId}`]: true
+            });
+            // 加载第一条评价的评论
+            this.loadComments(firstReviewId);
+          }, 100);
+        }
       } else {
         showToast(res.message);
       }
