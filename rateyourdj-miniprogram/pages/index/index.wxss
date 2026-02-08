@@ -3,6 +3,32 @@
   padding-bottom: 48rpx;
 }
 
+/* Slogan 区域 */
+.slogan-section {
+  text-align: center;
+  padding: 64rpx 48rpx 48rpx 48rpx;
+  background: #FFFFFF;
+  border-bottom: 3rpx solid #000;
+}
+
+.slogan-section .tagline {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+.slogan-section .tagline-sub {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.5rpx;
+  line-height: 1.5;
+}
+
 /* 搜索区域 */
 .search-section {
   padding: 48rpx 32rpx;

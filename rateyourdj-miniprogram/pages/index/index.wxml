@@ -1,5 +1,11 @@
 <!-- 首页 -->
 <view class="container">
+  <!-- Slogan -->
+  <view class="slogan-section">
+    <text class="tagline">一个DJ评分社区</text>
+    <text class="tagline-sub">好DJ值得被看见，烂DJ也是</text>
+  </view>
+
   <!-- 统计数据看板 -->
   <stats-dashboard
     wx:if="{{dashboardStats}}"
