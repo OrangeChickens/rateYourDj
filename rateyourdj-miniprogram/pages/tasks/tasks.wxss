@@ -258,11 +258,11 @@
 .reward-badge {
   width: 100%;
   padding: 10rpx 16rpx;
-  background: #FFF;
+  background: #000;
   border: 3rpx solid #000;
   font-size: 26rpx;
   font-weight: 900;
-  color: #000;
+  color: #FFF;
   letter-spacing: 1rpx;
   text-align: center;
   box-sizing: border-box;
