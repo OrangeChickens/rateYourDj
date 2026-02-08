@@ -15,12 +15,16 @@
     <!-- 投票和操作 -->
     <view class="comment-actions">
       <view class="vote-section">
-        <view class="vote-btn upvote" bindtap="onUpvote" data-id="{{item.id}}">▲</view>
+        <view class="vote-btn upvote {{item.user_vote_type === 'upvote' ? 'voted' : ''}}" bindtap="onUpvote" data-id="{{item.id}}">
+          {{item.user_vote_type === 'upvote' ? '▲' : '△'}}
+        </view>
         <text class="vote-score">{{item.vote_score}}</text>
-        <view class="vote-btn downvote" bindtap="onDownvote" data-id="{{item.id}}">▼</view>
+        <view class="vote-btn downvote {{item.user_vote_type === 'downvote' ? 'voted' : ''}}" bindtap="onDownvote" data-id="{{item.id}}">
+          {{item.user_vote_type === 'downvote' ? '▼' : '▽'}}
+        </view>
       </view>
 
-      <view class="reply-btn" bindtap="onReply" data-id="{{item.id}}" data-nickname="{{item.nickname}}" wx:if="{{item.depth < 2}}">
+      <view class="reply-btn" bindtap="toggleReplyBox" data-id="{{item.id}}" data-nickname="{{item.nickname}}" wx:if="{{item.depth < 2}}">
         回复
       </view>
 
@@ -29,9 +33,37 @@
       </view>
     </view>
 
+    <!-- 回复输入框（点击回复后展开） -->
+    <view wx:if="{{replyingCommentId === item.id}}" class="reply-input-box">
+      <input class="reply-input"
+             placeholder="回复 @{{replyingNickname}}..."
+             bindinput="onReplyInput"
+             bindconfirm="submitReply"
+             value="{{replyInputValue}}"
+             maxlength="500"
+             focus="{{true}}" />
+      <view class="reply-actions">
+        <button class="cancel-reply-btn" bindtap="cancelReply">取消</button>
+        <button class="submit-reply-btn" bindtap="submitReply">发送</button>
+      </view>
+    </view>
+
     <!-- 嵌套回复（递归） -->
     <view wx:if="{{item.replies && item.replies.length > 0}}" class="nested-replies">
-      <comment-list comments="{{item.replies}}" reviewId="{{reviewId}}" bind:upvote="onUpvote" bind:downvote="onDownvote" bind:reply="onReply" bind:delete="onDelete" />
+      <comment-list
+        comments="{{item.replies}}"
+        reviewId="{{reviewId}}"
+        replyingCommentId="{{replyingCommentId}}"
+        replyingNickname="{{replyingNickname}}"
+        replyInputValue="{{replyInputValue}}"
+        bind:upvote="onUpvote"
+        bind:downvote="onDownvote"
+        bind:reply="onReply"
+        bind:toggleReply="onToggleReply"
+        bind:replyInput="onReplyInput"
+        bind:submitReply="onSubmitReply"
+        bind:cancelReply="onCancelReply"
+        bind:delete="onDelete" />
     </view>
   </view>
 </view>

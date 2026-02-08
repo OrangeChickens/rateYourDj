@@ -71,12 +71,14 @@ exports.getReviewComments = async (req, res, next) => {
   try {
     const { reviewId } = req.params;
     const { page = 1, limit = 20, sort = 'created_at', order = 'DESC' } = req.query;
+    const userId = req.user?.userId || null; // 获取当前用户ID（可能未登录）
 
     const result = await Comment.findByReviewId(reviewId, {
       page: parseInt(page),
       limit: parseInt(limit),
       sort,
-      order
+      order,
+      userId // 传递用户ID以获取投票状态
     });
 
     console.log(`📊 评论原始数据 (reviewId=${reviewId}):`, JSON.stringify(result.data, null, 2));

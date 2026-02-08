@@ -70,6 +70,16 @@
   user-select: none;
 }
 
+.vote-btn.upvote.voted {
+  color: #FF6600;
+  font-weight: 900;
+}
+
+.vote-btn.downvote.voted {
+  color: #0066FF;
+  font-weight: 900;
+}
+
 .vote-btn.upvote:active {
   color: #FF6600;
 }
@@ -108,4 +118,58 @@
 
 .nested-replies {
   margin-top: 24rpx;
+}
+
+/* 回复输入框 */
+.reply-input-box {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  background: #F5F5F5;
+  border: 3rpx solid #000;
+}
+
+.reply-input {
+  width: 100%;
+  min-height: 80rpx;
+  padding: 16rpx;
+  background: #FFF;
+  border: 2rpx solid #000;
+  font-size: 26rpx;
+  line-height: 1.6;
+  box-sizing: border-box;
+  margin-bottom: 16rpx;
+}
+
+.reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+}
+
+.cancel-reply-btn,
+.submit-reply-btn {
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  line-height: 1;
+}
+
+.cancel-reply-btn {
+  background: #FFF;
+  color: #000;
+}
+
+.cancel-reply-btn::after {
+  border: none;
+}
+
+.submit-reply-btn {
+  background: #000;
+  color: #FFF;
+}
+
+.submit-reply-btn::after {
+  border: none;
 }

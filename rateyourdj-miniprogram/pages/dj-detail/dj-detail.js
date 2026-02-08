@@ -29,9 +29,10 @@ Page({
     // 评论相关
     expandedComments: {},      // 展开的评论区（key: reviewId, value: boolean）
     reviewComments: {},        // 各评价的评论列表（key: reviewId, value: comments[]）
-    commentInputs: {},         // 评论输入内容（key: reviewId, value: string）
+    commentInputs: {},         // 顶级评论输入内容（key: reviewId, value: string）
     replyingTo: {},            // 正在回复的评论ID（key: reviewId, value: commentId）
     replyingToNickname: {},    // 正在回复的用户昵称（key: reviewId, value: nickname）
+    replyInputValue: {},       // 回复输入内容（key: reviewId, value: string）
 
     // 国际化文本
     texts: {}
@@ -485,11 +486,11 @@ Page({
     });
   },
 
-  // 提交评论
+  // 提交顶级评论（不是回复某条评论）
   async submitComment(e) {
     const { reviewId } = e.currentTarget.dataset;
     const content = this.data.commentInputs[reviewId];
-    const parentCommentId = this.data.replyingTo[reviewId] || null;
+    const parentCommentId = null; // 顶级评论，不设置父评论ID
 
     if (!app.globalData.token) {
       const confirmed = await showConfirm(
@@ -528,11 +529,9 @@ Page({
       if (res.success) {
         showToast(i18n.t('comment.submitSuccess') || '评论成功');
 
-        // 清空输入和回复状态
+        // 清空输入（不清空 replyingTo 因为那是回复框的状态）
         this.setData({
-          [`commentInputs.${reviewId}`]: '',
-          [`replyingTo.${reviewId}`]: null,
-          [`replyingToNickname.${reviewId}`]: ''
+          [`commentInputs.${reviewId}`]: ''
         });
 
         // 刷新评论列表
@@ -619,19 +618,133 @@ Page({
     }
   },
 
-  // 回复评论
+  // 切换回复框（旧的 handleCommentReply，保留用于兼容）
   handleCommentReply(e) {
     const { commentId, nickname, reviewId } = e.detail;
+    this.handleToggleReply(e);
+  },
 
-    console.log(`💬 回复评论: reviewId=${reviewId}, commentId=${commentId}, nickname=${nickname}`);
+  // 切换回复框显示
+  handleToggleReply(e) {
+    const { commentId, nickname, reviewId } = e.detail;
 
-    this.setData({
-      [`replyingTo.${reviewId}`]: commentId,
-      [`replyingToNickname.${reviewId}`]: nickname
-    });
+    console.log(`💬 切换回复框: reviewId=${reviewId}, commentId=${commentId}, nickname=${nickname}`);
 
-    // 可选：聚焦输入框（微信小程序需要用户主动触发）
-    showToast(`回复 @${nickname}`);
+    // 如果点击的是当前正在回复的评论，则关闭回复框
+    if (this.data.replyingTo[reviewId] === commentId) {
+      this.setData({
+        [`replyingTo.${reviewId}`]: null,
+        [`replyingToNickname.${reviewId}`]: '',
+        [`replyInputValue.${reviewId}`]: ''
+      });
+    } else {
+      // 否则打开回复框
+      this.setData({
+        [`replyingTo.${reviewId}`]: commentId,
+        [`replyingToNickname.${reviewId}`]: nickname,
+        [`replyInputValue.${reviewId}`]: ''
+      });
+    }
+  },
+
+  // 回复输入
+  handleReplyInput(e) {
+    const { value } = e.detail;
+
+    // 找到当前展开的 reviewId
+    const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
+      id => this.data.expandedComments[id]
+    );
+
+    if (expandedReviewIds.length > 0) {
+      const reviewId = expandedReviewIds[0];
+      this.setData({
+        [`replyInputValue.${reviewId}`]: value
+      });
+    }
+  },
+
+  // 提交回复
+  async handleSubmitReply(e) {
+    // 找到当前展开的评论区
+    const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
+      id => this.data.expandedComments[id]
+    );
+
+    if (expandedReviewIds.length === 0) return;
+
+    const reviewId = expandedReviewIds[0];
+    const content = this.data.replyInputValue[reviewId];
+    const parentCommentId = this.data.replyingTo[reviewId];
+
+    if (!content || content.trim().length === 0) {
+      showToast('请输入回复内容');
+      return;
+    }
+
+    if (content.trim().length > 500) {
+      showToast('回复最多 500 字');
+      return;
+    }
+
+    try {
+      showLoading('发送中...');
+
+      console.log(`📝 提交回复: reviewId=${reviewId}, parentCommentId=${parentCommentId}, content=${content}`);
+
+      const res = await commentAPI.create(
+        parseInt(reviewId),
+        content.trim(),
+        parentCommentId
+      );
+
+      if (res.success) {
+        showToast('回复成功');
+
+        // 清空输入和回复状态
+        this.setData({
+          [`replyInputValue.${reviewId}`]: '',
+          [`replyingTo.${reviewId}`]: null,
+          [`replyingToNickname.${reviewId}`]: ''
+        });
+
+        // 刷新评论列表
+        this.loadComments(reviewId);
+
+        // 手动增加评论计数
+        const reviews = this.data.reviews.map(review => {
+          if (review.id === parseInt(reviewId)) {
+            return { ...review, comment_count: (review.comment_count || 0) + 1 };
+          }
+          return review;
+        });
+        this.setData({ reviews });
+      } else {
+        showToast(res.message || '回复失败');
+      }
+    } catch (error) {
+      console.error('提交回复失败:', error);
+      showToast('回复失败');
+    } finally {
+      hideLoading();
+    }
+  },
+
+  // 取消回复
+  handleCancelReply(e) {
+    // 找到当前展开的 reviewId
+    const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
+      id => this.data.expandedComments[id]
+    );
+
+    if (expandedReviewIds.length > 0) {
+      const reviewId = expandedReviewIds[0];
+      this.setData({
+        [`replyingTo.${reviewId}`]: null,
+        [`replyingToNickname.${reviewId}`]: '',
+        [`replyInputValue.${reviewId}`]: ''
+      });
+    }
   },
 
   // 删除评论

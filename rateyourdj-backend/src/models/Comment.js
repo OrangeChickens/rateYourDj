@@ -71,7 +71,7 @@ class Comment {
    * 获取评论列表（平铺，不含嵌套结构）
    */
   static async findByReviewId(reviewId, options = {}) {
-    const { page = 1, limit = 20, sort = 'created_at', order = 'DESC' } = options;
+    const { page = 1, limit = 20, sort = 'created_at', order = 'DESC', userId = null } = options;
     const offset = (page - 1) * limit;
 
     // 验证排序字段
@@ -80,14 +80,17 @@ class Comment {
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     // 获取评论列表（只获取顶级评论进行分页）
+    // 如果提供了 userId，同时获取该用户的投票状态
     const [comments] = await pool.query(
-      `SELECT c.*, u.nickname, u.avatar_url
+      `SELECT c.*, u.nickname, u.avatar_url,
+              ${userId ? 'cv.vote_type as user_vote_type' : 'NULL as user_vote_type'}
        FROM review_comments c
        LEFT JOIN users u ON c.user_id = u.id
+       ${userId ? 'LEFT JOIN comment_votes cv ON c.id = cv.comment_id AND cv.user_id = ?' : ''}
        WHERE c.review_id = ? AND c.parent_comment_id IS NULL
        ORDER BY c.${sortField} ${sortOrder}
        LIMIT ? OFFSET ?`,
-      [reviewId, limit, offset]
+      userId ? [userId, reviewId, limit, offset] : [reviewId, limit, offset]
     );
 
     console.log(`📝 顶级评论数量: ${comments.length}`);
@@ -102,12 +105,14 @@ class Comment {
 
     // 获取所有回复（不分页）
     const [replies] = await pool.query(
-      `SELECT c.*, u.nickname, u.avatar_url
+      `SELECT c.*, u.nickname, u.avatar_url,
+              ${userId ? 'cv.vote_type as user_vote_type' : 'NULL as user_vote_type'}
        FROM review_comments c
        LEFT JOIN users u ON c.user_id = u.id
+       ${userId ? 'LEFT JOIN comment_votes cv ON c.id = cv.comment_id AND cv.user_id = ?' : ''}
        WHERE c.review_id = ? AND c.parent_comment_id IS NOT NULL
        ORDER BY c.created_at ASC`,
-      [reviewId]
+      userId ? [userId, reviewId] : [reviewId]
     );
 
     console.log(`💬 回复评论数量: ${replies.length}`);

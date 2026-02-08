@@ -16,16 +16,27 @@ class Stats {
       'SELECT COUNT(*) as reviewCount FROM reviews WHERE status = "approved"'
     );
 
-    // 互动总数（评价互动 + 评论投票）
+    // 互动总数（评价互动 + 评论 + 评论投票）
     const [[{ reviewInteractionCount }]] = await pool.query(
       'SELECT COUNT(*) as reviewInteractionCount FROM review_interactions'
+    );
+
+    const [[{ commentCount }]] = await pool.query(
+      'SELECT COUNT(*) as commentCount FROM review_comments'
     );
 
     const [[{ commentVoteCount }]] = await pool.query(
       'SELECT COUNT(*) as commentVoteCount FROM comment_votes'
     );
 
-    const interactionCount = reviewInteractionCount + commentVoteCount;
+    const interactionCount = reviewInteractionCount + commentCount + commentVoteCount;
+
+    console.log(`📊 互动总数统计:`, {
+      reviewInteractionCount,
+      commentCount,
+      commentVoteCount,
+      total: interactionCount
+    });
 
     // 用户总数
     const [[{ userCount }]] = await pool.query(

@@ -179,10 +179,10 @@
           <!-- 评论区 -->
           <view class="comments-section">
             <view wx:if="{{expandedComments[item.id]}}" class="comments-content-wrapper">
-              <!-- 写评论输入框 -->
+              <!-- 写顶级评论输入框 -->
               <view class="write-comment">
                 <input class="comment-input"
-                       placeholder="{{replyingTo[item.id] ? '回复 @' + replyingToNickname[item.id] + '...' : '写评论...'}}"
+                       placeholder="写评论..."
                        bindinput="onCommentInput"
                        bindconfirm="submitComment"
                        data-review-id="{{item.id}}"
@@ -196,9 +196,16 @@
                 wx:if="{{reviewComments[item.id] && reviewComments[item.id].length > 0}}"
                 comments="{{reviewComments[item.id]}}"
                 reviewId="{{item.id}}"
+                replyingCommentId="{{replyingTo[item.id]}}"
+                replyingNickname="{{replyingToNickname[item.id]}}"
+                replyInputValue="{{replyInputValue[item.id]}}"
                 bind:upvote="handleCommentUpvote"
                 bind:downvote="handleCommentDownvote"
                 bind:reply="handleCommentReply"
+                bind:toggleReply="handleToggleReply"
+                bind:replyInput="handleReplyInput"
+                bind:submitReply="handleSubmitReply"
+                bind:cancelReply="handleCancelReply"
                 bind:delete="handleCommentDelete" />
 
               <view wx:if="{{!reviewComments[item.id] || reviewComments[item.id].length === 0}}" class="no-comments">
