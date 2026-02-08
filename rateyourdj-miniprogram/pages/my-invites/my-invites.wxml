@@ -53,7 +53,7 @@
         <button class="action-btn copy" bindtap="copyCode" data-code="{{item.code}}">
           复制
         </button>
-        <button class="action-btn share" bindtap="shareCode" data-code="{{item.code}}">
+        <button class="action-btn share" open-type="share" bindtap="prepareShare" data-code="{{item.code}}">
           分享
         </button>
       </view>

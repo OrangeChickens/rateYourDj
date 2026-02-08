@@ -6,7 +6,8 @@ Page({
   data: {
     inviteQuota: 0,
     codes: [],
-    generating: false
+    generating: false,
+    currentShareCode: '' // 当前要分享的邀请码
   },
 
   onLoad() {
@@ -130,25 +131,39 @@ Page({
     });
   },
 
-  // 分享邀请码
-  shareCode(e) {
+  // 准备分享（在分享前设置当前邀请码）
+  prepareShare(e) {
     const { code } = e.currentTarget.dataset;
-
-    // 构造分享内容
-    const shareText = `我在烂U盘发现了超多好DJ！用我的邀请码「${code}」加入吧`;
-
-    // 复制分享文本到剪贴板
-    wx.setClipboardData({
-      data: shareText,
-      success: () => {
-        wx.showModal({
-          title: '分享邀请码',
-          content: `分享文本已复制到剪贴板\n\n${shareText}\n\n请粘贴分享给好友`,
-          showCancel: false,
-          confirmText: '知道了'
-        });
-      }
+    this.setData({
+      currentShareCode: code
     });
+  },
+
+  // 微信分享
+  onShareAppMessage() {
+    const code = this.data.currentShareCode;
+
+    // 分享文案库
+    const shareTitles = [
+      `DJ好不好，来这里看真实评价 | 邀请码「${code}」`,
+      `一个可以说真话的DJ评分社区 | 邀请码「${code}」`,
+      `不吹不黑，就说DJ真实水平 | 邀请码「${code}」`,
+      `找好DJ、避雷渣DJ，都在这 | 邀请码「${code}」`,
+      `好DJ值得被看见，烂的也值得被知道 | 邀请码「${code}」`,
+      `发现了DJ评分社区，好的坏的都能说 | 邀请码「${code}」`,
+      `DJ圈终于有说真话的地方了 | 邀请码「${code}」`,
+      `终于可以给DJ打分了！邀请码「${code}」`,
+      `遇到好DJ收藏，遇到烂的吐槽 | 邀请码「${code}」`
+    ];
+
+    // 随机选择一条
+    const randomTitle = shareTitles[Math.floor(Math.random() * shareTitles.length)];
+
+    return {
+      title: randomTitle,
+      path: `/pages/waitlist/waitlist?inviteCode=${code}`,
+      imageUrl: '' // 可以设置自定义分享图片
+    };
   },
 
   // 跳转到任务中心

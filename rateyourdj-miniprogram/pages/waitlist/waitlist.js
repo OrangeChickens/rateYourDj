@@ -12,9 +12,10 @@ Page({
   onLoad(options) {
     console.log('Waitlist 页面加载，options:', options);
 
-    // 检查 URL 参数中是否有邀请码
-    if (options.code) {
-      this.setData({ inviteCode: options.code });
+    // 检查 URL 参数中是否有邀请码（支持 code 和 inviteCode 两种参数名）
+    const inviteCodeFromUrl = options.inviteCode || options.code;
+    if (inviteCodeFromUrl) {
+      this.setData({ inviteCode: inviteCodeFromUrl });
       // 延迟自动提交，等待页面渲染完成
       setTimeout(() => {
         this.autoSubmitInviteCode();
@@ -101,7 +102,7 @@ Page({
   // 欢迎动画
   showWelcomeAnimation() {
     wx.showModal({
-      title: '🎉 欢迎加入！',
+      title: '欢迎加入',
       content: '你已获得完整访问权限\n\n完成任务获得邀请码，邀请好友一起玩',
       showCancel: false,
       confirmText: '开始探索',

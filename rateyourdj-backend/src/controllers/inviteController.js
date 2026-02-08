@@ -70,7 +70,7 @@ exports.getMyCodes = async (req, res, next) => {
       code: code.code,
       usedCount: code.used_count,
       usageLimit: code.usage_limit,
-      status: code.used_count >= code.usage_limit ? 'used' : 'available',
+      status: !code.is_active || code.used_count >= code.usage_limit ? 'used' : 'available',
       createdAt: code.created_at,
       usedBy: code.usedBy || []
     }));
