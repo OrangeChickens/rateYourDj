@@ -31,6 +31,15 @@ Page({
     });
   },
 
+  onShow() {
+    // 检查是否有待处理的分享任务
+    if (this.pendingShareTask) {
+      console.log('🔄 检测到待处理的分享任务，开始记录...');
+      this.pendingShareTask = false;
+      this.recordShareTask();
+    }
+  },
+
   // 更新语言
   updateLanguage() {
     this.setData({
@@ -144,8 +153,9 @@ Page({
 
   // 分享评论给好友
   onShareAppMessage(options) {
-    // 记录分享任务完成（异步）
-    this.recordShareTask();
+    console.log('📤 触发分享到好友/群聊');
+    // 设置标记，在页面onShow时记录任务
+    this.pendingShareTask = true;
 
     // 从按钮的 dataset 中获取评论信息
     const review = options && options.target && options.target.dataset ? options.target.dataset.review : null;
@@ -175,8 +185,9 @@ Page({
 
   // 分享到朋友圈
   onShareTimeline() {
-    // 记录分享任务完成（异步）
-    this.recordShareTask();
+    console.log('📤 触发分享到朋友圈');
+    // 设置标记，在页面onShow时记录任务
+    this.pendingShareTask = true;
 
     return {
       title: '我的DJ评价 - 烂u盘',

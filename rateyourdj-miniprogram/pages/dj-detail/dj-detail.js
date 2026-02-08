@@ -67,6 +67,13 @@ Page({
   },
 
   onShow() {
+    // 检查是否有待处理的分享任务
+    if (this.pendingShareTask) {
+      console.log('🔄 检测到待处理的分享任务，开始记录...');
+      this.pendingShareTask = false;
+      this.recordShareTask();
+    }
+
     // 检查是否需要刷新数据（从写评论页返回）
     const needRefresh = getApp().globalData.needRefreshDJDetail;
     if (needRefresh) {
@@ -407,8 +414,9 @@ Page({
 
   // 分享给朋友（页面级分享配置）
   onShareAppMessage(options) {
-    // 记录分享任务完成（异步）
-    this.recordShareTask();
+    console.log('📤 触发分享到好友/群聊');
+    // 设置标记，在页面onShow时记录任务
+    this.pendingShareTask = true;
 
     // 如果是从分享按钮触发的
     if (options.from === 'button') {
@@ -430,8 +438,9 @@ Page({
 
   // 分享到朋友圈
   onShareTimeline() {
-    // 记录分享任务完成（异步）
-    this.recordShareTask();
+    console.log('📤 触发分享到朋友圈');
+    // 设置标记，在页面onShow时记录任务
+    this.pendingShareTask = true;
 
     const { dj } = this.data;
     return {
