@@ -1,5 +1,5 @@
 // pages/dj-upload/dj-upload.js
-import { showLoading, hideLoading, showToast } from '../../utils/util';
+import { showLoading, hideLoading, showToast, checkFullAccess } from '../../utils/util';
 import { djAPI, tagAPI } from '../../utils/api';
 
 const app = getApp();
@@ -34,6 +34,11 @@ Page({
   },
 
   async onLoad(options) {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     // 检查是否是编辑模式
     if (options.id) {
       this.setData({

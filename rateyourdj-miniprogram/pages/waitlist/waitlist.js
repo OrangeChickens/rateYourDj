@@ -6,7 +6,6 @@ Page({
   data: {
     position: 0,
     totalWaitlist: 0,
-    showModal: false,
     inviteCode: ''
   },
 
@@ -49,21 +48,6 @@ Page({
     }
   },
 
-  // 显示邀请码输入框
-  showInviteInput() {
-    this.setData({ showModal: true });
-  },
-
-  // 隐藏弹窗
-  hideModal() {
-    this.setData({ showModal: false });
-  },
-
-  // 阻止冒泡
-  stopPropagation() {
-    // 阻止事件冒泡到背景层
-  },
-
   // 输入邀请码
   onInviteInput(e) {
     this.setData({ inviteCode: e.detail.value.toUpperCase() });
@@ -101,9 +85,6 @@ Page({
         app.globalData.userInfo = app.globalData.userInfo || {};
         app.globalData.userInfo.access_level = 'full';
         app.globalData.accessLevel = 'full';
-
-        // 隐藏弹窗
-        this.setData({ showModal: false });
 
         // 显示成功提示并跳转
         this.showWelcomeAnimation();

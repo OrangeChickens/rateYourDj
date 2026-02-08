@@ -171,6 +171,25 @@ export async function requireLogin() {
 }
 
 /**
+ * 检查用户访问级别，如果是 waitlist 则跳转到 waitlist 页面
+ * @returns {boolean} 是否有完整访问权限
+ */
+export function checkFullAccess() {
+  const app = getApp();
+  const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+
+  if (userInfo && userInfo.access_level === 'waitlist') {
+    console.log('🚫 Waitlist 用户，跳转到 waitlist 页面');
+    wx.reLaunch({
+      url: '/pages/waitlist/waitlist'
+    });
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * 格式化评分
  */
 export function formatRating(rating) {

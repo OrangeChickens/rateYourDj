@@ -4,12 +4,8 @@
   <view class="waitlist-header">
     <text class="app-name">烂U盘</text>
     <text class="beta-badge">BETA</text>
-  </view>
-
-  <!-- 欢迎信息 -->
-  <view class="welcome-section">
-    <text class="welcome-title">感谢你的关注！</text>
-    <text class="welcome-desc">烂U盘目前处于内测阶段</text>
+    <text class="tagline">一个DJ评分社区</text>
+    <text class="tagline-sub">好DJ值得被看见，烂DJ也是</text>
   </view>
 
   <!-- 排队位置 -->
@@ -22,44 +18,18 @@
   <!-- 分割线 -->
   <view class="divider"></view>
 
-  <!-- 邀请码入口 -->
+  <!-- 邀请码输入 -->
   <view class="access-section">
     <text class="access-title">获得访问权限</text>
-    <button class="invite-code-btn" bindtap="showInviteInput">
-      <text class="btn-icon">🔑</text>
-      <text class="btn-text">输入邀请码</text>
-      <text class="btn-arrow">→</text>
-    </button>
-  </view>
-
-  <!-- 分割线 -->
-  <view class="divider"></view>
-
-  <!-- 额外信息 -->
-  <view class="info-section">
-    <text class="info-title">想了解更多？</text>
-    <button class="contact-btn" open-type="contact">
-      <text class="btn-icon">💬</text>
-      <text class="btn-text">联系客服</text>
-    </button>
-  </view>
-</view>
-
-<!-- 邀请码输入弹窗 -->
-<view class="invite-modal {{showModal ? 'show' : ''}}" catchtap="hideModal">
-  <view class="modal-content" catchtap="stopPropagation">
-    <text class="modal-title">输入邀请码</text>
-    <input
-      class="invite-input"
-      placeholder="例如: UDISK-ABC123"
-      value="{{inviteCode}}"
-      bindinput="onInviteInput"
-      maxlength="20"
-      auto-focus="{{showModal}}"
-    />
-    <view class="modal-buttons">
-      <button class="modal-btn cancel" bindtap="hideModal">取消</button>
-      <button class="modal-btn confirm" bindtap="submitInviteCode">确认</button>
+    <view class="invite-input-wrapper">
+      <input
+        class="invite-input"
+        placeholder="输入邀请码，例如: UDISK-ABC123"
+        value="{{inviteCode}}"
+        bindinput="onInviteInput"
+        maxlength="20"
+      />
+      <button class="submit-btn" bindtap="submitInviteCode">提交</button>
     </view>
   </view>
 </view>

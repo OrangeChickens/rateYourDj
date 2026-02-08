@@ -1,6 +1,6 @@
 // pages/my-favorites/my-favorites.js
 import { userAPI } from '../../utils/api';
-import { showLoading, hideLoading, showToast, showConfirm, generateStars, requireLogin } from '../../utils/util';
+import { showLoading, hideLoading, showToast, showConfirm, generateStars, requireLogin, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
 const app = getApp();
@@ -17,6 +17,11 @@ Page({
   },
 
   onLoad() {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     this.updateLanguage();
 
     // 首次加载时检查登录状态并加载数据

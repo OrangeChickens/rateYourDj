@@ -1,6 +1,6 @@
 // pages/tasks/tasks.js
 const app = getApp();
-import { showLoading, hideLoading, showToast } from '../../utils/util';
+import { showLoading, hideLoading, showToast, checkFullAccess } from '../../utils/util';
 
 Page({
   data: {
@@ -16,6 +16,11 @@ Page({
   },
 
   onLoad() {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     this.loadTasks();
   },
 

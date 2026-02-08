@@ -10,6 +10,7 @@ Page({
     userInfo: null,
     isLoggedIn: false,
     isAdmin: false,
+    hasFullAccess: false,
     currentLanguage: 'zh-CN',
     reviewCount: 0,
     favoriteCount: 0,
@@ -62,12 +63,22 @@ Page({
   // 检查登录状态
   checkLoginStatus() {
     const token = app.globalData.token;
-    const userInfo = app.globalData.userInfo;
+    const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+
+    console.log('🔍 Settings - 检查登录状态:', {
+      token: !!token,
+      userInfo: userInfo,
+      access_level: userInfo?.access_level
+    });
+
     this.setData({
       isLoggedIn: !!token,
       userInfo: userInfo,
-      isAdmin: userInfo && userInfo.role === 'admin'
+      isAdmin: userInfo && userInfo.role === 'admin',
+      hasFullAccess: userInfo && userInfo.access_level === 'full'
     });
+
+    console.log('✅ Settings - hasFullAccess:', this.data.hasFullAccess);
   },
 
   // 加载用户资料
@@ -80,13 +91,22 @@ Page({
     try {
       const res = await userAPI.getProfile();
       if (res.success) {
+        console.log('📥 Settings - 加载用户资料:', res.data);
+
         // 更新本地数据
         this.setData({
           userInfo: res.data,
           reviewCount: res.data.review_count || 0,
           favoriteCount: res.data.favorite_count || 0,
-          isAdmin: res.data.role === 'admin'
+          isAdmin: res.data.role === 'admin',
+          hasFullAccess: res.data.access_level === 'full'
         });
+
+        // 同步更新 globalData 和 storage
+        app.globalData.userInfo = res.data;
+        wx.setStorageSync('userInfo', res.data);
+
+        console.log('✅ Settings - 更新后 hasFullAccess:', this.data.hasFullAccess);
 
         // 同步更新globalData和storage（包含role字段）
         app.globalData.userInfo = res.data;
@@ -157,6 +177,30 @@ Page({
 
     wx.switchTab({
       url: '/pages/my-favorites/my-favorites'
+    });
+  },
+
+  // 跳转到任务中心
+  goToTasks() {
+    if (!this.data.isLoggedIn) {
+      showToast('请先登录');
+      return;
+    }
+
+    wx.navigateTo({
+      url: '/pages/tasks/tasks'
+    });
+  },
+
+  // 跳转到我的邀请码
+  goToMyInvites() {
+    if (!this.data.isLoggedIn) {
+      showToast('请先登录');
+      return;
+    }
+
+    wx.navigateTo({
+      url: '/pages/my-invites/my-invites'
     });
   },
 

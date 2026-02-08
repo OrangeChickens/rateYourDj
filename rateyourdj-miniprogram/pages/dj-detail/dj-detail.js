@@ -1,6 +1,6 @@
 // pages/dj-detail/dj-detail.js
 import { djAPI, reviewAPI, userAPI } from '../../utils/api';
-import { showLoading, hideLoading, showToast, showConfirm, generateStars, formatDate } from '../../utils/util';
+import { showLoading, hideLoading, showToast, showConfirm, generateStars, formatDate, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
 const app = getApp();
@@ -31,6 +31,11 @@ Page({
   },
 
   onLoad(options) {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     const djId = parseInt(options.id);
     if (!djId) {
       showToast('DJ ID 无效');

@@ -1,6 +1,6 @@
 // pages/review-create/review-create.js
 import { reviewAPI, tagAPI } from '../../utils/api';
-import { showLoading, hideLoading, showToast } from '../../utils/util';
+import { showLoading, hideLoading, showToast, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
 Page({
@@ -52,6 +52,11 @@ Page({
   },
 
   onLoad(options) {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     const djId = parseInt(options.djId);
     const djName = options.djName || '';
 

@@ -31,6 +31,16 @@ Page({
       return;
     }
 
+    // 检查访问级别 - waitlist 用户跳转到 waitlist 页面
+    const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+    if (userInfo && userInfo.access_level === 'waitlist') {
+      console.log('🚫 Waitlist 用户，跳转到 waitlist 页面');
+      wx.reLaunch({
+        url: '/pages/waitlist/waitlist'
+      });
+      return;
+    }
+
     // 从 storage 读取上次选择的城市（如果有）
     const selectedCity = wx.getStorageSync('selectedCity') || '全部城市';
     this.setData({ selectedCity });

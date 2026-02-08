@@ -30,8 +30,8 @@
     </view>
   </view>
 
-  <!-- 功能菜单 -->
-  <view class="menu-section">
+  <!-- 功能菜单（仅 full access 用户可见）-->
+  <view class="menu-section" wx:if="{{hasFullAccess}}">
     <!-- 我的评论 -->
     <view class="menu-item" bindtap="goToMyReviews">
       <text class="menu-icon">REV</text>
@@ -43,6 +43,20 @@
     <view class="menu-item" bindtap="goToMyFavorites">
       <text class="menu-icon">FAV</text>
       <text class="menu-label">{{texts.myFavorites}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <!-- 任务中心 -->
+    <view class="menu-item" bindtap="goToTasks">
+      <text class="menu-icon">TASK</text>
+      <text class="menu-label">任务中心</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <!-- 我的邀请码 -->
+    <view class="menu-item" bindtap="goToMyInvites">
+      <text class="menu-icon">CODE</text>
+      <text class="menu-label">我的邀请码</text>
       <text class="menu-arrow">›</text>
     </view>
   </view>

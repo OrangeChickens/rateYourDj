@@ -1,6 +1,6 @@
 // pages/city-list/city-list.js
 import { djAPI } from '../../utils/api';
-import { showLoading, hideLoading, showToast } from '../../utils/util';
+import { showLoading, hideLoading, showToast, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
 Page({
@@ -14,6 +14,11 @@ Page({
   },
 
   onLoad() {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     this.updateLanguage();
 
     // 获取当前选中的城市

@@ -1,6 +1,6 @@
 // pages/search/search.js
 import { djAPI, userAPI } from '../../utils/api';
-import { showToast, debounce, generateStars } from '../../utils/util';
+import { showToast, debounce, generateStars, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
 const app = getApp();
@@ -23,6 +23,11 @@ Page({
   },
 
   onLoad() {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     this.updateLanguage();
     this.loadSearchHistory();
 

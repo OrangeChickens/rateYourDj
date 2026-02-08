@@ -1,6 +1,6 @@
 // pages/my-reviews/my-reviews.js
 import { userAPI, reviewAPI } from '../../utils/api';
-import { showToast, formatDate, generateStars } from '../../utils/util';
+import { showToast, formatDate, generateStars, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
 const app = getApp();
@@ -16,6 +16,11 @@ Page({
   },
 
   onLoad(options) {
+    // 检查访问级别
+    if (!checkFullAccess()) {
+      return;
+    }
+
     this.updateLanguage();
     this.loadReviews();
   },
