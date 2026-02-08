@@ -189,7 +189,7 @@ async function checkAccess(req, res, next) {
 
     res.json({
       success: true,
-      accessLevel: user.access_level || 'waitlist'
+      access_level: user.access_level || 'waitlist'
     });
   } catch (error) {
     console.error('检查访问权限失败:', error);

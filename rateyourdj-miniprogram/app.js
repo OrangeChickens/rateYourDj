@@ -131,9 +131,11 @@ App({
 
       if (res.success) {
         const accessLevel = res.access_level;
+        console.log('🔍 Access Level Check:', accessLevel);
 
         // 如果用户是 waitlist 状态，且当前不在 waitlist 页面，则跳转
         if (accessLevel === 'waitlist') {
+          console.log('🚫 User is on waitlist, redirecting...');
           try {
             const pages = getCurrentPages();
             const currentPage = pages[pages.length - 1];
