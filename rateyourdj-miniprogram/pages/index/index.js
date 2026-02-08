@@ -21,6 +21,16 @@ Page({
   },
 
   onLoad() {
+    // 检查登录状态 - 未登录用户跳转到登录页
+    const app = getApp();
+    if (!app.globalData.token) {
+      console.log('⚠️ 用户未登录，跳转到登录页');
+      wx.reLaunch({
+        url: '/pages/login/login'
+      });
+      return;
+    }
+
     // 从 storage 读取上次选择的城市（如果有）
     const selectedCity = wx.getStorageSync('selectedCity') || '全部城市';
     this.setData({ selectedCity });

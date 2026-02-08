@@ -14,10 +14,10 @@ Page({
   },
 
   async onLoad(options) {
-    // 如果已经登录，跳转回我的页面
+    // 如果已经登录，跳转到首页
     if (app.globalData.token) {
       wx.switchTab({
-        url: '/pages/settings/settings'
+        url: '/pages/index/index'
       });
       return;
     }
@@ -238,11 +238,24 @@ Page({
           icon: 'success'
         });
 
-        // 跳转回我的页面
+        // 根据用户的访问级别决定跳转
         setTimeout(() => {
-          wx.switchTab({
-            url: '/pages/settings/settings'
-          });
+          const accessLevel = apiRes.data.user.access_level;
+          console.log('🔍 用户访问级别:', accessLevel);
+
+          if (accessLevel === 'waitlist') {
+            // Waitlist 用户跳转到 waitlist 页面
+            console.log('🚫 跳转到 Waitlist 页面');
+            wx.reLaunch({
+              url: '/pages/waitlist/waitlist'
+            });
+          } else {
+            // Full 访问用户跳转到首页
+            console.log('✅ 跳转到首页');
+            wx.switchTab({
+              url: '/pages/index/index'
+            });
+          }
         }, 1500);
       } else {
         throw new Error(apiRes.message || '登录失败');
