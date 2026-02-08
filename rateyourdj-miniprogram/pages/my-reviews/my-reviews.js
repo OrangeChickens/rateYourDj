@@ -188,10 +188,12 @@ Page({
   async recordShareTask() {
     const token = app.globalData.token;
     if (!token) {
+      console.log('⚠️ 未登录，跳过分享任务记录');
       return; // 未登录不记录
     }
 
     try {
+      console.log('📤 开始记录分享任务...');
       const res = await app.request({
         url: '/tasks/share-review',
         method: 'POST',
@@ -199,10 +201,18 @@ Page({
       });
 
       if (res.success) {
-        console.log('✅ 分享任务已记录');
+        console.log('✅ 分享任务已记录成功');
+        // 提示用户任务已记录
+        wx.showToast({
+          title: '分享已记录',
+          icon: 'success',
+          duration: 1500
+        });
+      } else {
+        console.error('❌ 分享任务记录失败:', res.message);
       }
     } catch (error) {
-      console.error('记录分享任务失败:', error);
+      console.error('❌ 记录分享任务异常:', error);
     }
   }
 });
