@@ -3,6 +3,7 @@ node_modules/
 .env.local
 .env.*.local
 .env.production
+.env.rds
 .DS_Store
 *.log
 npm-debug.log*
