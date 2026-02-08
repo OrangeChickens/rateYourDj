@@ -59,7 +59,7 @@ class TaskService {
   // 检查并触发 helpful_received 任务
   async checkHelpfulReceived(reviewAuthorId) {
     try {
-      const pool = require('../config/database');
+      const { pool } = require('../config/database');
 
       // 计算该用户所有评价的总 helpful_count
       const [result] = await pool.query(

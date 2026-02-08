@@ -1,5 +1,5 @@
 // models/InviteCode.js
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 
 class InviteCode {
   // 生成邀请码

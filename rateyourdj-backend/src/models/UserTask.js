@@ -1,5 +1,5 @@
 // models/UserTask.js
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 
 class UserTask {
   // 初始化用户任务（用户首次获得 full access 时调用）

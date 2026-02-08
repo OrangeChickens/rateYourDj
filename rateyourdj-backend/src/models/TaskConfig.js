@@ -1,5 +1,5 @@
 // models/TaskConfig.js
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 
 class TaskConfig {
   // 获取所有活跃任务配置
