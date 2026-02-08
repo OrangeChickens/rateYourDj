@@ -1,9 +1,9 @@
 {
   "pages": [
-    "pages/my-invites/my-invites",
-    "pages/tasks/tasks",
-    "pages/waitlist/waitlist",
     "pages/index/index",
+    "pages/waitlist/waitlist",
+    "pages/tasks/tasks",
+    "pages/my-invites/my-invites",
     "pages/login/login",
     "pages/search/search",
     "pages/dj-detail/dj-detail",
