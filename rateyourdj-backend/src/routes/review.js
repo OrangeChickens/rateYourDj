@@ -7,11 +7,15 @@ const {
   deleteReview,
   markReviewHelpful,
   markNotHelpful,
-  reportReview
+  reportReview,
+  getAllReviews
 } = require('../controllers/reviewController');
 
 // 创建评论（需要登录）
 router.post('/create', authenticate, createReview);
+
+// 获取所有评价列表（无需登录）
+router.get('/all', getAllReviews);
 
 // 获取DJ的评论列表（无需登录）
 router.get('/list/:djId', getDJReviews);

@@ -42,7 +42,8 @@ export default {
     recentReviews: {
       title: 'Recent Reviews',
       ratedDJ: 'rated',
-      noReviews: 'No reviews yet'
+      noReviews: 'No reviews yet',
+      viewAll: 'VIEW ALL →'
     }
   },
 
@@ -171,6 +172,12 @@ export default {
     title: 'Select City',
     hotCities: 'Hot Cities',
     allCities: 'All Cities'
+  },
+
+  allReviews: {
+    title: 'All Reviews',
+    djName: 'DJ',
+    noReviews: 'No reviews yet'
   },
 
   error: {

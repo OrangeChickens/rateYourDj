@@ -148,6 +148,15 @@ export const reviewAPI = {
       method: 'POST',
       needAuth: true
     });
+  },
+
+  // 获取所有评论（用于"所有评价"页面）
+  getAllReviews(params = {}) {
+    return app.request({
+      url: '/review/all',
+      method: 'GET',
+      data: params
+    });
   }
 };
 

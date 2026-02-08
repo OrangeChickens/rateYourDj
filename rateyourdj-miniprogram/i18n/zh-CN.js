@@ -42,7 +42,8 @@ export default {
     recentReviews: {
       title: '最近评价',
       ratedDJ: '评价了',
-      noReviews: '暂无评价'
+      noReviews: '暂无评价',
+      viewAll: '查看全部 →'
     }
   },
 
@@ -171,6 +172,12 @@ export default {
     title: '选择城市',
     hotCities: '热门城市',
     allCities: '全部城市'
+  },
+
+  allReviews: {
+    title: '所有评价',
+    djName: 'DJ',
+    noReviews: '暂无评价'
   },
 
   error: {

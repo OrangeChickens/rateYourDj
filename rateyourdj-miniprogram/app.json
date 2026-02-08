@@ -12,7 +12,8 @@
     "pages/my-reviews/my-reviews",
     "pages/settings/settings",
     "pages/city-list/city-list",
-    "pages/dj-upload/dj-upload"
+    "pages/dj-upload/dj-upload",
+    "pages/all-reviews/all-reviews"
   ],
   "window": {
     "backgroundTextStyle": "light",

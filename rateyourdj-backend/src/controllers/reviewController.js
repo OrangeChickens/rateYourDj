@@ -194,11 +194,34 @@ async function markNotHelpful(req, res, next) {
   }
 }
 
+// 获取所有评价（用于"所有评价"页面）
+async function getAllReviews(req, res, next) {
+  try {
+    const { page = 1, limit = 20, sort = 'created_at', order = 'DESC' } = req.query;
+
+    const result = await Review.getAllReviews({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      sort,
+      order
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createReview,
   getDJReviews,
   deleteReview,
   markReviewHelpful,
   markNotHelpful,
-  reportReview
+  reportReview,
+  getAllReviews
 };

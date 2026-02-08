@@ -278,6 +278,70 @@ class Review {
       connection.release();
     }
   }
+
+  // 获取所有评价（用于"所有评价"页面）
+  static async getAllReviews({ page = 1, limit = 20, sort = 'created_at', order = 'DESC' }) {
+    const offset = (page - 1) * limit;
+
+    // 验证排序字段（白名单）
+    const sortFieldMap = {
+      'created_at': 'r.created_at',
+      'overall_rating': 'r.overall_rating',
+      'helpful_count': 'r.helpful_count'
+    };
+    const sortField = sortFieldMap[sort] || 'r.created_at';
+
+    // 验证排序方向
+    const orderDir = (order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+
+    // 获取评价列表（仅已审核）
+    const query = `
+      SELECT
+        r.id,
+        r.dj_id,
+        r.overall_rating,
+        r.comment,
+        r.created_at,
+        r.is_anonymous,
+        r.helpful_count,
+        r.not_helpful_count,
+        u.nickname,
+        u.avatar_url,
+        d.name as dj_name,
+        d.city
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id
+      JOIN djs d ON r.dj_id = d.id
+      WHERE r.status = ?
+      ORDER BY ${sortField} ${orderDir}
+      LIMIT ? OFFSET ?
+    `;
+
+    const [reviews] = await pool.query(query, ['approved', limit, offset]);
+
+    // 获取总数
+    const countQuery = 'SELECT COUNT(*) as total FROM reviews WHERE status = ?';
+    const [[{ total }]] = await pool.query(countQuery, ['approved']);
+
+    // 处理匿名评价
+    const processedReviews = reviews.map(review => {
+      if (review.is_anonymous) {
+        review.nickname = '匿名用户';
+        review.avatar_url = null;
+      }
+      return processReview(review);
+    });
+
+    return {
+      data: processedReviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
 }
 
 module.exports = Review;

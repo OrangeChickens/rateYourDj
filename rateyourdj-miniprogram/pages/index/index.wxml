@@ -10,7 +10,8 @@
   <recent-reviews
     wx:if="{{recentReviews && recentReviews.length > 0}}"
     reviews="{{recentReviews}}"
-    texts="{{recentReviewsTexts}}" />
+    texts="{{recentReviewsTexts}}"
+    bind:viewall="handleViewAllReviews" />
 
   <!-- 搜索框 -->
   <view class="search-section">

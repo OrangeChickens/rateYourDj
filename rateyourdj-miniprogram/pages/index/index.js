@@ -115,7 +115,8 @@ Page({
       recentReviewsTexts: {
         title: i18n.t('home.recentReviews.title'),
         ratedDJ: i18n.t('home.recentReviews.ratedDJ'),
-        noReviews: i18n.t('home.recentReviews.noReviews')
+        noReviews: i18n.t('home.recentReviews.noReviews'),
+        viewAll: i18n.t('home.recentReviews.viewAll')
       }
     });
   },
@@ -216,7 +217,7 @@ Page({
           dashboardStats: res.data.stats,
           recentReviews: this.formatRecentReviews(res.data.recentReviews)
         });
-        console.log('✅ 仪表盘数据加载成功');
+        console.log('✅ 仪表盘数据加载成功', res.data);
       }
     } catch (error) {
       console.error('❌ 加载仪表盘数据失败:', error);
@@ -336,5 +337,12 @@ Page({
       title: '查看DJ评分 - 烂u盘',
       query: ''
     };
+  },
+
+  // 查看所有评价
+  handleViewAllReviews() {
+    wx.navigateTo({
+      url: '/pages/all-reviews/all-reviews'
+    });
   }
 });

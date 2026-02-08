@@ -1,0 +1,52 @@
+<!-- 所有评价页面 -->
+<view class="container">
+  <view class="reviews-list" wx:if="{{reviews.length > 0}}">
+    <view
+      wx:for="{{reviews}}"
+      wx:key="id"
+      class="review-item"
+      bindtap="goToDJDetail"
+      data-dj-id="{{item.dj_id}}"
+      data-review-id="{{item.id}}">
+
+      <view class="review-header">
+        <view class="user-info">
+          <text class="nickname">{{item.nickname}}</text>
+          <text class="time">{{item.timeAgo}}</text>
+        </view>
+        <view class="rating">
+          <text class="rating-number">{{item.overall_rating}}</text>
+          <view class="stars">
+            <text wx:for="{{item.stars}}" wx:key="index" wx:for-item="star">★</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="dj-info">
+        <text class="label">{{texts.djName}}</text>
+        <text class="dj-name">{{item.dj_name}}</text>
+      </view>
+
+      <view class="review-content" wx:if="{{item.comment}}">
+        <text>{{item.comment}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading && currentPage === 1}}">
+    <text>{{texts.loading}}</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:elif="{{!loading && reviews.length === 0}}">
+    <text class="empty-icon">—</text>
+    <text class="empty-text">{{texts.noReviews}}</text>
+  </view>
+
+  <!-- 底部加载状态 -->
+  <view class="load-more" wx:if="{{reviews.length > 0}}">
+    <text wx:if="{{loading}}" class="loading-text">{{texts.loading}}</text>
+    <text wx:elif="{{!hasMore}}" class="no-more-text">{{texts.noMore}}</text>
+  </view>
+</view>
