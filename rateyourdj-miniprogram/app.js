@@ -192,9 +192,15 @@ App({
         'Content-Type': 'application/json'
       };
 
-      // 如果需要认证，添加token
-      if (needAuth && this.globalData.token) {
+      // 如果有 token，自动添加（支持 optionalAuth）
+      if (this.globalData.token) {
         header['Authorization'] = `Bearer ${this.globalData.token}`;
+      }
+
+      // 如果需要强制认证但没有 token，直接拒绝
+      if (needAuth && !this.globalData.token) {
+        reject(new Error('需要登录'));
+        return;
       }
 
       // 构建完整URL
