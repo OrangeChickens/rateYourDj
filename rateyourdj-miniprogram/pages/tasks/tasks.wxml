@@ -2,21 +2,20 @@
 <view class="tasks-container">
   <!-- 头部状态 -->
   <view class="tasks-header">
-    <view class="user-status">
-      <text class="status-icon">🎫</text>
-      <view class="status-info">
-        <text class="status-title">邀请码额度</text>
-        <text class="status-number">{{inviteQuota}} 个</text>
+    <view class="quota-card">
+      <view class="quota-info">
+        <text class="quota-label">邀请码额度</text>
+        <text class="quota-number">{{inviteQuota}} 个</text>
       </view>
       <button class="manage-btn" bindtap="goToInvites">管理</button>
     </view>
 
-    <view class="invite-stats">
-      <view class="stat-item">
+    <view class="stats-row">
+      <view class="stat-box">
         <text class="stat-label">已发出</text>
         <text class="stat-value">{{invitesSent}}</text>
       </view>
-      <view class="stat-item">
+      <view class="stat-box">
         <text class="stat-label">已接受</text>
         <text class="stat-value">{{invitesAccepted}}</text>
       </view>
@@ -28,7 +27,6 @@
     <!-- 新手任务 -->
     <view class="task-section">
       <view class="section-header">
-        <text class="section-icon">🎯</text>
         <text class="section-title">新手任务</text>
       </view>
 
@@ -36,17 +34,10 @@
             class="task-card {{item.completed ? 'completed' : ''}}"
             bindtap="onTaskTap"
             data-code="{{item.code}}">
-        <view class="task-icon">{{item.icon}}</view>
-        <view class="task-content">
-          <view class="task-header">
-            <text class="task-name">{{item.name}}</text>
-            <view class="task-reward">
-              <text class="reward-icon">🎫</text>
-              <text class="reward-amount">+{{item.reward}}</text>
-            </view>
-          </view>
+        <view class="task-left">
+          <view class="task-title">{{item.name}}</view>
           <text class="task-desc">{{item.desc}}</text>
-          <view class="task-progress">
+          <view class="task-footer">
             <view class="progress-bar">
               <view class="progress-fill" style="width: {{item.progress / item.target * 100}}%"></view>
             </view>
@@ -54,15 +45,11 @@
           </view>
         </view>
 
-        <!-- 任务状态 -->
-        <view wx:if="{{item.canClaim}}" class="task-badge claim">
-          <text>领取</text>
-        </view>
-        <view wx:elif="{{item.completed}}" class="task-badge completed">
-          <text>✓</text>
-        </view>
-        <view wx:else class="task-badge pending">
-          <text>→</text>
+        <view class="task-right">
+          <view class="reward-badge">+{{item.reward}}</view>
+          <view wx:if="{{item.canClaim}}" class="action-btn claim">领取</view>
+          <view wx:elif="{{item.completed}}" class="action-btn completed">✓</view>
+          <view wx:else class="action-btn pending">→</view>
         </view>
       </view>
     </view>
@@ -70,7 +57,6 @@
     <!-- 进阶任务 -->
     <view class="task-section">
       <view class="section-header">
-        <text class="section-icon">🚀</text>
         <text class="section-title">进阶任务</text>
       </view>
 
@@ -78,17 +64,10 @@
             class="task-card {{item.completed ? 'completed' : ''}}"
             bindtap="onTaskTap"
             data-code="{{item.code}}">
-        <view class="task-icon">{{item.icon}}</view>
-        <view class="task-content">
-          <view class="task-header">
-            <text class="task-name">{{item.name}}</text>
-            <view class="task-reward">
-              <text class="reward-icon">🎫</text>
-              <text class="reward-amount">+{{item.reward}}</text>
-            </view>
-          </view>
+        <view class="task-left">
+          <view class="task-title">{{item.name}}</view>
           <text class="task-desc">{{item.desc}}</text>
-          <view class="task-progress">
+          <view class="task-footer">
             <view class="progress-bar">
               <view class="progress-fill" style="width: {{item.progress / item.target * 100}}%"></view>
             </view>
@@ -96,42 +75,29 @@
           </view>
         </view>
 
-        <!-- 任务状态 -->
-        <view wx:if="{{item.canClaim}}" class="task-badge claim">
-          <text>领取</text>
-        </view>
-        <view wx:elif="{{item.completed}}" class="task-badge completed">
-          <text>✓</text>
-        </view>
-        <view wx:else class="task-badge pending">
-          <text>→</text>
+        <view class="task-right">
+          <view class="reward-badge">+{{item.reward}}</view>
+          <view wx:if="{{item.canClaim}}" class="action-btn claim">领取</view>
+          <view wx:elif="{{item.completed}}" class="action-btn completed">✓</view>
+          <view wx:else class="action-btn pending">→</view>
         </view>
       </view>
     </view>
 
     <!-- VIP 任务 -->
-    <view class="task-section vip">
+    <view class="task-section">
       <view class="section-header">
-        <text class="section-icon">⭐</text>
         <text class="section-title">VIP 任务</text>
-        <text class="vip-badge">高奖励</text>
       </view>
 
       <view wx:for="{{vipTasks}}" wx:key="code"
             class="task-card vip {{item.completed ? 'completed' : ''}}"
             bindtap="onTaskTap"
             data-code="{{item.code}}">
-        <view class="task-icon">{{item.icon}}</view>
-        <view class="task-content">
-          <view class="task-header">
-            <text class="task-name">{{item.name}}</text>
-            <view class="task-reward">
-              <text class="reward-icon">🎫</text>
-              <text class="reward-amount">+{{item.reward}}</text>
-            </view>
-          </view>
+        <view class="task-left">
+          <view class="task-title">{{item.name}}</view>
           <text class="task-desc">{{item.desc}}</text>
-          <view class="task-progress">
+          <view class="task-footer">
             <view class="progress-bar">
               <view class="progress-fill" style="width: {{item.progress / item.target * 100}}%"></view>
             </view>
@@ -139,15 +105,11 @@
           </view>
         </view>
 
-        <!-- 任务状态 -->
-        <view wx:if="{{item.canClaim}}" class="task-badge claim">
-          <text>领取</text>
-        </view>
-        <view wx:elif="{{item.completed}}" class="task-badge completed">
-          <text>✓</text>
-        </view>
-        <view wx:else class="task-badge pending">
-          <text>→</text>
+        <view class="task-right">
+          <view class="reward-badge">+{{item.reward}}</view>
+          <view wx:if="{{item.canClaim}}" class="action-btn claim">领取</view>
+          <view wx:elif="{{item.completed}}" class="action-btn completed">✓</view>
+          <view wx:else class="action-btn pending">→</view>
         </view>
       </view>
     </view>

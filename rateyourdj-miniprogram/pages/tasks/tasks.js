@@ -105,10 +105,10 @@ Page({
       if (res.success) {
         // 显示成功提示
         wx.showModal({
-          title: '🎉 领取成功！',
+          title: '领取成功',
           content: `完成「${taskName}」任务\n获得 ${reward} 个邀请码`,
           showCancel: false,
-          confirmText: '太棒了',
+          confirmText: '确定',
           success: () => {
             // 刷新任务列表
             this.loadTasks();

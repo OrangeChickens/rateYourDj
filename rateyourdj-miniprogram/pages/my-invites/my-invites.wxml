@@ -13,7 +13,6 @@
     </button>
 
     <view class="quota-notice" wx:if="{{inviteQuota <= 0}}">
-      <text class="notice-icon">💡</text>
       <text class="notice-text">完成任务获得更多邀请码额度</text>
       <button class="go-tasks-btn" bindtap="goToTasks">查看任务</button>
     </view>
@@ -24,7 +23,6 @@
     <view class="section-title">我的邀请码</view>
 
     <view wx:if="{{codes.length === 0}}" class="empty-state">
-      <text class="empty-icon">📭</text>
       <text class="empty-text">还没有生成邀请码</text>
       <text class="empty-hint">点击上方按钮生成</text>
     </view>
@@ -32,8 +30,8 @@
     <view wx:for="{{codes}}" wx:key="code" class="code-card {{item.status}}">
       <view class="code-header">
         <text class="code-text">{{item.code}}</text>
-        <view class="code-status">
-          <text wx:if="{{item.status === 'used'}}">✓ 已使用</text>
+        <view class="code-status {{item.status}}">
+          <text wx:if="{{item.status === 'used'}}">已使用</text>
           <text wx:else>可用</text>
         </view>
       </view>
