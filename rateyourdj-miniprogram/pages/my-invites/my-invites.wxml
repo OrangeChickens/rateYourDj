@@ -49,7 +49,7 @@
         </view>
       </view>
 
-      <view class="code-actions">
+      <view class="code-actions" wx:if="{{item.status !== 'used'}}">
         <button class="action-btn copy" bindtap="copyCode" data-code="{{item.code}}">
           复制
         </button>
