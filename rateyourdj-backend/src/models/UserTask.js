@@ -33,7 +33,7 @@ class UserTask {
     }
   }
 
-  // 获取用户所有任务（每个任务只返回最新的实例）
+  // 获取用户所有任务（返回所有实例，包括已完成的历史记录）
   static async getUserTasks(userId) {
     const query = `
       SELECT
@@ -47,19 +47,9 @@ class UserTask {
       FROM user_tasks ut
       JOIN task_configs tc ON ut.task_code = tc.task_code
       WHERE ut.user_id = ? AND tc.is_active = TRUE
-        AND ut.id IN (
-          -- 对于每个 task_code，只选择 repeat_count 最大的实例
-          SELECT id FROM (
-            SELECT id, task_code, repeat_count,
-                   ROW_NUMBER() OVER (PARTITION BY task_code ORDER BY repeat_count DESC) as rn
-            FROM user_tasks
-            WHERE user_id = ?
-          ) ranked
-          WHERE rn = 1
-        )
-      ORDER BY tc.task_category, tc.sort_order
+      ORDER BY tc.task_category, tc.sort_order, ut.repeat_count DESC
     `;
-    const [rows] = await pool.query(query, [userId, userId]);
+    const [rows] = await pool.query(query, [userId]);
     return rows;
   }
 

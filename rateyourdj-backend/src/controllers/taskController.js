@@ -30,6 +30,7 @@ exports.getTaskList = async (req, res, next) => {
       const canClaim = task.completed && !task.reward_claimed;
 
       const taskData = {
+        id: task.id,  // 添加唯一ID用于wx:key
         code: task.task_code,
         name: task.task_name,
         desc: task.task_desc,

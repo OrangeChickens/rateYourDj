@@ -65,25 +65,28 @@ Page({
 
   // 点击任务卡片
   onTaskTap(e) {
-    const { code } = e.currentTarget.dataset;
+    const { code, repeatcount } = e.currentTarget.dataset;
 
-    // 找到对应的任务
+    // 找到对应的任务实例（根据code和repeatCount）
     const allTasks = [
       ...this.data.beginnerTasks,
       ...this.data.advancedTasks,
       ...this.data.vipTasks
     ];
-    const task = allTasks.find(t => t.code === code);
+    const task = allTasks.find(t => t.code === code && t.repeatCount === repeatcount);
 
     if (!task) return;
+
+    console.log('🎯 点击任务:', { code, repeatCount: repeatcount, canClaim: task.canClaim, completed: task.completed });
 
     // 如果可以领取，则领取奖励
     if (task.canClaim) {
       this.claimReward(code, task.name, task.reward);
-    } else if (task.completed) {
-      showToast('任务已完成');
+    } else if (task.completed && !task.canClaim) {
+      // 已完成且已领取
+      showToast('奖励已领取');
     } else {
-      // 显示任务提示
+      // 未完成，显示任务提示
       this.showTaskHint(task);
     }
   },

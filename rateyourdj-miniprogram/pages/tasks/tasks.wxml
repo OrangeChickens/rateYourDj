@@ -30,10 +30,11 @@
         <text class="section-title">新手任务</text>
       </view>
 
-      <view wx:for="{{beginnerTasks}}" wx:key="code"
+      <view wx:for="{{beginnerTasks}}" wx:key="id"
             class="task-card {{item.completed && !item.canClaim ? 'completed' : ''}}"
             bindtap="onTaskTap"
-            data-code="{{item.code}}">
+            data-code="{{item.code}}"
+            data-repeatcount="{{item.repeatCount}}">
         <view class="task-left">
           <view class="task-title">{{item.name}}</view>
           <text class="task-desc">{{item.desc}}</text>
@@ -60,10 +61,11 @@
         <text class="section-title">进阶任务</text>
       </view>
 
-      <view wx:for="{{advancedTasks}}" wx:key="code"
+      <view wx:for="{{advancedTasks}}" wx:key="id"
             class="task-card {{item.completed && !item.canClaim ? 'completed' : ''}}"
             bindtap="onTaskTap"
-            data-code="{{item.code}}">
+            data-code="{{item.code}}"
+            data-repeatcount="{{item.repeatCount}}">
         <view class="task-left">
           <view class="task-title">{{item.name}}</view>
           <text class="task-desc">{{item.desc}}</text>
@@ -90,10 +92,11 @@
         <text class="section-title">VIP 任务</text>
       </view>
 
-      <view wx:for="{{vipTasks}}" wx:key="code"
+      <view wx:for="{{vipTasks}}" wx:key="id"
             class="task-card vip {{item.completed && !item.canClaim ? 'completed' : ''}}"
             bindtap="onTaskTap"
-            data-code="{{item.code}}">
+            data-code="{{item.code}}"
+            data-repeatcount="{{item.repeatCount}}">
         <view class="task-left">
           <view class="task-title">{{item.name}}</view>
           <text class="task-desc">{{item.desc}}</text>
