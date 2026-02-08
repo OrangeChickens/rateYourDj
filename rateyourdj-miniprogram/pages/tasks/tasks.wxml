@@ -31,7 +31,7 @@
       </view>
 
       <view wx:for="{{beginnerTasks}}" wx:key="code"
-            class="task-card {{item.completed ? 'completed' : ''}}"
+            class="task-card {{item.completed && !item.canClaim ? 'completed' : ''}}"
             bindtap="onTaskTap"
             data-code="{{item.code}}">
         <view class="task-left">
@@ -61,7 +61,7 @@
       </view>
 
       <view wx:for="{{advancedTasks}}" wx:key="code"
-            class="task-card {{item.completed ? 'completed' : ''}}"
+            class="task-card {{item.completed && !item.canClaim ? 'completed' : ''}}"
             bindtap="onTaskTap"
             data-code="{{item.code}}">
         <view class="task-left">
@@ -91,7 +91,7 @@
       </view>
 
       <view wx:for="{{vipTasks}}" wx:key="code"
-            class="task-card vip {{item.completed ? 'completed' : ''}}"
+            class="task-card vip {{item.completed && !item.canClaim ? 'completed' : ''}}"
             bindtap="onTaskTap"
             data-code="{{item.code}}">
         <view class="task-left">
