@@ -2,6 +2,7 @@
 const UserTask = require('../models/UserTask');
 const TaskConfig = require('../models/TaskConfig');
 const User = require('../models/User');
+const TaskService = require('../services/taskService');
 
 // 获取用户任务列表
 exports.getTaskList = async (req, res, next) => {
@@ -101,5 +102,26 @@ exports.getTaskStats = async (req, res, next) => {
   } catch (error) {
     console.error('获取任务统计失败:', error);
     next(error);
+  }
+};
+
+// 记录分享评价任务
+exports.recordShareReview = async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+
+    console.log(`📤 [Task] 用户 ${userId} 分享评价`);
+
+    // 更新分享任务进度（增量 +1）
+    await TaskService.updateProgress(userId, 'share_review', 1);
+
+    res.json({
+      success: true,
+      message: '分享已记录'
+    });
+  } catch (error) {
+    console.error('记录分享任务失败:', error);
+    // 不要让分享失败影响用户体验，返回成功
+    res.json({ success: true });
   }
 };

@@ -58,6 +58,12 @@ Page({
     this.loadDJDetail();
     this.loadReviews();
     this.checkFavoriteStatus();
+
+    // 启用分享到朋友圈功能
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
   },
 
   onShow() {
@@ -401,6 +407,9 @@ Page({
 
   // 分享给朋友（页面级分享配置）
   onShareAppMessage(options) {
+    // 记录分享任务完成（异步）
+    this.recordShareTask();
+
     // 如果是从分享按钮触发的
     if (options.from === 'button') {
       const { djId, reviewId } = options.target.dataset;
@@ -417,6 +426,41 @@ Page({
       path: `/pages/dj-detail/dj-detail?id=${this.data.djId}`,
       imageUrl: this.data.dj.photo_url || ''
     };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    // 记录分享任务完成（异步）
+    this.recordShareTask();
+
+    const { dj } = this.data;
+    return {
+      title: `${dj.name} 的DJ评分 - 烂u盘`,
+      query: `id=${this.data.djId}`,
+      imageUrl: dj.photo_url || ''
+    };
+  },
+
+  // 记录分享任务完成
+  async recordShareTask() {
+    const token = app.globalData.token;
+    if (!token) {
+      return; // 未登录不记录
+    }
+
+    try {
+      const res = await app.request({
+        url: '/tasks/share-review',
+        method: 'POST',
+        needAuth: true
+      });
+
+      if (res.success) {
+        console.log('✅ 分享任务已记录');
+      }
+    } catch (error) {
+      console.error('记录分享任务失败:', error);
+    }
   },
 
   // ========== 评论功能 ==========

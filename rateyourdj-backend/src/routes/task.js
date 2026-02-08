@@ -16,4 +16,7 @@ router.post('/claim', taskController.claimReward);
 // 获取任务统计
 router.get('/stats', taskController.getTaskStats);
 
+// 记录分享评价任务
+router.post('/share-review', taskController.recordShareReview);
+
 module.exports = router;
