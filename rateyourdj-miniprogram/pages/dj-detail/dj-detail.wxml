@@ -148,6 +148,10 @@
               <text class="icon">👍</text>
               <text class="count">{{item.helpful_count}}</text>
             </view>
+            <view class="action" bindtap="markNotHelpful" data-id="{{item.id}}">
+              <text class="icon">👎</text>
+              <text class="count">{{item.not_helpful_count}}</text>
+            </view>
             <view class="action report" bindtap="reportReview" data-id="{{item.id}}">
               <text class="icon">!</text>
               <text>{{texts.report}}</text>

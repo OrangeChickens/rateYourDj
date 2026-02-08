@@ -288,6 +288,38 @@ Page({
     }
   },
 
+  // 标记没帮助
+  async markNotHelpful(e) {
+    const { id } = e.currentTarget.dataset;
+
+    if (!app.globalData.token) {
+      const confirmed = await showConfirm(
+        i18n.t('common.loginRequired'),
+        i18n.t('common.loginConfirm')
+      );
+      if (confirmed) {
+        wx.switchTab({
+          url: '/pages/settings/settings'
+        });
+      }
+      return;
+    }
+
+    try {
+      const res = await reviewAPI.markNotHelpful(id);
+      if (res.success) {
+        showToast(i18n.t('review.notHelpfulMarked'));
+        // 刷新评论列表
+        this.loadReviews();
+      } else {
+        showToast(res.message);
+      }
+    } catch (error) {
+      console.error('标记没帮助失败:', error);
+      showToast(i18n.t('error.operationFailed'));
+    }
+  },
+
   // 举报评论
   async reportReview(e) {
     const { id } = e.currentTarget.dataset;

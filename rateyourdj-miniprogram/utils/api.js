@@ -132,6 +132,15 @@ export const reviewAPI = {
     });
   },
 
+  // 标记评论没帮助
+  markNotHelpful(reviewId) {
+    return app.request({
+      url: `/review/${reviewId}/not-helpful`,
+      method: 'POST',
+      needAuth: true
+    });
+  },
+
   // 举报评论
   report(reviewId) {
     return app.request({

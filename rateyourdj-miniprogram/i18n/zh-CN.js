@@ -99,6 +99,7 @@ export default {
     deleteConfirm: '确认删除这条评论？',
     deleteSuccess: '评论已删除',
     helpfulMarked: '已标记有帮助',
+    notHelpfulMarked: '已标记没帮助',
     reportTitle: '举报评论',
     reportConfirm: '确认举报这条评论吗？我们会尽快处理。'
   },

@@ -6,6 +6,7 @@ const {
   getDJReviews,
   deleteReview,
   markReviewHelpful,
+  markNotHelpful,
   reportReview
 } = require('../controllers/reviewController');
 
@@ -20,6 +21,9 @@ router.delete('/:id', authenticate, deleteReview);
 
 // 标记评论有帮助（需要登录）
 router.post('/:id/helpful', authenticate, markReviewHelpful);
+
+// 标记评论没帮助（需要登录）
+router.post('/:id/not-helpful', authenticate, markNotHelpful);
 
 // 举报评论（需要登录）
 router.post('/:id/report', authenticate, reportReview);

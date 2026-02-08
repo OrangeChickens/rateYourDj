@@ -178,10 +178,27 @@ async function reportReview(req, res, next) {
   }
 }
 
+// 评论互动（没帮助）
+async function markNotHelpful(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    await Review.interact(id, req.user.userId, 'not_helpful');
+
+    res.json({
+      success: true,
+      message: '已标记'
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createReview,
   getDJReviews,
   deleteReview,
   markReviewHelpful,
+  markNotHelpful,
   reportReview
 };

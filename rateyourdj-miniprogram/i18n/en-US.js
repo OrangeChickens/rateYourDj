@@ -99,6 +99,7 @@ export default {
     deleteConfirm: 'Delete this review?',
     deleteSuccess: 'Review deleted',
     helpfulMarked: 'Marked as helpful',
+    notHelpfulMarked: 'Marked as not helpful',
     reportTitle: 'Report Review',
     reportConfirm: 'Report this review? We will review it soon.'
   },
