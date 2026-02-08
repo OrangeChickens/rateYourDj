@@ -148,14 +148,21 @@ Page({
       });
 
       if (res.success) {
+        console.log('📊 后端返回的评价数据:', res.data);
+
         // 处理评论数据
-        const reviews = res.data.map(review => ({
-          ...review,
-          stars: generateStars(review.overall_rating),
-          formattedDate: formatDate(review.created_at),
-          tagList: review.tags || [],
-          avatar_url: review.avatar_url || '/images/default-avatar.png'
-        }));
+        const reviews = res.data.map(review => {
+          console.log(`评价 ${review.id} 的 comment_count:`, review.comment_count);
+          return {
+            ...review,
+            stars: generateStars(review.overall_rating),
+            formattedDate: formatDate(review.created_at),
+            tagList: review.tags || [],
+            avatar_url: review.avatar_url || '/images/default-avatar.png'
+          };
+        });
+
+        console.log('📊 处理后的评价数据:', reviews);
 
         this.setData({
           reviews: append ? [...this.data.reviews, ...reviews] : reviews,
@@ -410,39 +417,42 @@ Page({
   async loadComments(reviewId) {
     try {
       const res = await commentAPI.getList(reviewId, 1, 20);
+      console.log('📊 加载评论返回:', res);
+
       if (res.success) {
         // 格式化评论数据
         const formattedComments = this.formatComments(res.data);
+        console.log('📊 格式化后的评论:', formattedComments);
 
         this.setData({
           [`reviewComments.${reviewId}`]: formattedComments
         });
 
-        // 更新评论计数
-        const reviews = this.data.reviews.map(review => {
-          if (review.id === parseInt(reviewId)) {
-            return { ...review, comment_count: res.data.length };
-          }
-          return review;
-        });
-        this.setData({ reviews });
+        // 不在这里更新 comment_count，应该由后端在评价列表中返回
       }
     } catch (error) {
-      console.error('加载评论失败:', error);
+      console.error('❌ 加载评论失败:', error);
       showToast('加载评论失败');
     }
   },
 
-  // 格式化评论数据
+  // 格式化评论数据（递归处理嵌套回复）
   formatComments(comments) {
     const userId = app.globalData.userInfo?.id;
 
     return comments.map(comment => {
-      return {
+      const formatted = {
         ...comment,
         timeAgo: this.formatTimeAgo(comment.created_at),
         canDelete: comment.user_id === userId
       };
+
+      // 递归格式化嵌套回复
+      if (comment.replies && comment.replies.length > 0) {
+        formatted.replies = this.formatComments(comment.replies);
+      }
+
+      return formatted;
     });
   },
 
@@ -522,6 +532,15 @@ Page({
 
         // 刷新评论列表
         this.loadComments(reviewId);
+
+        // 手动增加评论计数
+        const reviews = this.data.reviews.map(review => {
+          if (review.id === parseInt(reviewId)) {
+            return { ...review, comment_count: (review.comment_count || 0) + 1 };
+          }
+          return review;
+        });
+        this.setData({ reviews });
       } else {
         showToast(res.message || '评论失败');
       }
@@ -631,7 +650,18 @@ Page({
         const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
           id => this.data.expandedComments[id]
         );
-        expandedReviewIds.forEach(id => this.loadComments(id));
+        expandedReviewIds.forEach(id => {
+          this.loadComments(id);
+
+          // 手动减少评论计数
+          const reviews = this.data.reviews.map(review => {
+            if (review.id === parseInt(id)) {
+              return { ...review, comment_count: Math.max(0, (review.comment_count || 0) - 1) };
+            }
+            return review;
+          });
+          this.setData({ reviews });
+        });
       } else {
         showToast(res.message || '删除失败');
       }

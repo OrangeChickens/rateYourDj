@@ -170,9 +170,9 @@
             </view>
 
             <!-- 第二行：展开评论数 -->
-            <view wx:if="{{item.comment_count > 0}}" class="comments-expand" bindtap="toggleComments" data-review-id="{{item.id}}">
+            <view class="comments-expand" bindtap="toggleComments" data-review-id="{{item.id}}">
               <text class="expand-icon">{{expandedComments[item.id] ? '⊖' : '⊕'}}</text>
-              <text class="expand-text">{{item.comment_count}} 条评论</text>
+              <text class="expand-text">{{item.comment_count || 0}} 条评论</text>
             </view>
           </view>
 

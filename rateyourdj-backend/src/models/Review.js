@@ -133,7 +133,8 @@ class Review {
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     const [rows] = await pool.query(
-      `SELECT r.*, u.nickname, u.avatar_url
+      `SELECT r.*, u.nickname, u.avatar_url,
+              (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id) as comment_count
        FROM reviews r
        LEFT JOIN users u ON r.user_id = u.id
        WHERE r.dj_id = ? AND r.status = 'approved'
