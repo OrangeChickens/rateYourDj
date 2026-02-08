@@ -3,7 +3,53 @@ const UserTask = require('../models/UserTask');
 const TaskConfig = require('../models/TaskConfig');
 
 class TaskService {
-  // 更新任务进度
+  // 设置任务进度（覆盖式，直接设置为指定值，用于基于总数的任务）
+  async setProgress(userId, taskCode, newProgress) {
+    try {
+      console.log(`🔄 [Task Debug] setProgress 被调用:`, { userId, taskCode, newProgress });
+
+      // 获取当前任务
+      const task = await UserTask.getUserTask(userId, taskCode);
+
+      console.log(`🔍 [Task Debug] 获取任务信息:`, {
+        userId,
+        taskCode,
+        taskExists: !!task,
+        taskProgress: task?.progress,
+        taskTarget: task?.target,
+        taskCompleted: task?.completed,
+        taskRepeatable: task?.repeatable
+      });
+
+      if (!task) {
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 不存在，用户 ${userId}`);
+        return;
+      }
+
+      if (task.completed && !task.repeatable) {
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成且不可重复`);
+        return;
+      }
+
+      // 限制进度不超过目标
+      const cappedProgress = Math.min(newProgress, task.target);
+
+      console.log(`➡️ [Task Debug] 设置任务进度:`, { userId, taskCode, oldProgress: task.progress, newProgress: cappedProgress, target: task.target });
+
+      // 更新进度
+      await UserTask.updateProgress(userId, taskCode, cappedProgress);
+
+      // 检查是否完成
+      if (cappedProgress >= task.target) {
+        console.log(`🎉 [Task Debug] 任务达到目标，标记完成:`, { userId, taskCode, progress: cappedProgress, target: task.target });
+        await this.completeTask(userId, taskCode);
+      }
+    } catch (error) {
+      console.error(`❌ [Task Debug] 设置任务进度失败 (${taskCode}):`, error);
+    }
+  }
+
+  // 更新任务进度（增量式，每次增加指定值，用于可重复的任务）
   async updateProgress(userId, taskCode, increment = 1) {
     try {
       console.log(`🔄 [Task Debug] updateProgress 被调用:`, { userId, taskCode, increment });
@@ -31,10 +77,10 @@ class TaskService {
         return;
       }
 
-      // 计算新进度
-      const newProgress = task.progress + increment;
+      // 计算新进度（增量，限制不超过目标）
+      const newProgress = Math.min(task.progress + increment, task.target);
 
-      console.log(`➡️ [Task Debug] 更新任务进度:`, { userId, taskCode, oldProgress: task.progress, newProgress, target: task.target });
+      console.log(`➡️ [Task Debug] 更新任务进度:`, { userId, taskCode, oldProgress: task.progress, increment, newProgress, target: task.target });
 
       // 更新进度
       await UserTask.updateProgress(userId, taskCode, newProgress);
@@ -88,26 +134,11 @@ class TaskService {
 
       const totalHelpful = result[0].total_helpful || 0;
 
-      // 更新任务进度（使用总数覆盖，而不是增量）
-      if (totalHelpful >= 5) {
-        const task5 = await UserTask.getUserTask(reviewAuthorId, 'helpful_received_5');
-        if (task5 && !task5.completed) {
-          await UserTask.updateProgress(reviewAuthorId, 'helpful_received_5', totalHelpful);
-          if (totalHelpful >= 5) {
-            await this.completeTask(reviewAuthorId, 'helpful_received_5');
-          }
-        }
-      }
+      // helpful_received_5: 收到 5 个「有帮助」（覆盖式更新）
+      await this.setProgress(reviewAuthorId, 'helpful_received_5', totalHelpful);
 
-      if (totalHelpful >= 20) {
-        const task20 = await UserTask.getUserTask(reviewAuthorId, 'helpful_received_20');
-        if (task20 && !task20.completed) {
-          await UserTask.updateProgress(reviewAuthorId, 'helpful_received_20', totalHelpful);
-          if (totalHelpful >= 20) {
-            await this.completeTask(reviewAuthorId, 'helpful_received_20');
-          }
-        }
-      }
+      // helpful_received_20: 收到 20 个「有帮助」（覆盖式更新）
+      await this.setProgress(reviewAuthorId, 'helpful_received_20', totalHelpful);
     } catch (error) {
       console.error('触发 helpful_received 任务失败:', error);
     }
@@ -133,14 +164,14 @@ class TaskService {
         await this.updateProgress(userId, 'first_review', 1);
       }
 
-      // reviews_3: 评价 3 个 DJ
+      // reviews_3: 评价 3 个 DJ（覆盖式更新）
       if (reviewCount <= 3) {
-        await this.updateProgress(userId, 'reviews_3', reviewCount);
+        await this.setProgress(userId, 'reviews_3', reviewCount);
       }
 
-      // reviews_10: 评价 10 个 DJ
+      // reviews_10: 评价 10 个 DJ（覆盖式更新）
       if (reviewCount <= 10) {
-        await this.updateProgress(userId, 'reviews_10', reviewCount);
+        await this.setProgress(userId, 'reviews_10', reviewCount);
       }
 
       // quality_review: 撰写 30 字以上的优质评价（可重复）
@@ -181,9 +212,9 @@ class TaskService {
         [userId]
       );
 
-      // favorite_5: 收藏 5 个 DJ
+      // favorite_5: 收藏 5 个 DJ（覆盖式更新）
       if (favoriteCount <= 5) {
-        await this.updateProgress(userId, 'favorite_5', favoriteCount);
+        await this.setProgress(userId, 'favorite_5', favoriteCount);
       }
     } catch (error) {
       console.error('更新收藏任务失败:', error);
