@@ -1,5 +1,5 @@
 // pages/index/index.js
-import { djAPI } from '../../utils/api';
+import { djAPI, statsAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, generateStars } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
@@ -17,7 +17,13 @@ Page({
 
     // 分页
     currentPage: 1,
-    hasMore: true
+    hasMore: true,
+
+    // 仪表盘数据
+    dashboardStats: null,
+    recentReviews: [],
+    statsTexts: {},
+    recentReviewsTexts: {}
   },
 
   onLoad() {
@@ -46,6 +52,7 @@ Page({
     this.setData({ selectedCity });
 
     this.updateLanguage();
+    this.loadDashboard();
     this.loadHotDJs();
   },
 
@@ -97,7 +104,19 @@ Page({
       searchPlaceholder: i18n.t('home.searchPlaceholder'),
       hotDJsTitle: i18n.t('home.hotDJs'),
       loadingText: i18n.t('common.loading'),
-      noDataText: i18n.t('common.noData')
+      noDataText: i18n.t('common.noData'),
+      statsTexts: {
+        title: i18n.t('home.stats.title'),
+        djTotal: i18n.t('home.stats.djTotal'),
+        reviewTotal: i18n.t('home.stats.reviewTotal'),
+        interactionTotal: i18n.t('home.stats.interactionTotal'),
+        userTotal: i18n.t('home.stats.userTotal')
+      },
+      recentReviewsTexts: {
+        title: i18n.t('home.recentReviews.title'),
+        ratedDJ: i18n.t('home.recentReviews.ratedDJ'),
+        noReviews: i18n.t('home.recentReviews.noReviews')
+      }
     });
   },
 
@@ -166,6 +185,78 @@ Page({
     }
   },
 
+  // 加载仪表盘数据
+  async loadDashboard() {
+    try {
+      // 检查缓存（5分钟有效期）
+      const cached = wx.getStorageSync('dashboardData');
+      const cacheTime = wx.getStorageSync('dashboardCacheTime');
+      const now = Date.now();
+
+      if (cached && cacheTime && (now - cacheTime < 5 * 60 * 1000)) {
+        // 使用缓存
+        console.log('📊 使用缓存的仪表盘数据');
+        this.setData({
+          dashboardStats: cached.stats,
+          recentReviews: this.formatRecentReviews(cached.recentReviews)
+        });
+        return;
+      }
+
+      // 从 API 获取
+      console.log('📊 从API加载仪表盘数据');
+      const res = await statsAPI.getDashboard();
+
+      if (res.success) {
+        // 保存到缓存
+        wx.setStorageSync('dashboardData', res.data);
+        wx.setStorageSync('dashboardCacheTime', now);
+
+        this.setData({
+          dashboardStats: res.data.stats,
+          recentReviews: this.formatRecentReviews(res.data.recentReviews)
+        });
+        console.log('✅ 仪表盘数据加载成功');
+      }
+    } catch (error) {
+      console.error('❌ 加载仪表盘数据失败:', error);
+      // 静默失败，不影响页面其他功能
+    }
+  },
+
+  // 格式化最近评价数据
+  formatRecentReviews(reviews) {
+    if (!reviews || !Array.isArray(reviews)) return [];
+
+    return reviews.map(review => ({
+      ...review,
+      stars: Array(review.overall_rating).fill('★'),
+      timeAgo: this.formatTimeAgo(review.created_at),
+      comment: review.comment ?
+        (review.comment.length > 60 ? review.comment.substring(0, 60) + '...' : review.comment) :
+        ''
+    }));
+  },
+
+  // 格式化时间（"3分钟前"）
+  formatTimeAgo(timestamp) {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diff = now - past;
+
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}小时前`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}天前`;
+
+    return past.toLocaleDateString();
+  },
+
   // 跳转到搜索页
   goToSearch() {
     wx.navigateTo({
@@ -208,10 +299,17 @@ Page({
   },
 
   // 下拉刷新
-  onPullDownRefresh() {
-    this.loadHotDJs().then(() => {
-      wx.stopPullDownRefresh();
-    });
+  async onPullDownRefresh() {
+    // 清除仪表盘缓存
+    wx.removeStorageSync('dashboardData');
+    wx.removeStorageSync('dashboardCacheTime');
+
+    await Promise.all([
+      this.loadDashboard(),
+      this.loadHotDJs()
+    ]);
+
+    wx.stopPullDownRefresh();
   },
 
   // 触底加载更多

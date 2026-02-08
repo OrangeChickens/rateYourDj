@@ -1,0 +1,28 @@
+<view class="recent-reviews-section">
+  <view class="section-title">{{texts.title}}</view>
+
+  <view class="reviews-list">
+    <view wx:for="{{reviews}}" wx:key="id" class="review-item" bindtap="goToReview" data-dj-id="{{item.dj_id}}" data-review-id="{{item.id}}">
+      <view class="review-header">
+        <image class="avatar" src="{{item.avatar_url || '/images/default-avatar.png'}}" />
+        <view class="user-info">
+          <text class="nickname">{{item.nickname}}</text>
+          <view class="rating-info">
+            <view class="stars">
+              <text wx:for="{{item.stars}}" wx:key="index" wx:for-item="star">★</text>
+            </view>
+            <text class="rated-text">{{texts.ratedDJ}}</text>
+            <text class="dj-name">{{item.dj_name}}</text>
+          </view>
+        </view>
+        <text class="time">{{item.timeAgo}}</text>
+      </view>
+
+      <view class="review-preview">{{item.comment}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{!reviews || reviews.length === 0}}" class="no-reviews">
+    <text>{{texts.noReviews}}</text>
+  </view>
+</view>

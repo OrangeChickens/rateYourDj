@@ -195,6 +195,19 @@ export const commentAPI = {
 };
 
 /**
+ * 统计相关API
+ */
+export const statsAPI = {
+  // 获取仪表盘数据
+  getDashboard() {
+    return app.request({
+      url: '/stats/dashboard',
+      method: 'GET'
+    });
+  }
+};
+
+/**
  * 用户相关API
  */
 export const userAPI = {

@@ -1,5 +1,17 @@
 <!-- 首页 -->
 <view class="container">
+  <!-- 统计数据看板 -->
+  <stats-dashboard
+    wx:if="{{dashboardStats}}"
+    stats="{{dashboardStats}}"
+    texts="{{statsTexts}}" />
+
+  <!-- 最近评价 -->
+  <recent-reviews
+    wx:if="{{recentReviews && recentReviews.length > 0}}"
+    reviews="{{recentReviews}}"
+    texts="{{recentReviewsTexts}}" />
+
   <!-- 搜索框 -->
   <view class="search-section">
     <view class="search-bar" bindtap="goToSearch">

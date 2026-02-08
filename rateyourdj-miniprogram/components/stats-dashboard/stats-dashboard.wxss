@@ -1,0 +1,47 @@
+.stats-section {
+  padding: 0 32rpx;
+  margin-bottom: 48rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-bottom: 32rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 3rpx solid #000;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.stat-card {
+  background: #FFF;
+  border: 3rpx solid #000;
+  padding: 32rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.stat-label {
+  display: block;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 16rpx;
+}
+
+.stat-value {
+  display: block;
+  font-size: 56rpx;
+  font-weight: 900;
+  color: #000;
+  line-height: 1;
+}

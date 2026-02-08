@@ -32,7 +32,19 @@ export default {
     searchPlaceholder: '搜索DJ名称、城市或厂牌',
     selectCity: '选择城市',
     allCities: '全部城市',
-    recentReviews: '最新评论'
+    recentReviews: '最新评论',
+    stats: {
+      title: '平台数据',
+      djTotal: 'DJ总数',
+      reviewTotal: '评价总数',
+      interactionTotal: '互动总数',
+      userTotal: '用户总数'
+    },
+    recentReviews: {
+      title: '最近评价',
+      ratedDJ: '评价了',
+      noReviews: '暂无评价'
+    }
   },
 
   search: {

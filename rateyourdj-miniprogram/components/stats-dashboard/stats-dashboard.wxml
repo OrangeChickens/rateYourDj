@@ -1,0 +1,25 @@
+<view class="stats-section">
+  <view class="section-title">{{texts.title}}</view>
+
+  <view class="stats-grid">
+    <view class="stat-card">
+      <text class="stat-label">{{texts.djTotal}}</text>
+      <text class="stat-value">{{stats.djCount || 0}}</text>
+    </view>
+
+    <view class="stat-card">
+      <text class="stat-label">{{texts.reviewTotal}}</text>
+      <text class="stat-value">{{stats.reviewCount || 0}}</text>
+    </view>
+
+    <view class="stat-card">
+      <text class="stat-label">{{texts.interactionTotal}}</text>
+      <text class="stat-value">{{stats.interactionCount || 0}}</text>
+    </view>
+
+    <view class="stat-card">
+      <text class="stat-label">{{texts.userTotal}}</text>
+      <text class="stat-value">{{stats.userCount || 0}}</text>
+    </view>
+  </view>
+</view>

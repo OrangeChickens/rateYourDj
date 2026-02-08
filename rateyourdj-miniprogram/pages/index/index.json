@@ -3,5 +3,9 @@
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark",
   "enableShareAppMessage": true,
-  "enableShareTimeline": true
+  "enableShareTimeline": true,
+  "usingComponents": {
+    "stats-dashboard": "/components/stats-dashboard/stats-dashboard",
+    "recent-reviews": "/components/recent-reviews/recent-reviews"
+  }
 }
