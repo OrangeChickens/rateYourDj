@@ -223,6 +223,7 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .progress-fill {
@@ -232,6 +233,7 @@
   height: 100%;
   background: #000;
   transition: width 0.3s ease;
+  max-width: 100%;
 }
 
 .progress-text {
@@ -239,6 +241,7 @@
   font-weight: 900;
   color: #000;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* 任务右侧 */
