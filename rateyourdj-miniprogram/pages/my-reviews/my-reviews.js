@@ -23,6 +23,12 @@ Page({
 
     this.updateLanguage();
     this.loadReviews();
+
+    // 启用分享到朋友圈功能
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
   },
 
   // 更新语言
@@ -138,6 +144,9 @@ Page({
 
   // 分享评论给好友
   onShareAppMessage(options) {
+    // 记录分享任务完成（异步）
+    this.recordShareTask();
+
     // 从按钮的 dataset 中获取评论信息
     const review = options && options.target && options.target.dataset ? options.target.dataset.review : null;
 
@@ -166,9 +175,34 @@ Page({
 
   // 分享到朋友圈
   onShareTimeline() {
+    // 记录分享任务完成（异步）
+    this.recordShareTask();
+
     return {
       title: '我的DJ评价 - 烂u盘',
       query: ''
     };
+  },
+
+  // 记录分享任务完成
+  async recordShareTask() {
+    const token = app.globalData.token;
+    if (!token) {
+      return; // 未登录不记录
+    }
+
+    try {
+      const res = await app.request({
+        url: '/tasks/share-review',
+        method: 'POST',
+        needAuth: true
+      });
+
+      if (res.success) {
+        console.log('✅ 分享任务已记录');
+      }
+    } catch (error) {
+      console.error('记录分享任务失败:', error);
+    }
   }
 });
