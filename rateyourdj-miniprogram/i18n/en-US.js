@@ -32,7 +32,6 @@ export default {
     searchPlaceholder: 'Search DJ name, city or label',
     selectCity: 'Select City',
     allCities: 'All Cities',
-    recentReviews: 'Recent Reviews',
     stats: {
       title: 'Platform Stats',
       djTotal: 'Total DJs',
