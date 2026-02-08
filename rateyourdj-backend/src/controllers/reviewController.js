@@ -77,8 +77,9 @@ async function createReview(req, res, next) {
     await updateDJRatings(dj_id);
 
     // 更新任务进度（异步，不阻塞响应）
+    console.log(`📝 [Review Debug] 准备更新任务进度:`, { userId: req.user.userId, reviewId: review.id, commentLength: comment?.length });
     TaskService.updateReviewTasks(req.user.userId, comment).catch(err => {
-      console.error('更新任务进度失败:', err);
+      console.error('❌ [Review Debug] 更新任务进度失败:', err);
     });
 
     res.status(201).json({

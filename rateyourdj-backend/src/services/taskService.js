@@ -6,31 +6,46 @@ class TaskService {
   // 更新任务进度
   async updateProgress(userId, taskCode, increment = 1) {
     try {
+      console.log(`🔄 [Task Debug] updateProgress 被调用:`, { userId, taskCode, increment });
+
       // 获取当前任务
       const task = await UserTask.getUserTask(userId, taskCode);
 
+      console.log(`🔍 [Task Debug] 获取任务信息:`, {
+        userId,
+        taskCode,
+        taskExists: !!task,
+        taskProgress: task?.progress,
+        taskTarget: task?.target,
+        taskCompleted: task?.completed,
+        taskRepeatable: task?.repeatable
+      });
+
       if (!task) {
-        console.log(`任务 ${taskCode} 不存在，用户 ${userId}`);
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 不存在，用户 ${userId}`);
         return;
       }
 
       if (task.completed && !task.repeatable) {
-        console.log(`任务 ${taskCode} 已完成且不可重复`);
+        console.log(`⚠️ [Task Debug] 任务 ${taskCode} 已完成且不可重复`);
         return;
       }
 
       // 计算新进度
       const newProgress = task.progress + increment;
 
+      console.log(`➡️ [Task Debug] 更新任务进度:`, { userId, taskCode, oldProgress: task.progress, newProgress, target: task.target });
+
       // 更新进度
       await UserTask.updateProgress(userId, taskCode, newProgress);
 
       // 检查是否完成
       if (newProgress >= task.target) {
+        console.log(`🎉 [Task Debug] 任务达到目标，标记完成:`, { userId, taskCode, newProgress, target: task.target });
         await this.completeTask(userId, taskCode);
       }
     } catch (error) {
-      console.error(`更新任务进度失败 (${taskCode}):`, error);
+      console.error(`❌ [Task Debug] 更新任务进度失败 (${taskCode}):`, error);
     }
   }
 
@@ -49,10 +64,12 @@ class TaskService {
   // 检查并触发 invite_active_user 任务
   async checkInviteActiveUser(inviterId) {
     try {
+      console.log(`🎯 [Task Debug] checkInviteActiveUser 被调用:`, { inviterId });
       // 当被邀请的用户完成首次评价时，调用此方法
       await this.updateProgress(inviterId, 'invite_active_user', 1);
+      console.log(`✅ [Task Debug] invite_active_user 任务更新成功:`, { inviterId });
     } catch (error) {
-      console.error('触发 invite_active_user 任务失败:', error);
+      console.error('❌ [Task Debug] 触发 invite_active_user 任务失败:', error);
     }
   }
 
@@ -99,6 +116,8 @@ class TaskService {
   // 更新评价相关任务
   async updateReviewTasks(userId, comment = '') {
     try {
+      console.log(`🔍 [Task Debug] updateReviewTasks 被调用:`, { userId, commentLength: comment?.length });
+
       const { pool } = require('../config/database');
 
       // 获取用户的评价总数（包括当前这条）
@@ -106,6 +125,8 @@ class TaskService {
         'SELECT COUNT(*) as reviewCount FROM reviews WHERE user_id = ?',
         [userId]
       );
+
+      console.log(`🔍 [Task Debug] 用户评价总数:`, { userId, reviewCount });
 
       // first_review: 完成第一次评价
       if (reviewCount === 1) {
@@ -131,12 +152,21 @@ class TaskService {
       const User = require('../models/User');
       const user = await User.findById(userId);
 
+      console.log(`🔍 [Task Debug] 检查被邀请用户:`, {
+        userId,
+        userExists: !!user,
+        invitedBy: user?.invited_by,
+        reviewCount,
+        shouldTriggerInviteTask: user && user.invited_by && reviewCount === 1
+      });
+
       if (user && user.invited_by && reviewCount === 1) {
         // 触发邀请者的 invite_active_user 任务
+        console.log(`✅ [Task Debug] 触发 invite_active_user 任务:`, { inviterId: user.invited_by, invitedUserId: userId });
         await this.checkInviteActiveUser(user.invited_by);
       }
     } catch (error) {
-      console.error('更新评价任务失败:', error);
+      console.error('❌ [Task Debug] 更新评价任务失败:', error);
     }
   }
 
