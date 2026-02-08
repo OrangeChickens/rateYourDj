@@ -14,6 +14,7 @@ Page({
     reviewsLoading: false,
     isFavorited: false,
     isAdmin: false, // 是否是管理员
+    djNameFontSize: '72rpx', // DJ 名字字体大小（自适应）
 
     // 分页
     currentPage: 1,
@@ -119,7 +120,14 @@ Page({
         dj.performanceStars = generateStars(dj.performance_rating);
         dj.personalityStars = generateStars(dj.personality_rating);
 
-        this.setData({ dj, loading: false });
+        // 根据名字长度计算字体大小
+        const fontSize = this.calculateNameFontSize(dj.name);
+
+        this.setData({
+          dj,
+          loading: false,
+          djNameFontSize: fontSize
+        });
       } else {
         showToast(res.message);
         setTimeout(() => wx.navigateBack(), 1500);
@@ -898,5 +906,24 @@ Page({
     wx.navigateTo({
       url: `/pages/dj-upload/dj-upload?id=${this.data.djId}`
     });
+  },
+
+  // 根据名字长度计算字体大小
+  calculateNameFontSize(name) {
+    if (!name) return '64rpx';
+
+    const length = name.length;
+
+    if (length <= 6) {
+      return '72rpx';  // 短名字：大字号
+    } else if (length <= 10) {
+      return '56rpx';  // 中等名字：较小字号
+    } else if (length <= 14) {
+      return '48rpx';  // 较长名字：小字号
+    } else if (length <= 18) {
+      return '42rpx';  // 长名字：更小字号
+    } else {
+      return '36rpx';  // 超长名字：最小字号
+    }
   }
 });

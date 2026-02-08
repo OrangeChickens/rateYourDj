@@ -52,7 +52,7 @@
 }
 
 .dj-name {
-  font-size: 64rpx;
+  /* font-size 通过 JS 动态计算设置（根据名字长度） */
   font-weight: 700;
   color: #000;
   line-height: 1.1;
