@@ -75,6 +75,14 @@ class Comment {
     );
 
     console.log(`📝 顶级评论数量: ${comments.length}`);
+    if (comments.length > 0) {
+      console.log(`📝 顶级评论 ID 类型示例:`, {
+        id: comments[0].id,
+        idType: typeof comments[0].id,
+        parent_comment_id: comments[0].parent_comment_id,
+        parentIdType: typeof comments[0].parent_comment_id
+      });
+    }
 
     // 获取所有回复（不分页）
     const [replies] = await pool.query(
@@ -90,7 +98,9 @@ class Comment {
     if (replies.length > 0) {
       console.log(`💬 回复详情:`, replies.map(r => ({
         id: r.id,
+        idType: typeof r.id,
         parent_comment_id: r.parent_comment_id,
+        parentIdType: typeof r.parent_comment_id,
         content: r.content
       })));
     }
@@ -211,7 +221,8 @@ class Comment {
 
     for (const comment of flatComments) {
       // 匹配父评论（顶级评论的 parent_comment_id 为 null）
-      if (comment.parent_comment_id === parentId) {
+      // 使用 == 而不是 === 以允许数字/字符串类型的灵活匹配
+      if (comment.parent_comment_id == parentId) {
         const node = {
           ...comment,
           depth,
