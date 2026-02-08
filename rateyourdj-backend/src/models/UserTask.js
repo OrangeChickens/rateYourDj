@@ -125,6 +125,27 @@ class UserTask {
     try {
       await connection.beginTransaction();
 
+      console.log(`🎁 [Claim Debug] 开始领取奖励:`, { userId, taskCode });
+
+      // 先查询所有该任务的实例，用于调试
+      const [allTasks] = await connection.query(
+        `SELECT ut.*, tc.repeatable, tc.max_repeats
+         FROM user_tasks ut
+         JOIN task_configs tc ON ut.task_code = tc.task_code
+         WHERE ut.user_id = ? AND ut.task_code = ?
+         ORDER BY ut.repeat_count DESC`,
+        [userId, taskCode]
+      );
+
+      console.log(`🎁 [Claim Debug] 所有任务实例:`, allTasks.map(t => ({
+        id: t.id,
+        repeat_count: t.repeat_count,
+        progress: t.progress,
+        target: t.target,
+        completed: t.completed,
+        reward_claimed: t.reward_claimed
+      })));
+
       // 获取任务
       const [tasks] = await connection.query(
         `SELECT ut.*, tc.repeatable, tc.max_repeats
@@ -136,6 +157,13 @@ class UserTask {
          LIMIT 1`,
         [userId, taskCode]
       );
+
+      console.log(`🎁 [Claim Debug] 可领取的任务:`, tasks.length > 0 ? {
+        id: tasks[0].id,
+        repeat_count: tasks[0].repeat_count,
+        completed: tasks[0].completed,
+        reward_claimed: tasks[0].reward_claimed
+      } : '无');
 
       if (tasks.length === 0) {
         throw new Error('任务未完成或已领取奖励');
