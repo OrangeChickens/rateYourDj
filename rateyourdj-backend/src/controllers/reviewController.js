@@ -1,6 +1,7 @@
 const Review = require('../models/Review');
 const DJ = require('../models/DJ');
 const { updateDJRatings } = require('../services/ratingService');
+const TaskService = require('../services/taskService');
 
 // 创建评论
 async function createReview(req, res, next) {
@@ -59,6 +60,11 @@ async function createReview(req, res, next) {
 
     // 更新DJ评分
     await updateDJRatings(dj_id);
+
+    // 更新任务进度（异步，不阻塞响应）
+    TaskService.updateReviewTasks(req.user.userId, comment).catch(err => {
+      console.error('更新任务进度失败:', err);
+    });
 
     res.status(201).json({
       success: true,
@@ -129,7 +135,23 @@ async function markReviewHelpful(req, res, next) {
   try {
     const { id } = req.params;
 
+    // 获取评论信息，以便更新评论作者的任务进度
+    const review = await Review.findById(id);
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: '评论不存在'
+      });
+    }
+
     await Review.interact(id, req.user.userId, 'helpful');
+
+    // 更新评论作者的任务进度（异步，不阻塞响应）
+    if (review.user_id !== req.user.userId) {
+      TaskService.updateHelpfulTasks(review.user_id).catch(err => {
+        console.error('更新任务进度失败:', err);
+      });
+    }
 
     res.json({
       success: true,

@@ -1,0 +1,280 @@
+/* pages/my-invites/my-invites.wxss - NTS Style */
+
+.invites-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding: 32rpx;
+}
+
+/* 头部 */
+.invites-header {
+  background: #FFF;
+  border: 3rpx solid #000;
+  padding: 48rpx;
+  margin-bottom: 32rpx;
+}
+
+.quota-card {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.quota-label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 16rpx;
+}
+
+.quota-number {
+  display: block;
+  font-size: 96rpx;
+  font-weight: 900;
+  color: #000;
+  line-height: 1;
+  margin-bottom: 8rpx;
+}
+
+.quota-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  font-weight: 500;
+}
+
+.generate-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #000;
+  color: #FFF;
+  font-size: 28rpx;
+  font-weight: 700;
+  border: none;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-bottom: 24rpx;
+}
+
+.generate-btn[disabled] {
+  background: #CCC;
+  color: #999;
+}
+
+.generate-btn:active:not([disabled]) {
+  opacity: 0.8;
+}
+
+.quota-notice {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 24rpx;
+  background: #FFFAF0;
+  border: 2rpx solid #FFD700;
+}
+
+.notice-icon {
+  font-size: 32rpx;
+}
+
+.notice-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.go-tasks-btn {
+  padding: 12rpx 24rpx;
+  background: #000;
+  color: #FFF;
+  font-size: 22rpx;
+  font-weight: 700;
+  border: none;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.go-tasks-btn:active {
+  opacity: 0.8;
+}
+
+/* 邀请码列表 */
+.codes-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 24rpx;
+  padding-left: 8rpx;
+  border-left: 6rpx solid #000;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 120rpx 48rpx;
+  background: #FFF;
+  border: 2rpx solid #E0E0E0;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 96rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 12rpx;
+}
+
+.empty-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 邀请码卡片 */
+.code-card {
+  background: #FFF;
+  border: 2rpx solid #000;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+}
+
+.code-card.used {
+  opacity: 0.6;
+  border-color: #CCC;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #E0E0E0;
+}
+
+.code-text {
+  font-size: 32rpx;
+  font-weight: 900;
+  color: #000;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2rpx;
+}
+
+.code-status {
+  padding: 8rpx 16rpx;
+  background: #F5F5F5;
+  border: 2rpx solid #000;
+  font-size: 20rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.code-card.used .code-status {
+  background: #000;
+  color: #FFF;
+}
+
+.code-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.info-item {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 使用记录 */
+.used-by-section {
+  background: #F5F5F5;
+  padding: 20rpx;
+  margin-bottom: 24rpx;
+  border: 2rpx solid #E0E0E0;
+}
+
+.used-by-title {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 16rpx;
+}
+
+.used-by-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #E0E0E0;
+}
+
+.used-by-item:last-child {
+  border-bottom: none;
+}
+
+.user-nickname {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+}
+
+.user-time {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 操作按钮 */
+.code-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 72rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: none;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.action-btn.copy {
+  background: #FFF;
+  color: #000;
+  border: 2rpx solid #000;
+}
+
+.action-btn.share {
+  background: #000;
+  color: #FFF;
+}
+
+.action-btn:active {
+  opacity: 0.8;
+}

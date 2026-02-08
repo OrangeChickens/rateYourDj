@@ -1,0 +1,64 @@
+<!-- pages/my-invites/my-invites.wxml -->
+<view class="invites-container">
+  <!-- 头部 -->
+  <view class="invites-header">
+    <view class="quota-card">
+      <text class="quota-label">可用额度</text>
+      <text class="quota-number">{{inviteQuota}}</text>
+      <text class="quota-hint">个邀请码</text>
+    </view>
+
+    <button class="generate-btn" bindtap="generateCode" disabled="{{generating || inviteQuota <= 0}}">
+      {{generating ? '生成中...' : '生成新邀请码'}}
+    </button>
+
+    <view class="quota-notice" wx:if="{{inviteQuota <= 0}}">
+      <text class="notice-icon">💡</text>
+      <text class="notice-text">完成任务获得更多邀请码额度</text>
+      <button class="go-tasks-btn" bindtap="goToTasks">查看任务</button>
+    </view>
+  </view>
+
+  <!-- 邀请码列表 -->
+  <view class="codes-section">
+    <view class="section-title">我的邀请码</view>
+
+    <view wx:if="{{codes.length === 0}}" class="empty-state">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">还没有生成邀请码</text>
+      <text class="empty-hint">点击上方按钮生成</text>
+    </view>
+
+    <view wx:for="{{codes}}" wx:key="code" class="code-card {{item.status}}">
+      <view class="code-header">
+        <text class="code-text">{{item.code}}</text>
+        <view class="code-status">
+          <text wx:if="{{item.status === 'used'}}">✓ 已使用</text>
+          <text wx:else>可用</text>
+        </view>
+      </view>
+
+      <view class="code-info">
+        <text class="info-item">使用次数: {{item.usedCount}}/{{item.usageLimit}}</text>
+        <text class="info-item">创建时间: {{item.createdAt}}</text>
+      </view>
+
+      <view wx:if="{{item.usedBy && item.usedBy.length > 0}}" class="used-by-section">
+        <text class="used-by-title">被谁使用:</text>
+        <view wx:for="{{item.usedBy}}" wx:for-item="user" wx:key="usedAt" class="used-by-item">
+          <text class="user-nickname">{{user.nickname}}</text>
+          <text class="user-time">{{user.usedAt}}</text>
+        </view>
+      </view>
+
+      <view class="code-actions">
+        <button class="action-btn copy" bindtap="copyCode" data-code="{{item.code}}">
+          复制
+        </button>
+        <button class="action-btn share" bindtap="shareCode" data-code="{{item.code}}">
+          分享
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,276 @@
+/* pages/tasks/tasks.wxss - NTS Style */
+
+.tasks-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 头部状态 */
+.tasks-header {
+  background: #FFF;
+  border-bottom: 3rpx solid #000;
+  padding: 48rpx;
+}
+
+.user-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.status-icon {
+  font-size: 64rpx;
+  margin-right: 24rpx;
+}
+
+.status-info {
+  flex: 1;
+}
+
+.status-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 8rpx;
+}
+
+.status-number {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #000;
+  line-height: 1;
+}
+
+.manage-btn {
+  padding: 16rpx 32rpx;
+  background: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: none;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.manage-btn:active {
+  opacity: 0.8;
+}
+
+.invite-stats {
+  display: flex;
+  gap: 32rpx;
+  padding-top: 32rpx;
+  border-top: 2rpx solid #E0E0E0;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 8rpx;
+}
+
+.stat-value {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 900;
+  color: #000;
+}
+
+/* 任务列表 */
+.tasks-list {
+  flex: 1;
+  padding: 32rpx 32rpx 0 32rpx;
+}
+
+/* 任务分类 */
+.task-section {
+  margin-bottom: 48rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.section-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.section-title {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.vip-badge {
+  padding: 6rpx 16rpx;
+  background: #FFD700;
+  color: #000;
+  font-size: 20rpx;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 任务卡片 */
+.task-card {
+  background: #FFF;
+  border: 2rpx solid #000;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.task-card:active {
+  transform: translateY(2rpx);
+  opacity: 0.9;
+}
+
+.task-card.completed {
+  opacity: 0.6;
+  border-color: #CCC;
+}
+
+.task-card.vip {
+  border-color: #FFD700;
+  background: linear-gradient(135deg, #FFF 0%, #FFFAF0 100%);
+}
+
+.task-icon {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+.task-content {
+  flex: 1;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.task-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 0.5rpx;
+}
+
+.task-reward {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 16rpx;
+  background: #F5F5F5;
+  border: 2rpx solid #000;
+}
+
+.reward-icon {
+  font-size: 20rpx;
+}
+
+.reward-amount {
+  font-size: 22rpx;
+  font-weight: 900;
+  color: #000;
+}
+
+.task-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  line-height: 1.4;
+}
+
+.task-progress {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 12rpx;
+  background: #E0E0E0;
+  position: relative;
+}
+
+.progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #000;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #000;
+  white-space: nowrap;
+}
+
+/* 任务状态徽章 */
+.task-badge {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  border: 2rpx solid #000;
+}
+
+.task-badge.claim {
+  background: #FFD700;
+  color: #000;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.task-badge.completed {
+  background: #000;
+  color: #FFF;
+}
+
+.task-badge.pending {
+  background: #FFF;
+  color: #000;
+}

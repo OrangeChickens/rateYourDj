@@ -2,6 +2,9 @@
   "pages": [
     "pages/index/index",
     "pages/login/login",
+    "pages/waitlist/waitlist",
+    "pages/tasks/tasks",
+    "pages/my-invites/my-invites",
     "pages/search/search",
     "pages/dj-detail/dj-detail",
     "pages/review-create/review-create",

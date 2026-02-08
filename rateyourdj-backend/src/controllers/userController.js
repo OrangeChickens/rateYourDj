@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Review = require('../models/Review');
 const { pool } = require('../config/database');
+const TaskService = require('../services/taskService');
 
 // 获取用户资料
 async function getUserProfile(req, res, next) {
@@ -108,6 +109,11 @@ async function toggleFavorite(req, res, next) {
         'INSERT INTO favorites (user_id, dj_id) VALUES (?, ?)',
         [req.user.userId, djId]
       );
+
+      // 更新任务进度（异步，不阻塞响应）
+      TaskService.updateFavoriteTasks(req.user.userId).catch(err => {
+        console.error('更新任务进度失败:', err);
+      });
 
       res.json({
         success: true,

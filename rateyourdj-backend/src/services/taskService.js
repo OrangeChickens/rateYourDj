@@ -95,6 +95,75 @@ class TaskService {
       console.error('触发 helpful_received 任务失败:', error);
     }
   }
+
+  // 更新评价相关任务
+  async updateReviewTasks(userId, comment = '') {
+    try {
+      const { pool } = require('../config/database');
+
+      // 获取用户的评价总数（包括当前这条）
+      const [[{ reviewCount }]] = await pool.query(
+        'SELECT COUNT(*) as reviewCount FROM reviews WHERE user_id = ?',
+        [userId]
+      );
+
+      // first_review: 完成第一次评价
+      if (reviewCount === 1) {
+        await this.updateProgress(userId, 'first_review', 1);
+      }
+
+      // reviews_3: 评价 3 个 DJ
+      if (reviewCount <= 3) {
+        await this.updateProgress(userId, 'reviews_3', reviewCount);
+      }
+
+      // reviews_10: 评价 10 个 DJ
+      if (reviewCount <= 10) {
+        await this.updateProgress(userId, 'reviews_10', reviewCount);
+      }
+
+      // quality_review: 撰写 30 字以上的优质评价（可重复）
+      if (comment && comment.length >= 30) {
+        await this.updateProgress(userId, 'quality_review', 1);
+      }
+
+      // 检查是否是被邀请用户的首次评价
+      const User = require('../models/User');
+      const user = await User.findById(userId);
+
+      if (user && user.invited_by && reviewCount === 1) {
+        // 触发邀请者的 invite_active_user 任务
+        await this.checkInviteActiveUser(user.invited_by);
+      }
+    } catch (error) {
+      console.error('更新评价任务失败:', error);
+    }
+  }
+
+  // 更新收藏相关任务
+  async updateFavoriteTasks(userId) {
+    try {
+      const { pool } = require('../config/database');
+
+      // 获取用户的收藏总数
+      const [[{ favoriteCount }]] = await pool.query(
+        'SELECT COUNT(*) as favoriteCount FROM favorites WHERE user_id = ?',
+        [userId]
+      );
+
+      // favorite_5: 收藏 5 个 DJ
+      if (favoriteCount <= 5) {
+        await this.updateProgress(userId, 'favorite_5', favoriteCount);
+      }
+    } catch (error) {
+      console.error('更新收藏任务失败:', error);
+    }
+  }
+
+  // 更新 helpful 相关任务（别名方法，调用 checkHelpfulReceived）
+  async updateHelpfulTasks(userId) {
+    return this.checkHelpfulReceived(userId);
+  }
 }
 
 module.exports = new TaskService();

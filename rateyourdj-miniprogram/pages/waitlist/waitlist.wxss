@@ -1,0 +1,284 @@
+/* pages/waitlist/waitlist.wxss - NTS Style */
+
+.waitlist-container {
+  min-height: 100vh;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  padding: 80rpx 48rpx;
+}
+
+/* Logo & 标题 */
+.waitlist-header {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.app-name {
+  display: block;
+  font-size: 72rpx;
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 4rpx;
+  margin-bottom: 20rpx;
+}
+
+.beta-badge {
+  display: inline-block;
+  padding: 8rpx 24rpx;
+  background: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+}
+
+/* 欢迎信息 */
+.welcome-section {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.welcome-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+.welcome-desc {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+}
+
+/* 排队位置卡片 */
+.position-card {
+  background: #F5F5F5;
+  border: 3rpx solid #000;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.position-label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+}
+
+.position-number {
+  display: block;
+  font-size: 96rpx;
+  font-weight: 900;
+  color: #000;
+  line-height: 1;
+  margin-bottom: 20rpx;
+}
+
+.position-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  font-weight: 500;
+}
+
+/* 分割线 */
+.divider {
+  height: 2rpx;
+  background: #E0E0E0;
+  margin: 60rpx 0;
+}
+
+/* 访问权限区域 */
+.access-section {
+  margin-bottom: 60rpx;
+}
+
+.access-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 32rpx;
+  border-bottom: 3rpx solid #000;
+  padding-bottom: 16rpx;
+}
+
+.invite-code-btn {
+  width: 100%;
+  height: 120rpx;
+  background: #000;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40rpx;
+  transition: opacity 0.2s;
+}
+
+.invite-code-btn:active {
+  opacity: 0.8;
+}
+
+.btn-icon {
+  font-size: 48rpx;
+}
+
+.btn-text {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FFF;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+}
+
+.btn-arrow {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #FFF;
+}
+
+/* 额外信息区域 */
+.info-section {
+  margin-bottom: 40rpx;
+}
+
+.info-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 24rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.contact-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  transition: all 0.2s;
+}
+
+.contact-btn:active {
+  background: #F5F5F5;
+}
+
+.contact-btn .btn-icon {
+  font-size: 36rpx;
+}
+
+.contact-btn .btn-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 1rpx;
+}
+
+/* 邀请码输入弹窗 */
+.invite-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.invite-modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  width: 600rpx;
+  background: #FFF;
+  padding: 60rpx 48rpx;
+  border: 3rpx solid #000;
+}
+
+.modal-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-bottom: 40rpx;
+  border-bottom: 2rpx solid #000;
+  padding-bottom: 20rpx;
+}
+
+.invite-input {
+  width: 100%;
+  height: 88rpx;
+  background: #F5F5F5;
+  border: 2rpx solid #000;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-bottom: 40rpx;
+  box-sizing: border-box;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 20rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 88rpx;
+  border: none;
+  border-radius: 0;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.modal-btn.cancel {
+  background: #F5F5F5;
+  color: #000;
+  border: 2rpx solid #000;
+}
+
+.modal-btn.confirm {
+  background: #000;
+  color: #FFF;
+}
+
+.modal-btn:active {
+  opacity: 0.8;
+}

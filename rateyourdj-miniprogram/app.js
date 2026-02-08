@@ -24,6 +24,9 @@ App({
 
     // 初始化语言
     this.initLanguage();
+
+    // 检查用户访问级别
+    this.checkAccessLevel();
   },
 
   // 检查登录状态
@@ -110,6 +113,63 @@ App({
         }
       });
     });
+  },
+
+  // 检查用户访问级别
+  async checkAccessLevel() {
+    // 只在用户已登录时检查
+    if (!this.globalData.token) {
+      return;
+    }
+
+    try {
+      const res = await this.request({
+        url: '/auth/check-access',
+        method: 'GET',
+        needAuth: true
+      });
+
+      if (res.success) {
+        const accessLevel = res.access_level;
+
+        // 如果用户是 waitlist 状态，且当前不在 waitlist 页面，则跳转
+        if (accessLevel === 'waitlist') {
+          try {
+            const pages = getCurrentPages();
+            const currentPage = pages[pages.length - 1];
+            const currentRoute = currentPage ? currentPage.route : '';
+
+            // 如果不在 waitlist 页面，则跳转
+            if (currentRoute !== 'pages/waitlist/waitlist') {
+              wx.reLaunch({
+                url: '/pages/waitlist/waitlist'
+              });
+            }
+          } catch (err) {
+            // getCurrentPages() 可能在某些时机不可用，直接跳转
+            wx.reLaunch({
+              url: '/pages/waitlist/waitlist'
+            });
+          }
+        }
+
+        // 更新 globalData 中的用户信息
+        if (this.globalData.userInfo) {
+          this.globalData.userInfo.access_level = accessLevel;
+        }
+      }
+    } catch (error) {
+      console.error('检查访问级别失败:', error);
+    }
+  },
+
+  // 初始化语言
+  initLanguage() {
+    // 从本地存储读取语言设置
+    const savedLang = wx.getStorageSync('language');
+    if (savedLang) {
+      i18n.setLanguage(savedLang);
+    }
   },
 
   // 退出登录
