@@ -1,5 +1,5 @@
 // models/Comment.js
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 
 class Comment {
   /**
