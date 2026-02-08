@@ -233,30 +233,37 @@ Page({
         wx.setStorageSync('token', apiRes.data.token);
         wx.setStorageSync('userInfo', apiRes.data.user);
 
-        wx.showToast({
-          title: '登录成功',
-          icon: 'success'
-        });
-
         // 根据用户的访问级别决定跳转
-        setTimeout(() => {
-          const accessLevel = apiRes.data.user.access_level;
-          console.log('🔍 用户访问级别:', accessLevel);
+        const accessLevel = apiRes.data.user.access_level;
+        console.log('🔍 用户访问级别:', accessLevel);
 
-          if (accessLevel === 'waitlist') {
-            // Waitlist 用户跳转到 waitlist 页面
-            console.log('🚫 跳转到 Waitlist 页面');
+        if (accessLevel === 'waitlist') {
+          // Waitlist 用户跳转到 waitlist 页面
+          console.log('🚫 跳转到 Waitlist 页面');
+          wx.showToast({
+            title: '登录成功',
+            icon: 'success',
+            duration: 1000
+          });
+          setTimeout(() => {
             wx.reLaunch({
               url: '/pages/waitlist/waitlist'
             });
-          } else {
-            // Full 访问用户跳转到首页
-            console.log('✅ 跳转到首页');
+          }, 1000);
+        } else {
+          // Full 访问用户跳转到首页
+          console.log('✅ 跳转到首页');
+          wx.showToast({
+            title: '登录成功',
+            icon: 'success',
+            duration: 1000
+          });
+          setTimeout(() => {
             wx.switchTab({
               url: '/pages/index/index'
             });
-          }
-        }, 1500);
+          }, 1000);
+        }
       } else {
         throw new Error(apiRes.message || '登录失败');
       }
