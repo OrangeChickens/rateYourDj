@@ -246,7 +246,7 @@ router.post('/verify-invite-code', verifyInviteCode);
 ### 3. 数据库准备
 
 #### 生成审核员邀请码
-**文件**：`rateyourdj-backend/database_migrations/create_reviewer_invite_code.sql`
+**文件**：`rateyourdj-backend/migrations/002_create_reviewer_invite_code.sql`
 
 ```sql
 INSERT INTO invite_codes (
@@ -265,9 +265,19 @@ INSERT INTO invite_codes (
 ```
 
 **执行命令**：
+
+**方法1: 使用 RDS 同步脚本（推荐，适用于生产环境）**
 ```bash
 cd rateyourdj-backend
-mysql -u root -p rateyourdj < database_migrations/create_reviewer_invite_code.sql
+# 确保 .env.production 已配置 RDS 连接信息
+./scripts/sync-to-rds.sh
+# 脚本会自动应用所有未应用的迁移（包括 002_create_reviewer_invite_code.sql）
+```
+
+**方法2: 手动导入（仅用于本地测试）**
+```bash
+cd rateyourdj-backend
+mysql -u root -p rateyourdj < migrations/002_create_reviewer_invite_code.sql
 ```
 
 **验证**：
@@ -477,8 +487,8 @@ rateyourdj-miniprogram/pages/agreement/
 ├── agreement.wxml        # 协议页面布局
 └── agreement.wxss        # 协议页面样式
 
-rateyourdj-backend/database_migrations/
-└── create_reviewer_invite_code.sql  # 审核员邀请码生成脚本
+rateyourdj-backend/migrations/
+└── 002_create_reviewer_invite_code.sql  # 审核员邀请码迁移脚本
 ```
 
 ### 修改文件
