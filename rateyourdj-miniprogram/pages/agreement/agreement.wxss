@@ -1,0 +1,59 @@
+/* pages/agreement/agreement.wxss - NTS 风格 */
+
+.agreement-container {
+  min-height: 100vh;
+  background: #FFF;
+  padding: 48rpx 32rpx 80rpx;
+  box-sizing: border-box;
+}
+
+.content {
+  height: 100%;
+}
+
+.title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #000;
+  margin-bottom: 48rpx;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  border-bottom: 3rpx solid #000;
+  padding-bottom: 24rpx;
+}
+
+.section {
+  margin-bottom: 48rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 24rpx;
+  letter-spacing: 1rpx;
+}
+
+.text {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 16rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.update-time {
+  margin-top: 64rpx;
+  padding-top: 32rpx;
+  border-top: 2rpx solid #E0E0E0;
+  text-align: center;
+}
+
+.update-time text {
+  font-size: 20rpx;
+  color: #999;
+  font-weight: 600;
+}

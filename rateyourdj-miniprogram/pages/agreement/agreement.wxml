@@ -1,0 +1,103 @@
+<view class="agreement-container">
+  <scroll-view scroll-y class="content">
+    <!-- 用户服务协议 -->
+    <view wx:if="{{type === 'user'}}">
+      <text class="title">用户服务协议</text>
+
+      <view class="section">
+        <text class="section-title">1. 服务条款的接受</text>
+        <text class="text">欢迎使用烂u盘DJ评分平台。在使用本服务前，请您仔细阅读并理解本协议的全部内容。您使用本服务即表示您已阅读、理解并同意接受本协议的全部内容。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">2. 服务内容</text>
+        <text class="text">烂u盘为用户提供DJ评分、评价分享、收藏管理等服务。我们保留随时修改、中断或终止部分或全部服务的权利。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">3. 用户行为规范</text>
+        <text class="text">用户在使用本服务时，应遵守中华人民共和国相关法律法规，不得发布违法、不当或侵犯他人权益的内容。我们保留删除违规内容和封禁账号的权利。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">4. 知识产权</text>
+        <text class="text">用户发布的评价内容归用户所有，但用户授予烂u盘免费使用、展示、传播该内容的权利。平台其他内容的知识产权归烂u盘所有。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">5. 免责声明</text>
+        <text class="text">本平台仅提供信息展示服务，用户评价仅代表个人观点，不代表平台立场。我们不对评价内容的真实性、准确性、完整性做任何保证。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">6. 协议修改</text>
+        <text class="text">我们保留随时修改本协议的权利，修改后的协议将在平台公布。您继续使用服务即表示同意修改后的协议。</text>
+      </view>
+
+      <view class="update-time">
+        <text>最后更新时间：2026年2月</text>
+      </view>
+    </view>
+
+    <!-- 隐私政策 -->
+    <view wx:if="{{type === 'privacy'}}">
+      <text class="title">隐私政策</text>
+
+      <view class="section">
+        <text class="section-title">1. 信息收集</text>
+        <text class="text">我们仅收集您主动提供的信息，包括：</text>
+        <text class="text">• 微信昵称和头像（用于显示身份）</text>
+        <text class="text">• 您发布的评价内容</text>
+        <text class="text">• 您的收藏和互动记录</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">2. 信息使用</text>
+        <text class="text">我们使用您的信息用于：</text>
+        <text class="text">• 提供DJ评分和社区服务</text>
+        <text class="text">• 改进平台功能和用户体验</text>
+        <text class="text">• 与您沟通服务相关事宜</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">3. 信息保护</text>
+        <text class="text">我们采取合理的安全措施保护您的个人信息，防止未经授权的访问、使用或泄露。我们不会向第三方出售、出租或分享您的个人信息，除非：</text>
+        <text class="text">• 获得您的明确同意</text>
+        <text class="text">• 法律法规要求</text>
+        <text class="text">• 保护平台和用户安全所必需</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">4. Cookie和类似技术</text>
+        <text class="text">我们使用微信小程序提供的存储功能来保存您的登录状态和偏好设置，以提供更好的用户体验。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">5. 您的权利</text>
+        <text class="text">您有权：</text>
+        <text class="text">• 查看和更新您的个人信息</text>
+        <text class="text">• 删除您发布的评价内容</text>
+        <text class="text">• 注销您的账户</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">6. 未成年人保护</text>
+        <text class="text">我们重视未成年人的隐私保护。如果您是未成年人，请在监护人的陪同下阅读本政策，并在监护人同意后使用我们的服务。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">7. 政策更新</text>
+        <text class="text">我们可能会不时更新本隐私政策。更新后的政策将在平台公布，请您定期查看。</text>
+      </view>
+
+      <view class="section">
+        <text class="section-title">8. 联系我们</text>
+        <text class="text">如您对本隐私政策有任何疑问或建议，请通过平台"设置"页面联系我们。</text>
+      </view>
+
+      <view class="update-time">
+        <text>最后更新时间：2026年2月</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

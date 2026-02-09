@@ -10,7 +10,8 @@ Page({
     nickname: '',
     uploading: false,
     isExistingUser: false,
-    avatarTip: '选择头像（可选）' // 动态提示文案
+    avatarTip: '选择头像（可选）', // 动态提示文案
+    privacyChecked: false // 隐私政策是否已同意
   },
 
   async onLoad(options) {
@@ -121,6 +122,27 @@ Page({
     });
   },
 
+  // 切换隐私政策同意状态
+  onPrivacyCheck() {
+    this.setData({
+      privacyChecked: !this.data.privacyChecked
+    });
+  },
+
+  // 跳转到用户服务协议
+  goToUserAgreement() {
+    wx.navigateTo({
+      url: '/pages/agreement/agreement?type=user'
+    });
+  },
+
+  // 跳转到隐私政策
+  goToPrivacyPolicy() {
+    wx.navigateTo({
+      url: '/pages/agreement/agreement?type=privacy'
+    });
+  },
+
   // 上传头像到OSS
   async uploadAvatarToOSS(avatarUrl) {
     return new Promise((resolve, reject) => {
@@ -158,11 +180,19 @@ Page({
 
   // 登录
   async handleLogin() {
-    const { uploadedAvatarUrl, existingAvatarUrl, nickname, uploading, isExistingUser } = this.data;
+    const { uploadedAvatarUrl, existingAvatarUrl, nickname, uploading, isExistingUser, privacyChecked } = this.data;
 
     if (!nickname) {
       wx.showToast({
         title: '请输入昵称',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!privacyChecked) {
+      wx.showToast({
+        title: '请先同意用户协议和隐私政策',
         icon: 'none'
       });
       return;
@@ -216,6 +246,13 @@ Page({
       }
       // 老用户没上传新头像，不传avatarUrl字段
 
+      // 邀请码逻辑：如果存在 pendingInviteCode，携带给后端进行激活
+      const pendingInviteCode = wx.getStorageSync('pendingInviteCode');
+      if (pendingInviteCode) {
+        loginData.inviteCode = pendingInviteCode;
+        console.log('🎫 携带邀请码登录:', pendingInviteCode);
+      }
+
       // 第三步：发送到后端登录
       const apiRes = await app.request({
         url: '/auth/login',
@@ -233,37 +270,24 @@ Page({
         wx.setStorageSync('token', apiRes.data.token);
         wx.setStorageSync('userInfo', apiRes.data.user);
 
-        // 根据用户的访问级别决定跳转
-        const accessLevel = apiRes.data.user.access_level;
-        console.log('🔍 用户访问级别:', accessLevel);
-
-        if (accessLevel === 'waitlist') {
-          // Waitlist 用户跳转到 waitlist 页面
-          console.log('🚫 跳转到 Waitlist 页面');
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success',
-            duration: 1000
-          });
-          setTimeout(() => {
-            wx.reLaunch({
-              url: '/pages/waitlist/waitlist'
-            });
-          }, 1000);
-        } else {
-          // Full 访问用户跳转到首页
-          console.log('✅ 跳转到首页');
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success',
-            duration: 1000
-          });
-          setTimeout(() => {
-            wx.switchTab({
-              url: '/pages/index/index'
-            });
-          }, 1000);
+        // 清除 pendingInviteCode（已经激活）
+        if (pendingInviteCode) {
+          wx.removeStorageSync('pendingInviteCode');
+          console.log('✅ 邀请码已激活并清除');
         }
+
+        // 登录成功，直接跳转首页（邀请码已激活，都是 full access）
+        console.log('✅ 登录成功，跳转到首页');
+        wx.showToast({
+          title: '登录成功',
+          icon: 'success',
+          duration: 1000
+        });
+        setTimeout(() => {
+          wx.switchTab({
+            url: '/pages/index/index'
+          });
+        }, 1000);
       } else {
         throw new Error(apiRes.message || '登录失败');
       }

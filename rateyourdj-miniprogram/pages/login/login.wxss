@@ -123,6 +123,32 @@
   height: 120rpx;
 }
 
+/* 隐私政策区域 */
+.privacy-section {
+  margin-bottom: 48rpx;
+}
+
+.privacy-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.privacy-text {
+  flex: 1;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.6;
+  letter-spacing: 0.5rpx;
+}
+
+.privacy-text .link {
+  color: #000;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 /* 登录按钮 */
 .login-btn {
   width: 100%;
@@ -136,7 +162,6 @@
   border: 2rpx solid #000;
   text-transform: uppercase;
   letter-spacing: 2rpx;
-  margin-bottom: 32rpx;
   box-sizing: border-box;
 }
 
@@ -148,16 +173,4 @@
   background-color: #CCCCCC;
   border-color: #CCCCCC;
   color: #666;
-}
-
-/* 提示文字 */
-.tips {
-  text-align: center;
-}
-
-.tips text {
-  font-size: 20rpx;
-  font-weight: 600;
-  color: #999;
-  letter-spacing: 0.5rpx;
 }

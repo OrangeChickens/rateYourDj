@@ -13,7 +13,8 @@
     "pages/settings/settings",
     "pages/city-list/city-list",
     "pages/dj-upload/dj-upload",
-    "pages/all-reviews/all-reviews"
+    "pages/all-reviews/all-reviews",
+    "pages/agreement/agreement"
   ],
   "window": {
     "backgroundTextStyle": "light",

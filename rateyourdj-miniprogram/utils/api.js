@@ -12,6 +12,15 @@ export const authAPI = {
       method: 'POST',
       data: { code }
     });
+  },
+
+  // 验证邀请码（公开接口，无需登录）
+  verifyInviteCode(code) {
+    return app.request({
+      url: '/auth/verify-invite-code',
+      method: 'POST',
+      data: { code }
+    });
   }
 };
 

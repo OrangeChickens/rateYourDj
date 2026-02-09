@@ -7,7 +7,7 @@ const { generateToken } = require('../utils/jwt');
 // 微信登录
 async function wechatLogin(req, res, next) {
   try {
-    const { code, userInfo } = req.body;
+    const { code, userInfo, inviteCode } = req.body;
 
     if (!code) {
       return res.status(400).json({
@@ -21,8 +21,10 @@ async function wechatLogin(req, res, next) {
 
     // 查询或创建用户
     let user = await User.findByOpenid(openid);
+    let isNewUser = false;
 
     if (!user) {
+      isNewUser = true;
       // 创建新用户 - 默认为 waitlist 状态
       const pool = require('../config/database');
 
@@ -53,6 +55,24 @@ async function wechatLogin(req, res, next) {
       }
 
       user = await User.update(user.id, updateData);
+    }
+
+    // 如果提供了邀请码且用户是新用户或waitlist状态，自动激活
+    if (inviteCode && (isNewUser || user.access_level === 'waitlist')) {
+      try {
+        console.log(`🎫 用户 ${user.id} 使用邀请码登录: ${inviteCode}`);
+        await InviteCode.use(inviteCode, user.id);
+
+        // 初始化用户任务
+        await UserTask.initializeForUser(user.id);
+
+        // 重新获取用户信息（access_level已更新为full）
+        user = await User.findById(user.id);
+        console.log(`✅ 邀请码激活成功，用户访问级别: ${user.access_level}`);
+      } catch (error) {
+        console.error('❌ 邀请码激活失败:', error.message);
+        // 邀请码激活失败不影响登录，用户仍为waitlist状态
+      }
     }
 
     // 生成 JWT token
@@ -198,4 +218,36 @@ async function checkAccess(req, res, next) {
   }
 }
 
-module.exports = { wechatLogin, checkUser, useInviteCode, checkAccess };
+// 验证邀请码（公开接口，无需登录）
+async function verifyInviteCode(req, res, next) {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: '请输入邀请码'
+      });
+    }
+
+    // 验证邀请码
+    const validation = await InviteCode.validate(code);
+
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: validation.message
+      });
+    }
+
+    res.json({
+      success: true,
+      message: '邀请码有效'
+    });
+  } catch (error) {
+    console.error('验证邀请码失败:', error);
+    next(error);
+  }
+}
+
+module.exports = { wechatLogin, checkUser, useInviteCode, checkAccess, verifyInviteCode };
