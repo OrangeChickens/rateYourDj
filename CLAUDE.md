@@ -4,6 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## ⚠️ CRITICAL RULES - READ FIRST
+
+**THESE RULES OVERRIDE ALL OTHER BEHAVIORS:**
+
+1. **GIT PUSH POLICY - ABSOLUTELY FORBIDDEN TO AUTO-PUSH**
+   - ✅ Always run `git add` and `git commit` when work is complete
+   - ❌ **NEVER EVER run `git push` without explicit user approval**
+   - ✅ After committing, ALWAYS say: "已提交到本地。需要我 push 到远程仓库吗？"
+   - ✅ Only push when user explicitly says "push" / "推送" / "yes"
+   - ⚠️ User has complained about this violation multiple times - THIS IS CRITICAL
+
+2. **CONFIRMATION BEFORE DESTRUCTIVE OPERATIONS**
+   - Always ask before: deleting files, force pushing, rebasing, resetting
+
+---
+
 ## Project Overview
 
 RateYourDJ is a full-stack DJ rating platform with a Node.js/Express backend and WeChat Mini-Program frontend. Users can browse DJs, write multi-dimensional reviews, and manage favorites.
