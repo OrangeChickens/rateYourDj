@@ -57,6 +57,17 @@ async function wechatLogin(req, res, next) {
       user = await User.update(user.id, updateData);
     }
 
+    // 邀请码激活逻辑 - 详细日志
+    console.log(`\n========== 邀请码激活检查 ==========`);
+    console.log(`inviteCode: ${inviteCode || '(无)'}`);
+    console.log(`isNewUser: ${isNewUser}`);
+    console.log(`user.id: ${user.id}`);
+    console.log(`user.access_level: ${user.access_level}`);
+    console.log(`user.invite_code_used: ${user.invite_code_used || '(无)'}`);
+    console.log(`条件1 (inviteCode): ${!!inviteCode}`);
+    console.log(`条件2 (isNewUser || access_level=waitlist): ${isNewUser || user.access_level === 'waitlist'}`);
+    console.log(`=====================================\n`);
+
     // 如果提供了邀请码且用户是新用户或waitlist状态，自动激活
     if (inviteCode && (isNewUser || user.access_level === 'waitlist')) {
       // 检查用户是否已经使用过邀请码
@@ -65,6 +76,8 @@ async function wechatLogin(req, res, next) {
       } else {
         try {
           console.log(`🎫 用户 ${user.id} 使用邀请码登录: ${inviteCode}`);
+          console.log(`📞 调用 InviteCode.use(${inviteCode}, ${user.id})`);
+
           await InviteCode.use(inviteCode, user.id);
 
           // 初始化用户任务
@@ -72,13 +85,19 @@ async function wechatLogin(req, res, next) {
 
           // 重新获取用户信息（access_level已更新为full）
           user = await User.findById(user.id);
-          console.log(`✅ 邀请码激活成功，用户访问级别: ${user.access_level}`);
+          console.log(`✅ 邀请码激活成功！`);
+          console.log(`   - 用户 ID: ${user.id}`);
+          console.log(`   - 访问级别: ${user.access_level}`);
+          console.log(`   - 使用的邀请码: ${user.invite_code_used}`);
         } catch (error) {
-          console.error('❌ 邀请码激活失败:', error.message);
-          console.error('错误堆栈:', error.stack);
+          console.error(`\n❌ 邀请码激活失败！`);
+          console.error(`   - 错误信息: ${error.message}`);
+          console.error(`   - 错误堆栈:\n${error.stack}`);
           // 邀请码激活失败不影响登录，用户仍为waitlist状态
         }
       }
+    } else {
+      console.log(`⏭️ 跳过邀请码激活（条件不满足）`);
     }
 
     // 生成 JWT token
