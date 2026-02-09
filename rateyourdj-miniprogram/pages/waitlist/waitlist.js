@@ -18,6 +18,15 @@ Page({
       wx.switchTab({
         url: '/pages/index/index'
       });
+      return;
+    }
+
+    // 从分享链接接收邀请码参数
+    if (options.inviteCode) {
+      console.log('📥 接收到分享邀请码:', options.inviteCode);
+      this.setData({
+        inviteCode: options.inviteCode.trim().toUpperCase()
+      });
     }
   },
 
