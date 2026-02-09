@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/index/index",
     "pages/waitlist/waitlist",
+    "pages/index/index",
     "pages/tasks/tasks",
     "pages/my-invites/my-invites",
     "pages/login/login",

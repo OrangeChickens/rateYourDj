@@ -1,35 +1,30 @@
 <!-- pages/waitlist/waitlist.wxml -->
 <view class="waitlist-container">
-  <!-- Logo & 标题 -->
-  <view class="waitlist-header">
-    <text class="app-name">烂U盘</text>
-    <text class="beta-badge">BETA</text>
+  <!-- 头部标语 -->
+  <view class="header">
+    <text class="title">烂u盘</text>
     <text class="tagline">一个DJ评分社区</text>
     <text class="tagline-sub">好DJ值得被看见，烂DJ也是</text>
   </view>
 
-  <!-- 排队位置 -->
-  <view class="position-card">
-    <text class="position-label">你的排队位置</text>
-    <text class="position-number">#{{position}}</text>
-    <text class="position-hint">共 {{totalWaitlist}} 人在等待</text>
-  </view>
+  <!-- 邀请码输入区域 -->
+  <view class="invite-section">
+    <text class="section-title">输入邀请码</text>
+    <text class="section-desc">本小程序处于内测阶段，需要邀请码才能使用</text>
 
-  <!-- 分割线 -->
-  <view class="divider"></view>
-
-  <!-- 邀请码输入 -->
-  <view class="access-section">
-    <text class="access-title">获得访问权限</text>
-    <view class="invite-input-wrapper">
+    <view class="input-group">
       <input
         class="invite-input"
-        placeholder="输入邀请码，例如: UDISK-ABC123"
+        type="text"
+        placeholder="请输入邀请码"
         value="{{inviteCode}}"
-        bindinput="onInviteInput"
+        bindinput="onInviteCodeInput"
         maxlength="20"
       />
-      <button class="submit-btn" bindtap="submitInviteCode">提交</button>
     </view>
+
+    <button class="verify-btn" bindtap="handleVerifyCode" disabled="{{!inviteCode}}">
+      验证并进入
+    </button>
   </view>
 </view>
