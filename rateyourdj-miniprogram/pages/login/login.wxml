@@ -41,9 +41,9 @@
         <checkbox checked="{{privacyChecked}}" bindtap="onPrivacyCheck" color="#000" />
         <view class="privacy-text">
           <text>我已阅读并同意</text>
-          <text class="link" bindtap="goToUserAgreement">《用户服务协议》</text>
+          <text class="link" catchtap="goToUserAgreement">《用户服务协议》</text>
           <text>和</text>
-          <text class="link" bindtap="goToPrivacyPolicy">《隐私政策》</text>
+          <text class="link" catchtap="goToPrivacyPolicy">《隐私政策》</text>
         </view>
       </label>
     </view>
