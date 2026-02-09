@@ -59,19 +59,25 @@ async function wechatLogin(req, res, next) {
 
     // 如果提供了邀请码且用户是新用户或waitlist状态，自动激活
     if (inviteCode && (isNewUser || user.access_level === 'waitlist')) {
-      try {
-        console.log(`🎫 用户 ${user.id} 使用邀请码登录: ${inviteCode}`);
-        await InviteCode.use(inviteCode, user.id);
+      // 检查用户是否已经使用过邀请码
+      if (user.invite_code_used) {
+        console.log(`⚠️ 用户 ${user.id} 已使用过邀请码: ${user.invite_code_used}，跳过激活`);
+      } else {
+        try {
+          console.log(`🎫 用户 ${user.id} 使用邀请码登录: ${inviteCode}`);
+          await InviteCode.use(inviteCode, user.id);
 
-        // 初始化用户任务
-        await UserTask.initializeForUser(user.id);
+          // 初始化用户任务
+          await UserTask.initializeForUser(user.id);
 
-        // 重新获取用户信息（access_level已更新为full）
-        user = await User.findById(user.id);
-        console.log(`✅ 邀请码激活成功，用户访问级别: ${user.access_level}`);
-      } catch (error) {
-        console.error('❌ 邀请码激活失败:', error.message);
-        // 邀请码激活失败不影响登录，用户仍为waitlist状态
+          // 重新获取用户信息（access_level已更新为full）
+          user = await User.findById(user.id);
+          console.log(`✅ 邀请码激活成功，用户访问级别: ${user.access_level}`);
+        } catch (error) {
+          console.error('❌ 邀请码激活失败:', error.message);
+          console.error('错误堆栈:', error.stack);
+          // 邀请码激活失败不影响登录，用户仍为waitlist状态
+        }
       }
     }
 

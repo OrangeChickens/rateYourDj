@@ -90,13 +90,39 @@ class InviteCode {
     try {
       await connection.beginTransaction();
 
-      // 验证邀请码
-      const validation = await this.validate(code);
-      if (!validation.valid) {
-        throw new Error(validation.message);
+      // 在事务内查询邀请码（使用 FOR UPDATE 锁定行，防止并发问题）
+      const [rows] = await connection.query(
+        `SELECT * FROM invite_codes
+         WHERE code = ? AND is_active = TRUE
+         FOR UPDATE`,
+        [code]
+      );
+
+      if (rows.length === 0) {
+        throw new Error('邀请码不存在或已禁用');
       }
 
-      const invite = validation.invite;
+      const invite = rows[0];
+
+      // 检查是否过期
+      if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
+        throw new Error('邀请码已过期');
+      }
+
+      // 检查使用次数
+      if (invite.used_count >= invite.usage_limit) {
+        throw new Error('邀请码已达使用上限');
+      }
+
+      // 检查用户是否已经使用过邀请码
+      const [[existingUser]] = await connection.query(
+        'SELECT invite_code_used FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (existingUser && existingUser.invite_code_used) {
+        throw new Error(`用户已使用过邀请码: ${existingUser.invite_code_used}`);
+      }
 
       // 更新邀请码使用次数
       await connection.query(
@@ -124,9 +150,11 @@ class InviteCode {
       }
 
       await connection.commit();
+      console.log(`✅ 邀请码 ${code} 使用成功，used_count 已更新为 ${invite.used_count + 1}`);
       return { invitedBy: invite.created_by };
     } catch (error) {
       await connection.rollback();
+      console.error(`❌ 邀请码 ${code} 使用失败:`, error.message);
       throw error;
     } finally {
       connection.release();
