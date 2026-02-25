@@ -67,8 +67,7 @@ Page({
     try {
       const res = await userAPI.getSearchHistory();
       if (res.success) {
-        const history = res.data.map(item => item.keyword);
-        this.setData({ searchHistory: history });
+        this.setData({ searchHistory: res.data });
       }
     } catch (error) {
       console.error('加载搜索历史失败:', error);

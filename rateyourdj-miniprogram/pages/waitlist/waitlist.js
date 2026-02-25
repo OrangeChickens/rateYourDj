@@ -48,56 +48,22 @@ Page({
 
     try {
       const res = await authAPI.verifyInviteCode(inviteCode);
+      hideLoading();
 
-      if (!res.success) {
-        hideLoading();
+      if (res.success) {
+        console.log('✅ 邀请码验证成功:', inviteCode);
+
+        // 保存邀请码，登录时通过 wechatLogin 激活
+        wx.setStorageSync('pendingInviteCode', inviteCode);
+        showToast('验证成功！');
+
+        setTimeout(() => {
+          wx.switchTab({ url: '/pages/index/index' });
+        }, 1500);
+      } else {
         console.log('❌ 邀请码验证失败:', res.message);
         showToast(res.message || '邀请码无效');
-        return;
       }
-
-      console.log('✅ 邀请码验证成功:', inviteCode);
-
-      // 已登录用户：直接调用 use-invite-code 激活
-      const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-      if (userInfo) {
-        try {
-          const useRes = await authAPI.useInviteCode(inviteCode);
-          hideLoading();
-
-          if (useRes.success) {
-            console.log('✅ 邀请码激活成功');
-            // 更新本地用户状态
-            const updatedInfo = { ...userInfo, access_level: 'full' };
-            app.globalData.userInfo = updatedInfo;
-            wx.setStorageSync('userInfo', updatedInfo);
-            wx.removeStorageSync('pendingInviteCode');
-
-            showToast('激活成功！');
-            setTimeout(() => {
-              wx.switchTab({ url: '/pages/index/index' });
-            }, 1500);
-          } else {
-            showToast(useRes.message || '激活失败');
-          }
-        } catch (useError) {
-          hideLoading();
-          console.error('❌ 邀请码激活失败:', useError);
-          showToast('激活失败，请重试');
-        }
-        return;
-      }
-
-      // 未登录用户：保存邀请码，等登录时激活
-      hideLoading();
-      wx.setStorageSync('pendingInviteCode', inviteCode);
-      showToast('验证成功！');
-
-      setTimeout(() => {
-        wx.switchTab({
-          url: '/pages/index/index'
-        });
-      }, 1500);
     } catch (error) {
       hideLoading();
       console.error('❌ 验证邀请码失败:', error);
