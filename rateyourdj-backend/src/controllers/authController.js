@@ -26,7 +26,7 @@ async function wechatLogin(req, res, next) {
     if (!user) {
       isNewUser = true;
       // 创建新用户 - 默认为 waitlist 状态
-      const pool = require('../config/database');
+      const { pool } = require('../config/database');
 
       // 计算排队位置
       const [[{ waitlistCount }]] = await pool.query(
