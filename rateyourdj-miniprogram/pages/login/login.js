@@ -15,11 +15,14 @@ Page({
   },
 
   async onLoad(options) {
-    // 如果已经登录，跳转到首页
+    // 如果已经登录，根据 access_level 跳转
     if (app.globalData.token) {
-      wx.switchTab({
-        url: '/pages/index/index'
-      });
+      const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+      if (userInfo && userInfo.access_level === 'full') {
+        wx.switchTab({ url: '/pages/index/index' });
+      } else {
+        wx.redirectTo({ url: '/pages/waitlist/waitlist' });
+      }
       return;
     }
 
@@ -276,7 +279,23 @@ Page({
           console.log('✅ 邀请码已激活并清除');
         }
 
-        // 登录成功，直接跳转首页（邀请码已激活，都是 full access）
+        // 检查 access_level，非 full 用户跳回 waitlist
+        const accessLevel = apiRes.data.user.access_level;
+        if (accessLevel !== 'full') {
+          console.log('⚠️ 用户 access_level 为', accessLevel, '，跳回 waitlist');
+          wx.showToast({
+            title: '请先使用邀请码',
+            icon: 'none',
+            duration: 2000
+          });
+          setTimeout(() => {
+            wx.redirectTo({
+              url: '/pages/waitlist/waitlist'
+            });
+          }, 1500);
+          return;
+        }
+
         console.log('✅ 登录成功，跳转到首页');
         wx.showToast({
           title: '登录成功',
