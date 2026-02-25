@@ -715,7 +715,6 @@ mysql -u root -p rateyourdj < migrations/004_rollback_user_badges.sql
 
 - Migration guide: `rateyourdj-backend/migrations/README.md`
 - RDS sync documentation: `rateyourdj-backend/scripts/README-SYNC.md`
-- Full RDS setup: `rateyourdj-backend/scripts/RDS-SYNC.md`
 
 ### Git Workflow
 
@@ -1497,7 +1496,6 @@ idx_user_openid     -- Fast login lookup
 - **Database Schema**: `rateyourdj-backend/database.sql` (complete with comments)
 - **Backend Setup**: `rateyourdj-backend/SETUP.md` (installation guide)
 - **Frontend README**: `rateyourdj-miniprogram/README.md` (complete setup guide)
-- **Completion Report**: `MINIPROGRAM_COMPLETION_REPORT.md` (development status)
 
 ---
 
