@@ -21,6 +21,16 @@ export const authAPI = {
       method: 'POST',
       data: { code }
     });
+  },
+
+  // 使用邀请码（需要登录）
+  useInviteCode(code) {
+    return app.request({
+      url: '/auth/use-invite-code',
+      method: 'POST',
+      data: { code },
+      needAuth: true
+    });
   }
 };
 
