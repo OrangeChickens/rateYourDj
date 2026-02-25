@@ -8,17 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **THESE RULES OVERRIDE ALL OTHER BEHAVIORS:**
 
-1. **GIT PUSH POLICY - ABSOLUTELY FORBIDDEN TO AUTO-PUSH**
-   - ✅ Always run `git add` and `git commit` when work is complete
-   - ❌ **NEVER EVER run `git push` without explicit user approval**
-   - ✅ After committing, ALWAYS say: "已提交到本地。需要我 push 到远程仓库吗？"
-   - ✅ Only push when user explicitly says "push" / "推送" / "yes"
-   - ⚠️ User has complained about this violation multiple times - THIS IS CRITICAL
 
-2. **CONFIRMATION BEFORE DESTRUCTIVE OPERATIONS**
+1. **CONFIRMATION BEFORE DESTRUCTIVE OPERATIONS**
    - Always ask before: deleting files, force pushing, rebasing, resetting
 
-3. **DATABASE MIGRATION POLICY - STRICT CONVENTIONS**
+2. **DATABASE MIGRATION POLICY - STRICT CONVENTIONS**
    - ❌ **NEVER create folders like `database_migrations/` or `db_changes/`**
    - ✅ **ALWAYS use existing `rateyourdj-backend/migrations/` folder**
    - ✅ **ALWAYS follow numbering: 001_xxx.sql, 002_xxx.sql, 003_xxx.sql**
@@ -716,31 +710,32 @@ mysql -u root -p rateyourdj < migrations/004_rollback_user_badges.sql
 - Migration guide: `rateyourdj-backend/migrations/README.md`
 - RDS sync documentation: `rateyourdj-backend/scripts/README-SYNC.md`
 
-### Git Workflow
+## Git Workflow
 
-**IMPORTANT: Always ask before pushing to remote repository.**
-
+### GitHub PR flow
 ```bash
-# Make changes and stage files
-git add -A
-
-# Commit with descriptive message
-git commit -m "Your commit message"
-
-# ⚠️ STOP HERE - Ask user before pushing
-# DO NOT run 'git push' automatically
-
-# After user approval:
-git push
-```
-
-**Rules:**
-- ✅ Commit changes automatically when user confirms the work
-- ❌ NEVER push to remote without asking user first
-- ✅ Show commit summary and ask: "Ready to push?"
-- ✅ Wait for explicit user confirmation before running `git push`
+git checkout -b feature/<name>
+# ... develop ...
+git add <files> && git commit
+git push -u origin feature/<name>
+gh pr create --title "..." --body "..."
+# After review and approved: gh pr merge --squash --delete-branch  #do not run this without approval
 
 ---
+
+
+Branch naming: `feature/<name>` or `fix/<description>`. Never commit directly to main/master.
+
+
+## Development Verification Flow
+
+Full process documented in `docs/dev-workflow.md`. Summary:
+1. Create feature branch (both frontend and backend)
+2. Develop → commit → PR
+3. Code review → Jort approves -> merge
+4. Backend: asks if deployed to integ completed → API test
+5. Frontend: upload 体验版 → Jort manual test on phone
+6. Fix issues if any → re-verify
 
 ## Architecture Overview
 
@@ -1512,3 +1507,68 @@ idx_user_openid     -- Fast login lookup
 3. Test all flows end-to-end
 4. Deploy backend to production server
 5. Submit for WeChat review
+
+---
+
+## Critical Bugs / Known Traps
+
+> These are repeatedly encountered issues. Read before making changes to these areas.
+
+### Invite Code Flow (Waitlist)
+
+**The #1 trap**: `verify` vs `use` are different endpoints with different side effects.
+
+| Endpoint | Method | Side effect | When to use |
+|----------|--------|-------------|-------------|
+| `/api/invite/verify` | POST | None (read-only) | Checking if code is valid before UI confirmation |
+| `/api/invite/use` | POST | Increments `used_count` | After user confirms, to actually consume the code |
+
+**Common mistake**: Frontend calls `verify` at the confirmation step instead of `use`, so `used_count` never increases.
+
+**Full lifecycle**:
+1. User enters code → call `verify` (validation only)
+2. User confirms → call `use` (consumes the code)
+3. Already logged in? → `use` needs auth token in header
+4. Not logged in? → Store code locally → login → then call `use`
+
+### Search History NULL Bug
+
+**Problem**: Backend can return search history items with `null` keyword values. Frontend renders `null` as the literal string "NULL".
+
+**Prevention**: Always filter out null/empty keywords before rendering:
+```javascript
+const history = res.data.filter(item => item.keyword)
+```
+
+### WeChat Mini-Program Common Traps
+
+1. **Domain whitelist**: Production requires HTTPS domain in WeChat backend settings. Dev can bypass with "不校验合法域名".
+2. **Token expiry loop**: If 401 is not handled properly, user gets stuck in login redirect. Must call `app.logout()` and clear storage.
+3. **wx.login() code**: Expires in 5 minutes, one-time use only. Never cache or reuse.
+
+---
+
+## Task Management
+
+### Directory Structure
+
+```
+tasks/
+├── STATUS.md    # Global status board — read at session start
+├── todo.md      # Current task checklist
+└── lessons.md   # Bug patterns and gotchas — read at session start
+```
+
+### Workflow Rules
+
+1. **Session start**: Read `tasks/STATUS.md` and `tasks/lessons.md`
+2. **Starting a task**: Mark it in `tasks/todo.md`, update STATUS.md "In Progress"
+3. **Task complete**: Move to completed in `todo.md`, update STATUS.md "Recently Completed" with commit hash
+4. **Bug discovered**: Record pattern in `tasks/lessons.md`
+5. **Multi-session**: Note your session focus in STATUS.md "Session Coordination" table
+
+### Version Tracking
+
+Single source of truth: `rateyourdj-miniprogram/config/version.js`
+
+Update version there when releasing. Status board in `tasks/STATUS.md` should match.
