@@ -71,7 +71,6 @@ Page({
           hideLoading();
 
           if (useRes.success) {
-            // 更新本地 userInfo
             const userInfo = app.globalData.userInfo || {};
             userInfo.access_level = 'full';
             app.globalData.userInfo = userInfo;
@@ -85,12 +84,12 @@ Page({
             showToast(useRes.message || '激活失败');
           }
         } else {
-          // 未登录 — 保存邀请码，跳转登录页
+          // 未登录 — 保存邀请码，直接进首页浏览（登录时再消费）
           wx.setStorageSync('pendingInviteCode', inviteCode);
-          showToast('验证成功，请登录');
+          showToast('验证成功，欢迎浏览！');
 
           setTimeout(() => {
-            wx.navigateTo({ url: '/pages/login/login' });
+            wx.switchTab({ url: '/pages/index/index' });
           }, 1500);
         }
       } else {

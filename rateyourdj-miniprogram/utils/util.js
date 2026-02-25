@@ -151,15 +151,14 @@ export async function requireLogin() {
   try {
     const res = await wx.showModal({
       title: '提示',
-      content: '此功能需要登录，请前往"我的"页面登录',
+      content: '此功能需要登录',
       confirmText: '去登录',
       cancelText: '取消'
     });
 
     if (res.confirm) {
-      // 跳转到设置页面让用户手动登录
-      wx.switchTab({
-        url: '/pages/settings/settings'
+      wx.navigateTo({
+        url: '/pages/login/login'
       });
     }
 

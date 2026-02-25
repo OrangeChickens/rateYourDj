@@ -133,29 +133,7 @@ App({
         const accessLevel = res.access_level;
         console.log('🔍 Access Level Check:', accessLevel);
 
-        // 如果用户是 waitlist 状态，且当前不在 waitlist 页面，则跳转
-        if (accessLevel === 'waitlist') {
-          console.log('🚫 User is on waitlist, redirecting...');
-          try {
-            const pages = getCurrentPages();
-            const currentPage = pages[pages.length - 1];
-            const currentRoute = currentPage ? currentPage.route : '';
-
-            // 如果不在 waitlist 页面，则跳转
-            if (currentRoute !== 'pages/waitlist/waitlist') {
-              wx.reLaunch({
-                url: '/pages/waitlist/waitlist'
-              });
-            }
-          } catch (err) {
-            // getCurrentPages() 可能在某些时机不可用，直接跳转
-            wx.reLaunch({
-              url: '/pages/waitlist/waitlist'
-            });
-          }
-        }
-
-        // 更新 globalData 中的用户信息
+        // 更新 globalData 中的用户信息（不再强制跳转 waitlist）
         if (this.globalData.userInfo) {
           this.globalData.userInfo.access_level = accessLevel;
         }
