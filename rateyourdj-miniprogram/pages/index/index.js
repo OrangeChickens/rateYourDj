@@ -147,7 +147,7 @@ Page({
       const params = {
         page,
         limit: 10,
-        sort: 'overall_rating',
+        sort: 'weighted_score',
         order: 'DESC'
       };
 
