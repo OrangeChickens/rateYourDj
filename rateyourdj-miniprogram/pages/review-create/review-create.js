@@ -439,6 +439,11 @@ Page({
   async submitReview() {
     if (this.data.submitting) return;
 
+    // 自动提交未确认的自定义标签输入
+    if (this.data.customTagInput && this.data.customTagInput.trim()) {
+      this.addCustomTag();
+    }
+
     if (!this.validateForm()) return;
 
     try {
@@ -465,6 +470,8 @@ Page({
         tags: this.data.selectedTags,
         is_anonymous: this.data.isAnonymous
       };
+
+      console.log('📤 提交标签:', data.tags, '自定义标签:', this.data.customTags);
 
       const res = await reviewAPI.create(data);
 
