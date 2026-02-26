@@ -59,7 +59,7 @@ class DJ {
     const allowedSortFields = ['overall_rating', 'review_count', 'created_at', 'weighted_score'];
     const sortField = allowedSortFields.includes(sort) ? sort : 'weighted_score';
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-    query += ` ORDER BY ${sortField} ${sortOrder}`;
+    query += ` ORDER BY ${sortField} ${sortOrder}, id ASC`;
 
     // 分页
     const offset = (page - 1) * limit;
@@ -118,7 +118,7 @@ class DJ {
     const [rows] = await pool.query(
       `SELECT * FROM djs
        WHERE name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?
-       ORDER BY weighted_score DESC
+       ORDER BY weighted_score DESC, id ASC
        LIMIT ? OFFSET ?`,
       [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, parseInt(limit), parseInt(offset)]
     );
@@ -144,7 +144,7 @@ class DJ {
   static async getHotDJs(limit = 10) {
     const [rows] = await pool.query(
       `SELECT * FROM djs
-       ORDER BY weighted_score DESC, review_count DESC
+       ORDER BY weighted_score DESC, review_count DESC, id ASC
        LIMIT ?`,
       [limit]
     );
