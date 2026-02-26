@@ -7,9 +7,9 @@ async function getPresetTags(req, res, next) {
     const nameField = locale === 'en-US' ? 'tag_name_en' : 'tag_name';
 
     const [tags] = await pool.query(
-      `SELECT id, ${nameField} as name, category, usage_count
+      `SELECT id, ${nameField} as name, category, usage_count, genre_group, sub_group
        FROM preset_tags
-       ORDER BY category, usage_count DESC`
+       ORDER BY category, sort_order ASC, usage_count DESC`
     );
 
     // 按类别分组
@@ -20,11 +20,14 @@ async function getPresetTags(req, res, next) {
     };
 
     tags.forEach(tag => {
-      grouped[tag.category].push({
+      const item = {
         id: tag.id,
         name: tag.name,
         usage_count: tag.usage_count
-      });
+      };
+      if (tag.genre_group) item.genre_group = tag.genre_group;
+      if (tag.sub_group) item.sub_group = tag.sub_group;
+      grouped[tag.category].push(item);
     });
 
     res.json({

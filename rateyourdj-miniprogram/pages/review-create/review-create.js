@@ -25,11 +25,15 @@ Page({
     selectedTags: [],
     maxTags: 5,
 
-    // 音乐风格标签分类
+    // 音乐风格标签分类 (genre → subgroup 两级)
     styleCategories: [],
     originalCategories: [],
     searchKeyword: '',
-    expandedCategories: {},
+    expandedGroups: {},
+
+    // 自定义标签
+    customTagInput: '',
+    customTags: [],
 
     // 匿名
     isAnonymous: false,
@@ -116,6 +120,8 @@ Page({
               id: tag.id,
               name: tag.name,
               category: 'style',
+              genre_group: tag.genre_group || null,
+              sub_group: tag.sub_group || null,
               selected: false
             });
           });
@@ -166,50 +172,34 @@ Page({
     }
   },
 
-  // 音乐风格分类
+  // 音乐风格分类 — 数据驱动，从 API 返回的 genre_group/sub_group 构建两级结构
   categorizeStyles(styles) {
-    const categoryRules = {
-      '主流 EDM': ['EDM', 'Future Bass', 'Electro House', 'Melbourne Bounce', 'Hardstyle', 'Drum & Bass', 'Future House'],
-      'Techno/House': ['Techno', 'House', 'Tech House', 'Minimal Techno', 'Industrial Techno', 'Acid Techno', 'Breakbeat', 'Garage', 'UK Garage', 'Disco House', 'Afro House', 'Micro House'],
-      'Trance': ['Trance', 'Psytrance', 'Progressive Trance', 'Uplifting Trance', 'Tech Trance'],
-      'Bass 音乐': ['Dubstep', 'Future Garage', 'Riddim', 'Halftime', 'Neurofunk'],
-      '实验性/小众': ['Hyperpop', 'Glitch Hop', 'IDM', 'Vaporwave', 'Footwork', 'Jungle', 'Breakcore', 'Ambient', 'Downtempo', 'Trip Hop', 'Wave', 'Jersey Club'],
-      '其他流行': ['Trap', 'Moombahton', 'Hardwave', 'Phonk', 'UK Drill', 'Slap House', 'Bassline', 'Grime', 'Electro Swing'],
-      '中国/亚洲': ['国风电音', 'J-Core', 'K-House', 'Bounce', 'Hands Up']
-    };
+    const genreMap = new Map(); // genre_group → { subgroups: Map<sub_group, tags[]> }
+
+    styles.forEach(tag => {
+      const group = tag.genre_group || '其他';
+      const sub = tag.sub_group || '其他';
+
+      if (!genreMap.has(group)) {
+        genreMap.set(group, new Map());
+      }
+      const subMap = genreMap.get(group);
+      if (!subMap.has(sub)) {
+        subMap.set(sub, []);
+      }
+      subMap.get(sub).push(tag);
+    });
 
     const categories = [];
-    const assignedTags = new Set();
-
-    // 按规则分类
-    for (const [categoryName, ruleNames] of Object.entries(categoryRules)) {
-      const categoryTags = [];
-
-      for (const style of styles) {
-        if (ruleNames.includes(style.name)) {
-          categoryTags.push(style);
-          assignedTags.add(style.name);
-        }
-      }
-
-      if (categoryTags.length > 0) {
-        categories.push({
-          name: categoryName,
-          tags: categoryTags,
-          count: categoryTags.length
-        });
-      }
-    }
-
-    // 未分类的放入"其他"
-    const uncategorizedTags = styles.filter(s => !assignedTags.has(s.name));
-    if (uncategorizedTags.length > 0) {
-      categories.push({
-        name: '其他',
-        tags: uncategorizedTags,
-        count: uncategorizedTags.length
+    genreMap.forEach((subMap, genreName) => {
+      const subgroups = [];
+      let totalCount = 0;
+      subMap.forEach((tags, subName) => {
+        subgroups.push({ name: subName, tags, count: tags.length });
+        totalCount += tags.length;
       });
-    }
+      categories.push({ name: genreName, subgroups, totalCount });
+    });
 
     return categories;
   },
@@ -221,49 +211,54 @@ Page({
     this.updateFilteredCategories();
   },
 
-  // 更新过滤后的分类
+  // 更新过滤后的分类（两级过滤）
   updateFilteredCategories() {
     const keyword = this.data.searchKeyword.toLowerCase();
 
     if (!keyword) {
-      // 清空搜索，恢复原始数据
       this.setData({
-        styleCategories: JSON.parse(JSON.stringify(this.data.originalCategories))
+        styleCategories: JSON.parse(JSON.stringify(this.data.originalCategories)),
+        expandedGroups: {}
       });
       return;
     }
 
-    // 过滤标签
-    const filteredCategories = this.data.originalCategories.map(category => {
-      const filteredTags = category.tags.filter(tag =>
-        tag.name.toLowerCase().includes(keyword) ||
-        (tag.name_en && tag.name_en.toLowerCase().includes(keyword))
-      );
-      return {
-        ...category,
-        tags: filteredTags,
-        count: filteredTags.length
-      };
-    }).filter(category => category.count > 0);
+    // 两级过滤：过滤每个 subgroup 内的标签
+    const filtered = [];
+    const expandedGroups = {};
 
-    // 自动展开有结果的分类
-    const expandedCategories = {};
-    filteredCategories.forEach(category => {
-      expandedCategories[category.name] = true;
+    this.data.originalCategories.forEach(genre => {
+      const filteredSubgroups = [];
+      let totalCount = 0;
+
+      genre.subgroups.forEach(sub => {
+        const filteredTags = sub.tags.filter(tag =>
+          tag.name.toLowerCase().includes(keyword)
+        );
+        if (filteredTags.length > 0) {
+          filteredSubgroups.push({ ...sub, tags: filteredTags, count: filteredTags.length });
+          totalCount += filteredTags.length;
+        }
+      });
+
+      if (filteredSubgroups.length > 0) {
+        filtered.push({ ...genre, subgroups: filteredSubgroups, totalCount });
+        expandedGroups[genre.name] = true; // 自动展开有结果的组
+      }
     });
 
     this.setData({
-      styleCategories: filteredCategories,
-      expandedCategories
+      styleCategories: filtered,
+      expandedGroups
     });
   },
 
-  // 切换分类展开/折叠
-  toggleCategory(e) {
-    const categoryName = e.currentTarget.dataset.name;
-    const key = `expandedCategories.${categoryName}`;
+  // 切换 Genre Group 展开/折叠
+  toggleGenreGroup(e) {
+    const groupName = e.currentTarget.dataset.name;
+    const key = `expandedGroups.${groupName}`;
     this.setData({
-      [key]: !this.data.expandedCategories[categoryName]
+      [key]: !this.data.expandedGroups[groupName]
     });
   },
 
@@ -337,8 +332,8 @@ Page({
       tag.selected = false;
       console.log('取消选择:', name);
     } else {
-      // 检查是否已达到最大数量
-      const selectedCount = presetTags.filter(t => t.selected).length;
+      // 检查是否已达到最大数量（含自定义标签）
+      const selectedCount = presetTags.filter(t => t.selected).length + this.data.customTags.length;
       if (selectedCount >= this.data.maxTags) {
         showToast(i18n.t('review.maxTagsReached').replace('{n}', this.data.maxTags));
         return;
@@ -347,13 +342,57 @@ Page({
       console.log('添加选择:', name);
     }
 
-    // 更新数据
+    // 更新数据（保留自定义标签）
+    const presetSelected = presetTags.filter(t => t.selected).map(t => t.name);
     this.setData({
       presetTags,
-      selectedTags: presetTags.filter(t => t.selected).map(t => t.name)
+      selectedTags: [...presetSelected, ...this.data.customTags]
     }, () => {
       console.log('已选标签:', this.data.selectedTags);
     });
+  },
+
+  // 自定义标签输入跟踪
+  onCustomTagInput(e) {
+    this.setData({ customTagInput: e.detail.value });
+  },
+
+  // 添加自定义标签
+  addCustomTag() {
+    const tagName = this.data.customTagInput.trim();
+
+    if (!tagName) return;
+
+    if (tagName.length > 20) {
+      showToast('标签最多20个字符');
+      return;
+    }
+
+    if (this.data.selectedTags.includes(tagName)) {
+      showToast('标签已存在');
+      return;
+    }
+
+    if (this.data.selectedTags.length >= this.data.maxTags) {
+      showToast(i18n.t('review.maxTagsReached').replace('{n}', this.data.maxTags));
+      return;
+    }
+
+    const selectedTags = [...this.data.selectedTags, tagName];
+    const customTags = [...this.data.customTags, tagName];
+    this.setData({
+      selectedTags,
+      customTags,
+      customTagInput: ''
+    });
+  },
+
+  // 移除自定义标签
+  removeCustomTag(e) {
+    const tagName = e.currentTarget.dataset.name;
+    const selectedTags = this.data.selectedTags.filter(t => t !== tagName);
+    const customTags = this.data.customTags.filter(t => t !== tagName);
+    this.setData({ selectedTags, customTags });
   },
 
   // 评论输入
