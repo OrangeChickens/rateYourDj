@@ -110,3 +110,18 @@
   border-color: #CCC;
   color: #666;
 }
+
+/* 已有账号入口 */
+.login-link {
+  margin-top: 64rpx;
+  text-align: center;
+}
+
+.login-link text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.5rpx;
+  border-bottom: 2rpx solid #666;
+  padding-bottom: 4rpx;
+}

@@ -27,4 +27,9 @@
       验证并进入
     </button>
   </view>
+
+  <!-- 已有账号入口 -->
+  <view class="login-link" bindtap="goToLogin">
+    <text>已有账号？直接登录</text>
+  </view>
 </view>
