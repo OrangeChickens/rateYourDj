@@ -45,6 +45,7 @@ Page({
     submitting: false,
 
     // 滑动提交相关
+    readyToSwipe: false, // 两步提交：先确认，再上滑
     swipeProgress: 0,
     touchStartY: 0,
     touchStartTime: 0,
@@ -523,6 +524,18 @@ Page({
   // 按类别获取标签
   getTagsByCategory(category) {
     return this.data.presetTags.filter(tag => tag.category === category);
+  },
+
+  // 确认提交（第一步）
+  confirmReady(e) {
+    if (!this.validateForm()) return;
+    wx.vibrateShort({ type: 'light' });
+    this.setData({ readyToSwipe: true });
+  },
+
+  // 取消确认，回到按钮状态
+  cancelReady() {
+    this.setData({ readyToSwipe: false, swipeProgress: 0 });
   },
 
   // 触摸开始
