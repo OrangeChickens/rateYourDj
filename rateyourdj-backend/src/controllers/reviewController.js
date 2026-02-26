@@ -96,6 +96,7 @@ async function createReview(req, res, next) {
 async function getDJReviews(req, res, next) {
   try {
     const { djId } = req.params;
+    const userId = req.user ? req.user.userId : null;
     const options = {
       sort: req.query.sort || 'created_at',
       order: req.query.order || 'DESC',
@@ -103,7 +104,7 @@ async function getDJReviews(req, res, next) {
       limit: parseInt(req.query.limit) || 20
     };
 
-    const result = await Review.findByDJId(djId, options);
+    const result = await Review.findByDJId(djId, options, userId);
 
     res.json({
       success: true,

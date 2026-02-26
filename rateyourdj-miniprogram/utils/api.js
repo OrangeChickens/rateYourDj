@@ -193,12 +193,13 @@ export const commentAPI = {
     });
   },
 
-  // 获取评论列表
+  // 获取评论列表（带 token 以获取当前用户投票状态）
   getList(reviewId, page = 1, limit = 20) {
     return app.request({
       url: `/comment/review/${reviewId}`,
       method: 'GET',
-      data: { page, limit }
+      data: { page, limit },
+      needAuth: true
     });
   },
 

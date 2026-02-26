@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate } = require('../middleware/auth');
+const { authenticate, optionalAuth } = require('../middleware/auth');
 const {
   createReview,
   getDJReviews,
@@ -17,8 +17,8 @@ router.post('/create', authenticate, createReview);
 // 获取所有评价列表（无需登录）
 router.get('/all', getAllReviews);
 
-// 获取DJ的评论列表（无需登录）
-router.get('/list/:djId', getDJReviews);
+// 获取DJ的评论列表（可选登录，登录用户返回投票状态）
+router.get('/list/:djId', optionalAuth, getDJReviews);
 
 // 删除评论（需要登录）
 router.delete('/:id', authenticate, deleteReview);

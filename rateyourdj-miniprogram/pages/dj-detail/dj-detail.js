@@ -308,9 +308,40 @@ Page({
     });
   },
 
+  // 乐观更新 review 投票状态
+  _applyReviewVote(reviewId, voteType) {
+    const reviews = this.data.reviews.map(review => {
+      if (review.id !== reviewId) return review;
+
+      const currentVote = review.user_vote;
+      let { helpful_count, not_helpful_count } = review;
+      let newVote;
+
+      if (currentVote === voteType) {
+        // 取消当前投票
+        newVote = null;
+        if (voteType === 'helpful') helpful_count--;
+        else not_helpful_count--;
+      } else {
+        // 如果有对立投票，先取消
+        if (currentVote === 'helpful') helpful_count--;
+        else if (currentVote === 'not_helpful') not_helpful_count--;
+        // 添加新投票
+        newVote = voteType;
+        if (voteType === 'helpful') helpful_count++;
+        else not_helpful_count++;
+      }
+
+      return { ...review, user_vote: newVote, helpful_count, not_helpful_count };
+    });
+
+    this.setData({ reviews });
+  },
+
   // 标记评论有帮助
   async markHelpful(e) {
     const { id } = e.currentTarget.dataset;
+    const reviewId = parseInt(id);
 
     if (!app.globalData.token) {
       const confirmed = await showConfirm(
@@ -325,17 +356,19 @@ Page({
       return;
     }
 
+    // 乐观更新
+    this._applyReviewVote(reviewId, 'helpful');
+
     try {
       const res = await reviewAPI.markHelpful(id);
-      if (res.success) {
-        showToast(i18n.t('review.helpfulMarked'));
-        // 刷新评论列表
+      if (!res.success) {
+        // 回滚：重新加载
         this.loadReviews();
-      } else {
         showToast(res.message);
       }
     } catch (error) {
       console.error('标记有帮助失败:', error);
+      this.loadReviews();
       showToast(i18n.t('error.operationFailed'));
     }
   },
@@ -343,6 +376,7 @@ Page({
   // 标记没帮助
   async markNotHelpful(e) {
     const { id } = e.currentTarget.dataset;
+    const reviewId = parseInt(id);
 
     if (!app.globalData.token) {
       const confirmed = await showConfirm(
@@ -357,17 +391,19 @@ Page({
       return;
     }
 
+    // 乐观更新
+    this._applyReviewVote(reviewId, 'not_helpful');
+
     try {
       const res = await reviewAPI.markNotHelpful(id);
-      if (res.success) {
-        showToast(i18n.t('review.notHelpfulMarked'));
-        // 刷新评论列表
+      if (!res.success) {
+        // 回滚：重新加载
         this.loadReviews();
-      } else {
         showToast(res.message);
       }
     } catch (error) {
       console.error('标记没帮助失败:', error);
+      this.loadReviews();
       showToast(i18n.t('error.operationFailed'));
     }
   },
@@ -641,6 +677,45 @@ Page({
     }
   },
 
+  // 在嵌套评论树中查找并更新指定评论
+  _updateCommentInTree(comments, commentId, updateFn) {
+    return comments.map(c => {
+      if (c.id == commentId) return updateFn(c);
+      if (c.replies && c.replies.length > 0) {
+        return { ...c, replies: this._updateCommentInTree(c.replies, commentId, updateFn) };
+      }
+      return c;
+    });
+  },
+
+  // 乐观更新投票状态（立刻更新 UI，不等服务器）
+  _applyOptimisticVote(commentId, voteType) {
+    const reviewComments = this.data.reviewComments;
+    for (const reviewId of Object.keys(reviewComments)) {
+      const updated = this._updateCommentInTree(reviewComments[reviewId], commentId, (comment) => {
+        const cur = comment.user_vote_type;
+        let scoreChange, newVoteType;
+
+        if (!cur) {
+          // 没投过 → 新投票
+          newVoteType = voteType;
+          scoreChange = voteType === 'upvote' ? 1 : -1;
+        } else if (cur === voteType) {
+          // 相同 → 取消
+          newVoteType = null;
+          scoreChange = voteType === 'upvote' ? -1 : 1;
+        } else {
+          // 不同 → 切换
+          newVoteType = voteType;
+          scoreChange = voteType === 'upvote' ? 2 : -2;
+        }
+
+        return { ...comment, vote_score: comment.vote_score + scoreChange, user_vote_type: newVoteType };
+      });
+      this.setData({ [`reviewComments.${reviewId}`]: updated });
+    }
+  },
+
   // 点赞评论
   async handleCommentUpvote(e) {
     const { commentId } = e.detail;
@@ -651,24 +726,23 @@ Page({
         i18n.t('common.loginConfirm')
       );
       if (confirmed) {
-        wx.switchTab({
-          url: '/pages/settings/settings'
-        });
+        wx.switchTab({ url: '/pages/settings/settings' });
       }
       return;
     }
 
+    this._applyOptimisticVote(commentId, 'upvote');
+
     try {
       await commentAPI.vote(commentId, 'upvote');
-
-      // 刷新当前展开的评论
+    } catch (error) {
+      console.error('投票失败:', error);
+      showToast('投票失败');
+      // 投票失败，重新加载以恢复正确状态
       const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
         id => this.data.expandedComments[id]
       );
       expandedReviewIds.forEach(id => this.loadComments(id));
-    } catch (error) {
-      console.error('投票失败:', error);
-      showToast('投票失败');
     }
   },
 
@@ -682,24 +756,23 @@ Page({
         i18n.t('common.loginConfirm')
       );
       if (confirmed) {
-        wx.switchTab({
-          url: '/pages/settings/settings'
-        });
+        wx.switchTab({ url: '/pages/settings/settings' });
       }
       return;
     }
 
+    this._applyOptimisticVote(commentId, 'downvote');
+
     try {
       await commentAPI.vote(commentId, 'downvote');
-
-      // 刷新当前展开的评论
+    } catch (error) {
+      console.error('投票失败:', error);
+      showToast('投票失败');
+      // 投票失败，重新加载以恢复正确状态
       const expandedReviewIds = Object.keys(this.data.expandedComments).filter(
         id => this.data.expandedComments[id]
       );
       expandedReviewIds.forEach(id => this.loadComments(id));
-    } catch (error) {
-      console.error('投票失败:', error);
-      showToast('投票失败');
     }
   },
 

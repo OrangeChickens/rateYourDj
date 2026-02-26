@@ -154,18 +154,17 @@ Component({
     toggleExpandReplies(e) {
       const { commentId } = e.currentTarget.dataset;
       const currentState = this.data.expandedReplies[commentId] || false;
+      const updated = { ...this.data.expandedReplies, [commentId]: !currentState };
 
-      this.setData({
-        [`expandedReplies.${commentId}`]: !currentState
-      });
+      this.setData({ expandedReplies: updated });
     },
 
     // 传递子组件的展开事件
     onExpandReplies(e) {
       const { commentId } = e.detail;
-      this.setData({
-        [`expandedReplies.${commentId}`]: true
-      });
+      const updated = { ...this.data.expandedReplies, [commentId]: true };
+
+      this.setData({ expandedReplies: updated });
     }
   }
 });

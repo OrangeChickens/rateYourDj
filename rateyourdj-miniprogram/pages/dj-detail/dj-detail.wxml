@@ -148,9 +148,9 @@
             <!-- 第一行：Vote, Reply, Report, Share -->
             <view class="review-actions">
               <view class="action vote">
-                <text class="icon up" bindtap="markHelpful" data-id="{{item.id}}">▲</text>
+                <text class="icon up {{item.user_vote === 'helpful' ? 'active' : ''}}" bindtap="markHelpful" data-id="{{item.id}}">▲</text>
                 <text class="count">{{item.helpful_count - item.not_helpful_count}}</text>
-                <text class="icon down" bindtap="markNotHelpful" data-id="{{item.id}}">▼</text>
+                <text class="icon down {{item.user_vote === 'not_helpful' ? 'active' : ''}}" bindtap="markNotHelpful" data-id="{{item.id}}">▼</text>
               </view>
 
               <view class="action" bindtap="toggleComments" data-review-id="{{item.id}}">
