@@ -31,11 +31,13 @@ CREATE TABLE djs (
   personality_rating DECIMAL(3,2) DEFAULT 0,
   review_count INT DEFAULT 0,
   would_choose_again_percent INT DEFAULT 0,
+  weighted_score DECIMAL(4,2) DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_city (city),
   INDEX idx_name (name),
   INDEX idx_overall_rating (overall_rating),
+  INDEX idx_weighted_score (weighted_score),
   FULLTEXT idx_name_fulltext (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -8,6 +8,9 @@ function average(numbers) {
   return sum / numbers.length;
 }
 
+// Bayesian average 可信阈值
+const BAYESIAN_C = 5;
+
 // 更新DJ的所有评分
 async function updateDJRatings(djId) {
   try {
@@ -25,7 +28,8 @@ async function updateDJRatings(djId) {
         performance_rating: 0,
         personality_rating: 0,
         review_count: 0,
-        would_choose_again_percent: 0
+        would_choose_again_percent: 0,
+        weighted_score: 0
       });
       return;
     }
@@ -40,6 +44,16 @@ async function updateDJRatings(djId) {
     const wouldChooseAgainCount = reviews.filter(r => r.would_choose_again).length;
     const wouldChooseAgainPercent = (wouldChooseAgainCount / reviews.length) * 100;
 
+    // 计算 Bayesian average weighted_score
+    // 公式: weighted = (n / (n + C)) × R + (C / (n + C)) × G
+    const n = reviews.length;
+    const R = overallRating;
+    const [globalAvgResult] = await pool.query(
+      'SELECT AVG(overall_rating) as global_avg FROM djs WHERE review_count > 0'
+    );
+    const G = globalAvgResult[0].global_avg || 0;
+    const weightedScore = (n / (n + BAYESIAN_C)) * R + (BAYESIAN_C / (n + BAYESIAN_C)) * G;
+
     // 更新DJ评分
     await DJ.updateRatings(djId, {
       overall_rating: parseFloat(overallRating.toFixed(2)),
@@ -47,7 +61,8 @@ async function updateDJRatings(djId) {
       performance_rating: parseFloat(performanceRating.toFixed(2)),
       personality_rating: parseFloat(personalityRating.toFixed(2)),
       review_count: reviews.length,
-      would_choose_again_percent: Math.round(wouldChooseAgainPercent)
+      would_choose_again_percent: Math.round(wouldChooseAgainPercent),
+      weighted_score: parseFloat(weightedScore.toFixed(2))
     });
 
     console.log(`✅ Updated ratings for DJ ${djId}`);
