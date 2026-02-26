@@ -123,7 +123,7 @@ class Review {
   }
 
   // 获取DJ的评论列表
-  static async findByDJId(djId, options = {}) {
+  static async findByDJId(djId, options = {}, userId = null) {
     const { sort = 'created_at', order = 'DESC', page = 1, limit = 20 } = options;
 
     const offset = (page - 1) * limit;
@@ -132,15 +132,29 @@ class Review {
     const sortField = allowedSortFields.includes(sort) ? sort : 'created_at';
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
+    // 如果有 userId，LEFT JOIN review_interactions 获取当前用户的投票状态
+    const userVoteJoin = userId
+      ? `LEFT JOIN review_interactions ri ON ri.review_id = r.id AND ri.user_id = ? AND ri.interaction_type IN ('helpful', 'not_helpful')`
+      : '';
+    const userVoteSelect = userId
+      ? `, ri.interaction_type as user_vote`
+      : `, NULL as user_vote`;
+
+    const params = userId
+      ? [userId, djId, parseInt(limit), parseInt(offset)]
+      : [djId, parseInt(limit), parseInt(offset)];
+
     const [rows] = await pool.query(
       `SELECT r.*, u.nickname, u.avatar_url,
               (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id) as comment_count
+              ${userVoteSelect}
        FROM reviews r
        LEFT JOIN users u ON r.user_id = u.id
+       ${userVoteJoin}
        WHERE r.dj_id = ? AND r.status = 'approved'
        ORDER BY r.${sortField} ${sortOrder}
        LIMIT ? OFFSET ?`,
-      [djId, parseInt(limit), parseInt(offset)]
+      params
     );
 
     // 获取每个评论的标签
@@ -230,13 +244,14 @@ class Review {
   }
 
   // 评论互动（有帮助/无帮助/举报）
+  // helpful 和 not_helpful 互斥：点一个自动取消另一个
   static async interact(reviewId, userId, interactionType) {
     const connection = await pool.getConnection();
 
     try {
       await connection.beginTransaction();
 
-      // 检查是否已经互动过
+      // 检查是否已经有相同类型的互动
       const [existing] = await connection.query(
         'SELECT * FROM review_interactions WHERE review_id = ? AND user_id = ? AND interaction_type = ?',
         [reviewId, userId, interactionType]
@@ -249,20 +264,44 @@ class Review {
           [reviewId, userId, interactionType]
         );
 
-        // 更新评论计数
         const countField = `${interactionType}_count`;
         await connection.query(
-          `UPDATE reviews SET ${countField} = ${countField} - 1 WHERE id = ?`,
+          `UPDATE reviews SET ${countField} = GREATEST(${countField} - 1, 0) WHERE id = ?`,
           [reviewId]
         );
       } else {
-        // 添加互动
+        // 互斥逻辑：helpful 和 not_helpful 互相排斥
+        const oppositeType = interactionType === 'helpful' ? 'not_helpful'
+                           : interactionType === 'not_helpful' ? 'helpful'
+                           : null;
+
+        if (oppositeType) {
+          const [oppositeExisting] = await connection.query(
+            'SELECT * FROM review_interactions WHERE review_id = ? AND user_id = ? AND interaction_type = ?',
+            [reviewId, userId, oppositeType]
+          );
+
+          if (oppositeExisting.length > 0) {
+            // 删除对立互动
+            await connection.query(
+              'DELETE FROM review_interactions WHERE review_id = ? AND user_id = ? AND interaction_type = ?',
+              [reviewId, userId, oppositeType]
+            );
+
+            const oppositeCountField = `${oppositeType}_count`;
+            await connection.query(
+              `UPDATE reviews SET ${oppositeCountField} = GREATEST(${oppositeCountField} - 1, 0) WHERE id = ?`,
+              [reviewId]
+            );
+          }
+        }
+
+        // 添加新互动
         await connection.query(
           'INSERT INTO review_interactions (review_id, user_id, interaction_type) VALUES (?, ?, ?)',
           [reviewId, userId, interactionType]
         );
 
-        // 更新评论计数
         const countField = `${interactionType}_count`;
         await connection.query(
           `UPDATE reviews SET ${countField} = ${countField} + 1 WHERE id = ?`,
