@@ -22,7 +22,7 @@ Page({
     hasMore: true,
 
     // 排序
-    sortType: 'created_at', // created_at, helpful_count, overall_rating
+    sortType: 'hot', // hot, created_at, helpful_count, overall_rating
     sortOrder: 'DESC',
     sortOptions: [],
     selectedSortIndex: 0,
@@ -88,8 +88,8 @@ Page({
   // 更新语言
   updateLanguage() {
     const sortOptions = [
+      i18n.t('djDetail.sortHottest') || '热度最高',
       i18n.t('djDetail.sortNewest'),
-      i18n.t('djDetail.sortMostHelpful'),
       i18n.t('djDetail.sortHighestRating'),
       i18n.t('djDetail.sortLowestRating')
     ];
@@ -279,12 +279,12 @@ Page({
         let sortOrder = 'DESC';
 
         switch (index) {
-          case 0: // 最新
-            sortType = 'created_at';
+          case 0: // 热度最高
+            sortType = 'hot';
             sortOrder = 'DESC';
             break;
-          case 1: // 最有帮助
-            sortType = 'helpful_count';
+          case 1: // 最新
+            sortType = 'created_at';
             sortOrder = 'DESC';
             break;
           case 2: // 评分最高

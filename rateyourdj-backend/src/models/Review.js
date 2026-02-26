@@ -128,6 +128,7 @@ class Review {
 
     const offset = (page - 1) * limit;
 
+    const isHotSort = sort === 'hot';
     const allowedSortFields = ['created_at', 'helpful_count', 'overall_rating'];
     const sortField = allowedSortFields.includes(sort) ? sort : 'created_at';
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
@@ -152,7 +153,9 @@ class Review {
        LEFT JOIN users u ON r.user_id = u.id
        ${userVoteJoin}
        WHERE r.dj_id = ? AND r.status = 'approved'
-       ORDER BY r.${sortField} ${sortOrder}
+       ORDER BY ${isHotSort
+         ? `(r.helpful_count * 2 + (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id) * 3 - r.not_helpful_count) DESC, r.created_at DESC`
+         : `r.${sortField} ${sortOrder}`}
        LIMIT ? OFFSET ?`,
       params
     );
