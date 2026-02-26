@@ -28,7 +28,31 @@ Component({
 
   data: {
     expandedReplies: {}, // 记录哪些评论的回复被完全展开了
-    defaultReplyLimit: 3 // 默认显示的回复数量
+    defaultReplyLimit: 3, // 默认显示的回复数量
+    processedComments: [] // 预处理后的评论（含 visibleReplies）
+  },
+
+  observers: {
+    'comments, expandedReplies': function(comments, expandedReplies) {
+      if (!comments || comments.length === 0) {
+        this.setData({ processedComments: [] });
+        return;
+      }
+      const limit = this.data.defaultReplyLimit;
+      const processed = comments.map(c => {
+        if (c.replies && c.replies.length > 0) {
+          const expanded = expandedReplies[c.id];
+          return {
+            ...c,
+            visibleReplies: expanded ? c.replies : c.replies.slice(0, limit),
+            hasMoreReplies: c.replies.length > limit,
+            hiddenCount: Math.max(0, c.replies.length - limit)
+          };
+        }
+        return { ...c, visibleReplies: [], hasMoreReplies: false, hiddenCount: 0 };
+      });
+      this.setData({ processedComments: processed });
+    }
   },
 
   /**

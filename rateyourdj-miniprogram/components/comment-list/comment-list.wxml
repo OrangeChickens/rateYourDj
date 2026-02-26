@@ -1,5 +1,5 @@
 <view class="comment-list">
-  <view wx:for="{{comments}}" wx:key="id" class="comment-item" style="padding-left: {{item.depth * 40}}rpx">
+  <view wx:for="{{processedComments}}" wx:key="id" class="comment-item" style="padding-left: {{item.depth * 40}}rpx">
     <!-- 评论头部 -->
     <view class="comment-header">
       <image class="avatar" src="{{item.avatar_url || '/images/default-avatar.png'}}" lazy-load />
@@ -49,10 +49,9 @@
     </view>
 
     <!-- 嵌套回复（递归，带折叠功能） -->
-    <view wx:if="{{item.replies && item.replies.length > 0}}" class="nested-replies">
-      <!-- 显示前 3 条或全部回复 -->
+    <view wx:if="{{item.visibleReplies && item.visibleReplies.length > 0}}" class="nested-replies">
       <comment-list
-        comments="{{expandedReplies[item.id] ? item.replies : item.replies.slice(0, defaultReplyLimit)}}"
+        comments="{{item.visibleReplies}}"
         reviewId="{{reviewId}}"
         replyingCommentId="{{replyingCommentId}}"
         replyingNickname="{{replyingNickname}}"
@@ -68,13 +67,13 @@
         bind:expandReplies="onExpandReplies" />
 
       <!-- 如果回复超过 3 条且未展开，显示"查看更多"按钮 -->
-      <view wx:if="{{item.replies.length > defaultReplyLimit && !expandedReplies[item.id]}}" class="view-more-replies" bindtap="toggleExpandReplies" data-comment-id="{{item.id}}">
-        <text class="view-more-text">查看更多 {{item.replies.length - defaultReplyLimit}} 条回复</text>
+      <view wx:if="{{item.hasMoreReplies && !expandedReplies[item.id]}}" class="view-more-replies" bindtap="toggleExpandReplies" data-comment-id="{{item.id}}">
+        <text class="view-more-text">查看更多 {{item.hiddenCount}} 条回复</text>
         <text class="arrow">▼</text>
       </view>
 
       <!-- 如果已展开且回复超过 3 条，显示"收起"按钮 -->
-      <view wx:if="{{item.replies.length > defaultReplyLimit && expandedReplies[item.id]}}" class="view-more-replies" bindtap="toggleExpandReplies" data-comment-id="{{item.id}}">
+      <view wx:if="{{item.hasMoreReplies && expandedReplies[item.id]}}" class="view-more-replies" bindtap="toggleExpandReplies" data-comment-id="{{item.id}}">
         <text class="view-more-text">收起回复</text>
         <text class="arrow">▲</text>
       </view>
