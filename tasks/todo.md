@@ -2,7 +2,7 @@
 
 ## In Progress
 
-- (none)
+- [ ] Fix: Review voting (helpful/not_helpful) system — deploy backend + upload trial version to test
 
 ## To Do
 

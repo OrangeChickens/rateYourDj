@@ -475,11 +475,13 @@
   color: #999;
 }
 
-.review-actions .action.vote .icon.up:active {
+.review-actions .action.vote .icon.up:active,
+.review-actions .action.vote .icon.up.active {
   color: #FF6600;
 }
 
-.review-actions .action.vote .icon.down:active {
+.review-actions .action.vote .icon.down:active,
+.review-actions .action.vote .icon.down.active {
   color: #0066FF;
 }
 
