@@ -80,7 +80,7 @@ export default {
     sortByHelpful: '按点赞',
     sortByRating: '按评分',
     sortNewest: '最新评论',
-    sortMostHelpful: '最有帮助',
+    sortHottest: '热度最高',
     sortHighestRating: '评分最高',
     sortLowestRating: '评分最低',
     noReviews: '暂无评论，来写第一条吧！'

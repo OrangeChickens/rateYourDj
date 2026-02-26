@@ -80,7 +80,7 @@ export default {
     sortByHelpful: 'Helpful',
     sortByRating: 'Rating',
     sortNewest: 'Newest',
-    sortMostHelpful: 'Most Helpful',
+    sortHottest: 'Hottest',
     sortHighestRating: 'Highest Rating',
     sortLowestRating: 'Lowest Rating',
     noReviews: 'No reviews yet. Be the first!'
