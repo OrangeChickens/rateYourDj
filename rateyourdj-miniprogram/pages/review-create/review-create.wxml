@@ -243,8 +243,21 @@
     <view style="height: 200rpx;"></view>
   </scroll-view>
 
-  <!-- 滑动提交区域 -->
+  <!-- 步骤1：确认提交 -->
   <view
+    wx:if="{{!readyToSwipe}}"
+    class="swipe-submit-area"
+    bindtap="confirmReady"
+  >
+    <view class="swipe-indicator">
+      <text class="swipe-icon">↑</text>
+      <text class="swipe-text">确定提交?</text>
+    </view>
+  </view>
+
+  <!-- 步骤2：上滑提交 -->
+  <view
+    wx:if="{{readyToSwipe}}"
     class="swipe-submit-area {{swipeProgress > 0 ? 'active' : ''}}"
     bindtouchstart="handleTouchStart"
     bindtouchmove="handleTouchMove"

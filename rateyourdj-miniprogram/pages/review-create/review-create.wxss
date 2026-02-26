@@ -173,7 +173,7 @@
   display: flex;
   align-items: center;
   gap: 16rpx;
-  margin-top: 24rpx;
+  margin-top: 48rpx;
 }
 
 .custom-tag-row .search-input {
@@ -397,6 +397,7 @@
 .swipe-submit-area.active {
   background: #F5F5F5;
 }
+
 
 .swipe-indicator {
   display: flex;

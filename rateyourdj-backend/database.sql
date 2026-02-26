@@ -97,10 +97,12 @@ INSERT INTO preset_tags (category, tag_name, tag_name_en, genre_group, sub_group
 ('style', 'Chicago House',    'Chicago House',    'House', 'Classic',         11),
 ('style', 'Acid House',       'Acid House',       'House', 'Classic',         12),
 ('style', 'Disco House',      'Disco House',      'House', 'Classic',         13),
+('style', 'Vogue',            'Vogue',            'House', 'Classic',         14),
 ('style', 'Deep House',       'Deep House',       'House', 'Deep & Melodic',  20),
 ('style', 'Progressive House','Progressive House','House', 'Deep & Melodic',  21),
 ('style', 'Afro House',       'Afro House',       'House', 'Deep & Melodic',  22),
 ('style', 'Tropical House',   'Tropical House',   'House', 'Deep & Melodic',  23),
+('style', 'Tribal House',    'Tribal House',     'House', 'Deep & Melodic',  24),
 ('style', 'Tech House',       'Tech House',       'House', 'Modern',          30),
 ('style', 'Bass House',       'Bass House',       'House', 'Modern',          31),
 ('style', 'Future House',     'Future House',     'House', 'Modern',          32),
@@ -116,8 +118,11 @@ INSERT INTO preset_tags (category, tag_name, tag_name_en, genre_group, sub_group
 ('style', 'Melodic Techno',   'Melodic Techno',   'Techno', 'Modern',         50),
 ('style', 'Minimal Techno',   'Minimal Techno',   'Techno', 'Modern',         51),
 ('style', 'Industrial Techno','Industrial Techno','Techno', 'Modern',         52),
+('style', 'Hard Groove',      'Hard Groove',      'Techno', 'Modern',         53),
 ('style', 'Hardcore Techno',  'Hardcore Techno',  'Techno', 'Hard',           55),
 ('style', 'Hard Techno',      'Hard Techno',      'Techno', 'Hard',           56),
+('style', 'Ghetto Techno',   'Ghetto Techno',    'Techno', 'Hard',           57),
+('style', 'Gabber',           'Gabber',           'Techno', 'Hard',           58),
 ('style', 'Dub Techno',       'Dub Techno',       'Techno', 'Hypnotic',       60),
 ('style', 'Ambient Techno',   'Ambient Techno',   'Techno', 'Hypnotic',       61);
 
@@ -126,6 +131,7 @@ INSERT INTO preset_tags (category, tag_name, tag_name_en, genre_group, sub_group
 ('style', 'Trance',           'Trance',           'Trance', 'Melodic',        70),
 ('style', 'Uplifting Trance', 'Uplifting Trance', 'Trance', 'Melodic',        71),
 ('style', 'Progressive Trance','Progressive Trance','Trance','Melodic',       72),
+('style', 'Neo Trance',       'Neo Trance',       'Trance', 'Melodic',        73),
 ('style', 'Psytrance',        'Psytrance',        'Trance', 'Dark & Driving', 75),
 ('style', 'Tech Trance',      'Tech Trance',      'Trance', 'Dark & Driving', 76);
 
@@ -137,10 +143,16 @@ INSERT INTO preset_tags (category, tag_name, tag_name_en, genre_group, sub_group
 ('style', 'Drum & Bass',      'Drum & Bass',      'Bass Music', 'Drum & Bass', 95),
 ('style', 'Neurofunk',        'Neurofunk',        'Bass Music', 'Drum & Bass', 96),
 ('style', 'Jungle',           'Jungle',           'Bass Music', 'Drum & Bass', 97),
+('style', 'Techstep',         'Techstep',         'Bass Music', 'Drum & Bass', 98),
+('style', 'Halftime',         'Halftime',         'Bass Music', 'Drum & Bass', 99),
+('style', 'Liquid Funk',      'Liquid Funk',      'Bass Music', 'Drum & Bass', 94),
 ('style', 'UK Garage',        'UK Garage',        'Bass Music', 'UK Bass',    100),
 ('style', 'Grime',            'Grime',            'Bass Music', 'UK Bass',    101),
 ('style', 'Bassline',         'Bassline',         'Bass Music', 'UK Bass',    102),
-('style', 'Future Garage',    'Future Garage',    'Bass Music', 'UK Bass',    103);
+('style', 'Future Garage',    'Future Garage',    'Bass Music', 'UK Bass',    103),
+('style', 'Baile Funk',       'Baile Funk',       'Bass Music', 'Global Bass', 105),
+('style', 'Gqom',             'Gqom',             'Bass Music', 'Global Bass', 106),
+('style', 'Latin Core',       'Latin Core',       'Bass Music', 'Global Bass', 107);
 
 -- EDM / Dance
 INSERT INTO preset_tags (category, tag_name, tag_name_en, genre_group, sub_group, sort_order) VALUES
@@ -148,6 +160,7 @@ INSERT INTO preset_tags (category, tag_name, tag_name_en, genre_group, sub_group
 ('style', 'Big Room',         'Big Room',         'EDM / Dance', 'Main Stage',  120),
 ('style', 'Electro House',    'Electro House',    'EDM / Dance', 'Main Stage',  121),
 ('style', 'Hardstyle',        'Hardstyle',        'EDM / Dance', 'Main Stage',  122),
+('style', 'Club',             'Club',             'EDM / Dance', 'Main Stage',  123),
 ('style', 'Future Bass',      'Future Bass',      'EDM / Dance', 'Future Pop',  125),
 ('style', 'Melbourne Bounce', 'Melbourne Bounce', 'EDM / Dance', 'Future Pop',  126),
 ('style', 'Moombahton',       'Moombahton',       'EDM / Dance', 'Future Pop',  127);
