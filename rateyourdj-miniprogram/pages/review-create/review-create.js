@@ -343,11 +343,15 @@ Page({
       console.log('添加选择:', name);
     }
 
-    // 更新数据（保留自定义标签）
+    // 更新数据（保留风格标签和自定义标签）
     const presetSelected = presetTags.filter(t => t.selected).map(t => t.name);
+    // 收集已选的风格标签（不在 presetTags 中的非自定义标签）
+    const presetNames = new Set(presetTags.map(t => t.name));
+    const customNames = new Set(this.data.customTags);
+    const styleTags = this.data.selectedTags.filter(t => !presetNames.has(t) && !customNames.has(t));
     this.setData({
       presetTags,
-      selectedTags: [...presetSelected, ...this.data.customTags]
+      selectedTags: [...styleTags, ...presetSelected, ...this.data.customTags]
     }, () => {
       console.log('已选标签:', this.data.selectedTags);
     });
