@@ -26,7 +26,7 @@ Page({
     styleCategories: [], // 分类后的风格标签（当前显示的，可能被搜索过滤）
     originalCategories: [], // 原始完整的分类数据（不变）
     searchKeyword: '', // 搜索关键词
-    expandedCategories: {}, // 展开/折叠状态 {categoryName: true/false}
+    expandedGroups: {}, // 展开/折叠状态 {genreGroupName: true/false}
 
     photo_url: '',
     localImagePath: '',
@@ -156,22 +156,26 @@ Page({
 
       // 处理标签数据 - 只使用 style 类别的标签
       if (tagsRes.success) {
-        const styleTagOptions = tagsRes.data.style || [];
+        const styleTagOptions = (tagsRes.data.style || []).map(tag => ({
+          ...tag,
+          genre_group: tag.genre_group || null,
+          sub_group: tag.sub_group || null
+        }));
 
-        // 对标签进行分类
+        // 对标签进行分类（数据驱动两级结构）
         const styleCategories = this.categorizeStyles(styleTagOptions);
 
         // 默认展开第一个分类
-        const expandedCategories = {};
+        const expandedGroups = {};
         if (styleCategories.length > 0) {
-          expandedCategories[styleCategories[0].name] = true;
+          expandedGroups[styleCategories[0].name] = true;
         }
 
         this.setData({
           styleTagOptions,
           styleCategories,
-          originalCategories: JSON.parse(JSON.stringify(styleCategories)), // 深拷贝保存原始数据
-          expandedCategories
+          originalCategories: JSON.parse(JSON.stringify(styleCategories)),
+          expandedGroups
         });
       }
 
@@ -554,119 +558,92 @@ Page({
     }
   },
 
-  // 对音乐风格进行分类
+  // 对音乐风格进行分类 — 数据驱动，从 API 返回的 genre_group/sub_group 构建两级结构
   categorizeStyles(styles) {
-    // 定义分类规则
-    const categoryRules = {
-      '主流 EDM': ['EDM', 'Future Bass', 'Electro House', 'Melbourne Bounce', 'Hardstyle', 'Drum & Bass', 'Future House'],
-      'Techno/House': ['Techno', 'House', 'Tech House', 'Minimal Techno', 'Industrial Techno', 'Acid Techno', 'Breakbeat', 'Garage', 'UK Garage', 'Disco House', 'Afro House', 'Micro House', 'Progressive House', 'Deep House', 'Bass House', 'Melodic Techno'],
-      'Trance': ['Trance', 'Psytrance', 'Progressive Trance', 'Uplifting Trance', 'Tech Trance'],
-      'Bass 音乐': ['Dubstep', 'Future Garage', 'Riddim', 'Halftime', 'Neurofunk'],
-      '实验性/小众': ['Hyperpop', 'Glitch Hop', 'IDM', 'Vaporwave', 'Footwork', 'Jungle', 'Breakcore', 'Ambient', 'Downtempo', 'Trip Hop', 'Wave', 'Jersey Club'],
-      '其他流行': ['Trap', 'Moombahton', 'Hardwave', 'Phonk', 'UK Drill', 'Slap House', 'Bassline', 'Grime', 'Electro Swing', 'Big Room'],
-      '中国/亚洲': ['国风电音', 'J-Core', 'K-House', 'Bounce', 'Hands Up']
-    };
+    const genreMap = new Map();
 
-    // 构建分类数据结构
-    const categories = [];
-    const categorizedTags = new Set();
+    styles.forEach(tag => {
+      const group = tag.genre_group || '其他';
+      const sub = tag.sub_group || '其他';
 
-    // 按预定义顺序添加分类
-    Object.entries(categoryRules).forEach(([categoryName, tagNames]) => {
-      const categoryTags = [];
-
-      tagNames.forEach(tagName => {
-        const tag = styles.find(t => t.name === tagName);
-        if (tag) {
-          categoryTags.push(tag);
-          categorizedTags.add(tag.name);
-        }
-      });
-
-      if (categoryTags.length > 0) {
-        categories.push({
-          name: categoryName,
-          tags: categoryTags,
-          count: categoryTags.length
-        });
+      if (!genreMap.has(group)) {
+        genreMap.set(group, new Map());
       }
+      const subMap = genreMap.get(group);
+      if (!subMap.has(sub)) {
+        subMap.set(sub, []);
+      }
+      subMap.get(sub).push(tag);
     });
 
-    // 添加未分类的标签
-    const uncategorized = styles.filter(t => !categorizedTags.has(t.name));
-    if (uncategorized.length > 0) {
-      categories.push({
-        name: '其他',
-        tags: uncategorized,
-        count: uncategorized.length
+    const categories = [];
+    genreMap.forEach((subMap, genreName) => {
+      const subgroups = [];
+      let totalCount = 0;
+      subMap.forEach((tags, subName) => {
+        subgroups.push({ name: subName, tags, count: tags.length });
+        totalCount += tags.length;
       });
-    }
+      categories.push({ name: genreName, subgroups, totalCount });
+    });
 
     return categories;
   },
 
-  // 切换分类展开/折叠
-  toggleCategory(e) {
+  // 切换 Genre Group 展开/折叠
+  toggleGenreGroup(e) {
     const { name } = e.currentTarget.dataset;
-    const expandedCategories = { ...this.data.expandedCategories };
-    expandedCategories[name] = !expandedCategories[name];
-
-    this.setData({ expandedCategories });
+    const key = `expandedGroups.${name}`;
+    this.setData({
+      [key]: !this.data.expandedGroups[name]
+    });
   },
 
   // 搜索风格
   onSearchInput(e) {
     const keyword = e.detail.value.trim().toLowerCase();
     this.setData({ searchKeyword: keyword });
-
-    if (!keyword) {
-      // 清空搜索，恢复分类显示
-      this.updateFilteredCategories();
-      return;
-    }
-
-    // 搜索时展开所有包含匹配结果的分类
-    const expandedCategories = {};
-    this.data.styleCategories.forEach(category => {
-      const hasMatch = category.tags.some(tag =>
-        tag.name.toLowerCase().includes(keyword) ||
-        tag.name_en?.toLowerCase().includes(keyword)
-      );
-      if (hasMatch) {
-        expandedCategories[category.name] = true;
-      }
-    });
-
-    this.setData({ expandedCategories });
     this.updateFilteredCategories();
   },
 
-  // 更新过滤后的分类数据
+  // 更新过滤后的分类数据（两级过滤）
   updateFilteredCategories() {
     const keyword = this.data.searchKeyword.toLowerCase();
 
     if (!keyword) {
-      // 没有搜索关键词，恢复原始数据
       this.setData({
-        styleCategories: JSON.parse(JSON.stringify(this.data.originalCategories))
+        styleCategories: JSON.parse(JSON.stringify(this.data.originalCategories)),
+        expandedGroups: {}
       });
       return;
     }
 
-    // 有搜索关键词，基于原始数据进行过滤
-    const filteredCategories = this.data.originalCategories.map(category => {
-      const filteredTags = category.tags.filter(tag =>
-        tag.name.toLowerCase().includes(keyword) ||
-        (tag.name_en && tag.name_en.toLowerCase().includes(keyword))
-      );
+    const filtered = [];
+    const expandedGroups = {};
 
-      return {
-        ...category,
-        tags: filteredTags,
-        count: filteredTags.length
-      };
-    }).filter(category => category.count > 0); // 移除没有匹配标签的分类
+    this.data.originalCategories.forEach(genre => {
+      const filteredSubgroups = [];
+      let totalCount = 0;
 
-    this.setData({ styleCategories: filteredCategories });
+      genre.subgroups.forEach(sub => {
+        const filteredTags = sub.tags.filter(tag =>
+          tag.name.toLowerCase().includes(keyword)
+        );
+        if (filteredTags.length > 0) {
+          filteredSubgroups.push({ ...sub, tags: filteredTags, count: filteredTags.length });
+          totalCount += filteredTags.length;
+        }
+      });
+
+      if (filteredSubgroups.length > 0) {
+        filtered.push({ ...genre, subgroups: filteredSubgroups, totalCount });
+        expandedGroups[genre.name] = true;
+      }
+    });
+
+    this.setData({
+      styleCategories: filtered,
+      expandedGroups
+    });
   }
 });

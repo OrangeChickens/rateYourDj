@@ -124,12 +124,13 @@ export const reviewAPI = {
     });
   },
 
-  // 获取DJ的评论列表
+  // 获取DJ的评论列表（带 token 以获取当前用户投票状态）
   getList(djId, params = {}) {
     return app.request({
       url: `/review/list/${djId}`,
       method: 'GET',
-      data: params
+      data: params,
+      needAuth: true
     });
   },
 

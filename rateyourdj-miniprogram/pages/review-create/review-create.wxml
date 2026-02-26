@@ -114,39 +114,71 @@
           />
         </view>
 
-        <!-- 分类标签 -->
+        <!-- Genre → Subgroup 两级分类 -->
         <view class="style-categories">
           <view
             wx:for="{{styleCategories}}"
             wx:key="name"
-            class="category-group"
+            class="genre-group"
           >
-            <!-- 分类标题（可点击展开/折叠） -->
+            <!-- Genre Group header (level 1) -->
             <view
               class="category-header"
-              bindtap="toggleCategory"
+              bindtap="toggleGenreGroup"
               data-name="{{item.name}}"
             >
-              <text class="category-icon">{{expandedCategories[item.name] ? '▼' : '▶'}}</text>
-              <text class="category-title">{{item.name}} ({{item.count}})</text>
+              <text class="category-icon">{{expandedGroups[item.name] ? '▼' : '▶'}}</text>
+              <text class="category-title">{{item.name}} ({{item.totalCount}})</text>
             </view>
 
-            <!-- 标签列表（展开时显示） -->
+            <!-- Subgroups (level 2) -->
             <view
-              wx:if="{{expandedCategories[item.name]}}"
-              class="category-tags"
+              wx:if="{{expandedGroups[item.name]}}"
+              class="subgroups-container"
             >
-              <block wx:for="{{item.tags}}" wx:for-item="tag" wx:key="id">
-                <view
-                  class="tag-item {{tools.isSelected(selectedTags, tag.name) ? 'selected' : ''}}"
-                  bindtap="toggleStyleTag"
-                  data-name="{{tag.name}}"
-                >
-                  {{tag.name}}
+              <view
+                wx:for="{{item.subgroups}}"
+                wx:for-item="subgroup"
+                wx:key="name"
+                class="subgroup"
+              >
+                <text class="subgroup-title">{{subgroup.name}}</text>
+                <view class="subgroup-tags">
+                  <block wx:for="{{subgroup.tags}}" wx:for-item="tag" wx:key="id">
+                    <view
+                      class="tag-item {{tools.isSelected(selectedTags, tag.name) ? 'selected' : ''}}"
+                      bindtap="toggleStyleTag"
+                      data-name="{{tag.name}}"
+                    >
+                      {{tag.name}}
+                    </view>
+                  </block>
                 </view>
-              </block>
+              </view>
             </view>
           </view>
+        </view>
+
+        <!-- 自定义标签输入 -->
+        <view class="custom-tag-row">
+          <input
+            class="search-input"
+            placeholder="输入自定义标签..."
+            value="{{customTagInput}}"
+            bindinput="onCustomTagInput"
+            bindconfirm="addCustomTag"
+            maxlength="20"
+          />
+          <view class="custom-tag-btn" bindtap="addCustomTag">+</view>
+        </view>
+        <view class="tag-list" wx:if="{{customTags.length > 0}}">
+          <view
+            wx:for="{{customTags}}"
+            wx:key="*this"
+            class="tag selected"
+            bindtap="removeCustomTag"
+            data-name="{{item}}"
+          >{{item}} ×</view>
         </view>
       </view>
 
