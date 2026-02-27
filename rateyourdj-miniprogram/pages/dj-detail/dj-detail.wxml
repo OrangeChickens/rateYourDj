@@ -46,6 +46,60 @@
       </view>
     </view>
 
+    <!-- 音频 Demo -->
+    <view wx:if="{{audioTracks.length > 0}}" class="media-section">
+      <view class="media-header">
+        <text class="media-title">MIXES</text>
+      </view>
+      <view class="audio-list">
+        <view
+          wx:for="{{audioTracks}}"
+          wx:key="id"
+          class="audio-item {{currentAudioId === item.id ? 'playing' : ''}}"
+          bindtap="toggleAudio"
+          data-id="{{item.id}}"
+        >
+          <view class="audio-play-btn">
+            <text class="play-icon">{{currentAudioId === item.id && isPlaying ? '■' : '▶'}}</text>
+          </view>
+          <view class="audio-info">
+            <text class="audio-title">{{item.title}}</text>
+            <text class="audio-duration">{{item.duration}}</text>
+          </view>
+          <view wx:if="{{currentAudioId === item.id}}" class="audio-progress">
+            <view class="progress-bar">
+              <view class="progress-fill" style="width: {{audioProgress}}%"></view>
+            </view>
+            <view class="progress-time">
+              <text>{{audioCurrentTime}}</text>
+              <text>{{audioDuration}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 视频号 Demo -->
+    <view wx:if="{{channelVideos.length > 0}}" class="media-section">
+      <view class="media-header">
+        <text class="media-title">VIDEOS</text>
+      </view>
+      <view class="video-list">
+        <view
+          wx:for="{{channelVideos}}"
+          wx:key="id"
+          class="video-item"
+        >
+          <channel-video
+            feed-id="{{item.feedId}}"
+            finder-user-name="{{item.finderUserName}}"
+            autoplay="{{false}}"
+          />
+          <text wx:if="{{item.title}}" class="video-title">{{item.title}}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 评分统计 -->
     <view class="rating-section">
       <view class="overall-rating">

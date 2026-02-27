@@ -161,6 +161,153 @@
   display: block;
 }
 
+/* ========== 音频/视频 Media Section ========== */
+
+.media-section {
+  background: #FFF;
+  padding: 48rpx;
+  border-bottom: 2rpx solid #000;
+}
+
+.media-header {
+  margin-bottom: 32rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 3rpx solid #000;
+}
+
+.media-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* Audio list */
+.audio-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.audio-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24rpx;
+  padding: 32rpx 0;
+  border-bottom: 2rpx solid #E0E0E0;
+}
+
+.audio-item:last-child {
+  border-bottom: none;
+}
+
+.audio-item.playing {
+  background: #F5F5F5;
+  margin: 0 -24rpx;
+  padding: 32rpx 24rpx;
+}
+
+.audio-play-btn {
+  width: 80rpx;
+  height: 80rpx;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.audio-item.playing .audio-play-btn {
+  background: #000;
+}
+
+.play-icon {
+  color: #FFF;
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.audio-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.audio-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audio-duration {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.5rpx;
+}
+
+/* Audio progress */
+.audio-progress {
+  width: 100%;
+  padding-top: 16rpx;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6rpx;
+  background: #E0E0E0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #000;
+  transition: width 0.3s linear;
+}
+
+.progress-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #666;
+}
+
+/* Video list */
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.video-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.video-item channel-video {
+  width: 100%;
+  border: 2rpx solid #000;
+}
+
+.video-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
 /* 评分统计 */
 .rating-section {
   background: #FFF;

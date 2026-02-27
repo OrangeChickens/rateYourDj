@@ -35,6 +35,17 @@ Page({
     replyingToNickname: {},    // 正在回复的用户昵称（key: reviewId, value: nickname）
     replyInputValue: {},       // 回复输入内容（key: reviewId, value: string）
 
+    // 音频播放
+    audioTracks: [],
+    currentAudioId: null,
+    isPlaying: false,
+    audioProgress: 0,
+    audioCurrentTime: '0:00',
+    audioDuration: '0:00',
+
+    // 视频号
+    channelVideos: [],
+
     // 国际化文本
     texts: {}
   },
@@ -58,6 +69,7 @@ Page({
     this.loadDJDetail();
     this.loadReviews();
     this.checkFavoriteStatus();
+    this.loadMediaDemo(djId);
 
     // 启用分享到朋友圈功能
     wx.showShareMenu({
@@ -1000,6 +1012,151 @@ Page({
     wx.navigateTo({
       url: `/pages/dj-upload/dj-upload?id=${this.data.djId}`
     });
+  },
+
+  // ========== 音频/视频 Demo ==========
+
+  // 加载 Demo 媒体数据（硬编码演示用）
+  loadMediaDemo(djId) {
+    // Demo: 只给特定 DJ 展示，或者全部展示
+    // 这里用硬编码 demo 数据，实际应从后端获取
+    const demoAudioTracks = [
+      {
+        id: 1,
+        title: 'Boiler Room Shanghai Set',
+        duration: '58:32',
+        src: 'https://storage.example.com/demo/boiler-room-set.mp3'
+      },
+      {
+        id: 2,
+        title: 'Club Mix 2025.12',
+        duration: '1:24:15',
+        src: 'https://storage.example.com/demo/club-mix.mp3'
+      },
+      {
+        id: 3,
+        title: 'Vinyl Only Session',
+        duration: '45:08',
+        src: 'https://storage.example.com/demo/vinyl-session.mp3'
+      }
+    ];
+
+    const demoChannelVideos = [
+      {
+        id: 1,
+        feedId: '',  // 填入实际视频号 feedId
+        finderUserName: '',  // 填入实际视频号用户名
+        title: 'Live at Shelter Shanghai'
+      },
+      {
+        id: 2,
+        feedId: '',
+        finderUserName: '',
+        title: 'Closing Set @ ALL Club'
+      }
+    ];
+
+    this.setData({
+      audioTracks: demoAudioTracks,
+      channelVideos: demoChannelVideos
+    });
+  },
+
+  // 切换音频播放
+  toggleAudio(e) {
+    const { id } = e.currentTarget.dataset;
+    const track = this.data.audioTracks.find(t => t.id === id);
+    if (!track) return;
+
+    // 如果点击的是正在播放的曲目 → 暂停/恢复
+    if (this.data.currentAudioId === id) {
+      if (this.data.isPlaying) {
+        this.audioCtx.pause();
+        this.setData({ isPlaying: false });
+      } else {
+        this.audioCtx.play();
+        this.setData({ isPlaying: true });
+      }
+      return;
+    }
+
+    // 播放新曲目
+    this.playAudio(track);
+  },
+
+  // 播放音频
+  playAudio(track) {
+    // 销毁旧实例
+    if (this.audioCtx) {
+      this.audioCtx.destroy();
+    }
+
+    const audioCtx = wx.createInnerAudioContext();
+    audioCtx.src = track.src;
+    audioCtx.autoplay = true;
+
+    audioCtx.onPlay(() => {
+      this.setData({
+        currentAudioId: track.id,
+        isPlaying: true
+      });
+    });
+
+    audioCtx.onPause(() => {
+      this.setData({ isPlaying: false });
+    });
+
+    audioCtx.onEnded(() => {
+      this.setData({
+        currentAudioId: null,
+        isPlaying: false,
+        audioProgress: 0,
+        audioCurrentTime: '0:00',
+        audioDuration: '0:00'
+      });
+    });
+
+    audioCtx.onTimeUpdate(() => {
+      if (!audioCtx.duration) return;
+      const progress = (audioCtx.currentTime / audioCtx.duration) * 100;
+      this.setData({
+        audioProgress: progress,
+        audioCurrentTime: this.formatAudioTime(audioCtx.currentTime),
+        audioDuration: this.formatAudioTime(audioCtx.duration)
+      });
+    });
+
+    audioCtx.onError((err) => {
+      console.error('Audio error:', err);
+      // Demo 提示：实际使用时替换为真实音频 URL
+      wx.showToast({
+        title: 'DEMO: 需要真实音频URL',
+        icon: 'none',
+        duration: 2000
+      });
+      this.setData({
+        currentAudioId: track.id,
+        isPlaying: false
+      });
+    });
+
+    this.audioCtx = audioCtx;
+  },
+
+  // 格式化音频时间
+  formatAudioTime(seconds) {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  },
+
+  // 页面卸载时清理音频
+  onUnload() {
+    if (this.audioCtx) {
+      this.audioCtx.destroy();
+      this.audioCtx = null;
+    }
   },
 
   // 根据名字长度计算字体大小
