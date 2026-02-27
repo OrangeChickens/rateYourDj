@@ -1016,49 +1016,27 @@ Page({
 
   // ========== 音频/视频 Demo ==========
 
-  // 加载 Demo 媒体数据（硬编码演示用）
+  // 加载 Demo 媒体数据（硬编码演示用，仅 DJ liuyang id=9）
   loadMediaDemo(djId) {
-    // Demo: 只给特定 DJ 展示，或者全部展示
-    // 这里用硬编码 demo 数据，实际应从后端获取
-    const demoAudioTracks = [
-      {
-        id: 1,
-        title: 'Boiler Room Shanghai Set',
-        duration: '58:32',
-        src: 'https://storage.example.com/demo/boiler-room-set.mp3'
-      },
-      {
-        id: 2,
-        title: 'Club Mix 2025.12',
-        duration: '1:24:15',
-        src: 'https://storage.example.com/demo/club-mix.mp3'
-      },
-      {
-        id: 3,
-        title: 'Vinyl Only Session',
-        duration: '45:08',
-        src: 'https://storage.example.com/demo/vinyl-session.mp3'
-      }
-    ];
-
-    const demoChannelVideos = [
-      {
-        id: 1,
-        feedId: '',  // 填入实际视频号 feedId
-        finderUserName: '',  // 填入实际视频号用户名
-        title: 'Live at Shelter Shanghai'
-      },
-      {
-        id: 2,
-        feedId: '',
-        finderUserName: '',
-        title: 'Closing Set @ ALL Club'
-      }
-    ];
+    if (djId !== 9) return;
 
     this.setData({
-      audioTracks: demoAudioTracks,
-      channelVideos: demoChannelVideos
+      audioTracks: [
+        {
+          id: 1,
+          title: 'Test Mix',
+          duration: '0:30',
+          src: 'https://rateyourdj-images.oss-cn-beijing.aliyuncs.com/dj-audio/demo/test-mix-30s.wav'
+        }
+      ],
+      channelVideos: [
+        {
+          id: 1,
+          feedId: 'export/UzFfAgtgekIEAQAAAAAAaI4pXAq25QAAAAstQy6ubaLX4KHWvLEZgBPEmqMkCS5xfsWOzNPgMJowUOibNchYPPmXkPKIXTko',
+          finderUserName: 'sph2F9cRFPGM2Pk',
+          title: ''
+        }
+      ]
     });
   },
 
