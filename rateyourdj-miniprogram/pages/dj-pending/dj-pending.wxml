@@ -1,0 +1,45 @@
+<!--pages/dj-pending/dj-pending.wxml-->
+<view class="container">
+  <!-- DJ列表 -->
+  <view wx:if="{{pendingList.length > 0}}" class="pending-list">
+    <view
+      wx:for="{{pendingList}}"
+      wx:key="id"
+      class="dj-card"
+    >
+      <view class="dj-photo">
+        <image
+          wx:if="{{item.photo_url}}"
+          src="{{item.photo_url}}"
+          mode="aspectFill"
+          class="photo"
+          lazy-load="{{true}}"
+        />
+        <view wx:else class="photo-placeholder">—</view>
+      </view>
+
+      <view class="dj-info">
+        <text class="dj-name">{{item.name}}</text>
+        <text class="dj-city">{{item.city}}</text>
+        <text wx:if="{{item.label}}" class="dj-label">{{item.label}}</text>
+        <text wx:if="{{item.music_style}}" class="dj-style">{{item.music_style}}</text>
+      </view>
+
+      <view class="action-buttons">
+        <view class="btn-approve" bindtap="handleApprove" data-id="{{item.id}}">APPROVE</view>
+        <view class="btn-reject" bindtap="handleReject" data-id="{{item.id}}">REJECT</view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{hasMore}}">
+      <text class="more-btn" bindtap="loadMore">{{loading ? 'LOADING...' : 'LOAD MORE'}}</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state">
+    <text class="icon">—</text>
+    <text class="text">暂无待审核DJ</text>
+  </view>
+</view>

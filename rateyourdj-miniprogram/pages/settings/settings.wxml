@@ -59,6 +59,13 @@
       <text class="menu-label">我的邀请码</text>
       <text class="menu-arrow">›</text>
     </view>
+
+    <!-- 提交DJ资料（非管理员） -->
+    <view class="menu-item" wx:if="{{!isAdmin}}" bindtap="goToSubmitDJ">
+      <text class="menu-icon">DJ</text>
+      <text class="menu-label">提交DJ资料</text>
+      <text class="menu-arrow">›</text>
+    </view>
   </view>
 
   <!-- 管理员菜单 -->
@@ -66,6 +73,12 @@
     <view class="menu-item" bindtap="goToUploadDJ">
       <text class="menu-icon">ADD</text>
       <text class="menu-label">上传DJ资料</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goToPendingDJs">
+      <text class="menu-icon">REV</text>
+      <text class="menu-label">待审核DJ</text>
+      <text wx:if="{{pendingCount > 0}}" class="menu-badge">{{pendingCount}}</text>
       <text class="menu-arrow">›</text>
     </view>
   </view>

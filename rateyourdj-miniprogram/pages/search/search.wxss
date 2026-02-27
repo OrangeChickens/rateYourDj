@@ -297,3 +297,17 @@
   letter-spacing: 1rpx;
   color: #999;
 }
+
+.empty-state .submit-dj-btn {
+  display: inline-block;
+  margin-top: 48rpx;
+  padding: 28rpx 80rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
