@@ -156,6 +156,19 @@
   letter-spacing: 0.5rpx;
 }
 
+.menu-badge {
+  min-width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  padding: 0 12rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 20rpx;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 0;
+}
+
 .menu-arrow {
   font-size: 40rpx;
   color: #000;

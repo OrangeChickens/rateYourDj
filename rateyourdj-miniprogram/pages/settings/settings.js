@@ -1,5 +1,5 @@
 // pages/settings/settings.js
-import { userAPI } from '../../utils/api';
+import { userAPI, djAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, showConfirm } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
@@ -14,6 +14,7 @@ Page({
     currentLanguage: 'zh-CN',
     reviewCount: 0,
     favoriteCount: 0,
+    pendingCount: 0,
 
     // 国际化文本
     texts: {}
@@ -34,6 +35,9 @@ Page({
     this.checkLoginStatus();
     if (this.data.isLoggedIn) {
       this.loadUserProfile();
+      if (this.data.isAdmin) {
+        this.loadPendingCount();
+      }
     }
   },
 
@@ -209,6 +213,32 @@ Page({
     wx.navigateTo({
       url: '/pages/dj-upload/dj-upload'
     });
+  },
+
+  // 跳转到提交DJ页面（普通用户）
+  goToSubmitDJ() {
+    wx.navigateTo({
+      url: '/pages/dj-upload/dj-upload'
+    });
+  },
+
+  // 跳转到待审核DJ列表（管理员）
+  goToPendingDJs() {
+    wx.navigateTo({
+      url: '/pages/dj-pending/dj-pending'
+    });
+  },
+
+  // 加载待审核DJ数量
+  async loadPendingCount() {
+    try {
+      const res = await djAPI.getPending(1, 1);
+      if (res.success) {
+        this.setData({ pendingCount: res.pagination.total });
+      }
+    } catch (error) {
+      console.error('加载待审核数量失败:', error);
+    }
   },
 
   // 关于

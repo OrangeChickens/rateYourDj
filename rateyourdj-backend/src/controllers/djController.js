@@ -229,6 +229,105 @@ async function updateDJ(req, res, next) {
   }
 }
 
+// 用户提交DJ（待审核）
+async function submitDJ(req, res, next) {
+  try {
+    const { name, city, label, music_style, photo_url } = req.body;
+
+    if (!name || !city) {
+      return res.status(400).json({
+        success: false,
+        message: '缺少必填字段：name 和 city'
+      });
+    }
+
+    const dj = await DJ.submit({
+      name,
+      city,
+      label: label || null,
+      music_style: music_style || null,
+      photo_url: photo_url || null,
+      submitted_by: req.user.userId
+    });
+
+    res.status(201).json({
+      success: true,
+      message: '提交成功，等待审核',
+      data: dj
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 获取待审核DJ列表（管理员）
+async function getPendingDJs(req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+
+    const result = await DJ.getPending(page, limit);
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 审核通过DJ（管理员）
+async function approveDJ(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const dj = await DJ.findById(id);
+    if (!dj) {
+      return res.status(404).json({
+        success: false,
+        message: 'DJ不存在'
+      });
+    }
+
+    const updated = await DJ.updateStatus(id, 'approved');
+
+    res.json({
+      success: true,
+      message: '审核通过',
+      data: updated
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 拒绝DJ（管理员）
+async function rejectDJ(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const dj = await DJ.findById(id);
+    if (!dj) {
+      return res.status(404).json({
+        success: false,
+        message: 'DJ不存在'
+      });
+    }
+
+    const updated = await DJ.updateStatus(id, 'rejected');
+
+    res.json({
+      success: true,
+      message: '已拒绝',
+      data: updated
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getDJList,
   getDJDetail,
@@ -237,5 +336,9 @@ module.exports = {
   getCities,
   getLabels,
   createDJ,
-  updateDJ
+  updateDJ,
+  submitDJ,
+  getPendingDJs,
+  approveDJ,
+  rejectDJ
 };

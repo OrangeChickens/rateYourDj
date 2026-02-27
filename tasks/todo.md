@@ -3,6 +3,7 @@
 ## In Progress
 
 - [ ] Fix: Review voting (helpful/not_helpful) system — deploy backend + upload trial version to test
+- [ ] Feat: DJ 用户提交 + 管理员审核系统 — code complete, needs migration + deploy + test
 
 ## To Do
 
@@ -14,6 +15,7 @@
 
 ## Completed (Recent)
 
+- [x] Fix: Review voting 互斥 + 已投状态高亮 + 乐观更新 (`9f73a12`, `4fb26c2`)
 - [x] Fix: 搜索历史显示 NULL (`6e3d753`)
 - [x] Fix: waitlist 已登录用户 used_count 不增加 (`69f7c2e`)
 - [x] Chore: 删除一次性调试脚本 (`5baa295`)

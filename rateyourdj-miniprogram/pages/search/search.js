@@ -209,6 +209,13 @@ Page({
     });
   },
 
+  // 跳转到提交DJ页面
+  goToSubmitDJ() {
+    wx.navigateTo({
+      url: '/pages/dj-upload/dj-upload'
+    });
+  },
+
   // 触底加载更多
   onReachBottom() {
     this.loadMore();

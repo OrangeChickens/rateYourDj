@@ -107,6 +107,44 @@ export const djAPI = {
       data,
       needAuth: true
     });
+  },
+
+  // 用户提交DJ（待审核）
+  submit(data) {
+    return app.request({
+      url: '/dj/submit',
+      method: 'POST',
+      data,
+      needAuth: true
+    });
+  },
+
+  // 获取待审核DJ列表（管理员）
+  getPending(page = 1, limit = 20) {
+    return app.request({
+      url: '/dj/pending/list',
+      method: 'GET',
+      data: { page, limit },
+      needAuth: true
+    });
+  },
+
+  // 审核通过DJ（管理员）
+  approve(id) {
+    return app.request({
+      url: `/dj/${id}/approve`,
+      method: 'PUT',
+      needAuth: true
+    });
+  },
+
+  // 拒绝DJ（管理员）
+  reject(id) {
+    return app.request({
+      url: `/dj/${id}/reject`,
+      method: 'PUT',
+      needAuth: true
+    });
   }
 };
 

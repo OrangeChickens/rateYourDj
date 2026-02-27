@@ -1,0 +1,160 @@
+/* pages/dj-pending/dj-pending.wxss - NTS style */
+
+.container {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  padding: 48rpx 32rpx;
+}
+
+/* DJ cards */
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.dj-card {
+  background: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  padding: 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.dj-photo {
+  width: 100%;
+  height: 320rpx;
+}
+
+.dj-photo .photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: 2rpx solid #000;
+  background-color: #F0F0F0;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2rpx solid #CCC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  color: #CCC;
+  background-color: #F0F0F0;
+}
+
+.dj-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.dj-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.dj-city {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.dj-label {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+}
+
+.dj-style {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #666;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 16rpx;
+}
+
+.btn-approve {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.btn-reject {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #FFF;
+  color: #000;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* Load more */
+.load-more {
+  text-align: center;
+  padding: 64rpx 0;
+}
+
+.load-more .more-btn {
+  display: inline-block;
+  padding: 28rpx 80rpx;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 200rpx 0;
+  text-align: center;
+}
+
+.empty-state .icon {
+  display: block;
+  font-size: 120rpx;
+  margin-bottom: 48rpx;
+  opacity: 0.2;
+}
+
+.empty-state .text {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  color: #999;
+}

@@ -13,6 +13,7 @@
     "pages/settings/settings",
     "pages/city-list/city-list",
     "pages/dj-upload/dj-upload",
+    "pages/dj-pending/dj-pending",
     "pages/all-reviews/all-reviews",
     "pages/agreement/agreement"
   ],

@@ -8,6 +8,7 @@ Page({
   data: {
     djId: null, // DJ ID（编辑模式）
     isEditMode: false, // 是否编辑模式
+    isAdmin: false, // 是否管理员
 
     name: '',
     city: '',
@@ -49,21 +50,15 @@ Page({
         title: '编辑DJ资料'
       });
     }
-    // 检查管理员权限
+
     const userInfo = app.globalData.userInfo;
     const token = app.globalData.token;
 
-    console.log('DJ上传页面 - 权限检查:');
-    console.log('token:', token ? '存在' : '不存在');
-    console.log('userInfo:', userInfo);
-    console.log('role:', userInfo ? userInfo.role : '无');
-
     // 未登录
     if (!token || !userInfo) {
-      console.log('用户未登录，返回');
       wx.showModal({
         title: '需要登录',
-        content: '请先登录后再上传DJ资料',
+        content: '请先登录后再提交DJ资料',
         confirmText: '去登录',
         cancelText: '取消',
         success: (res) => {
@@ -79,22 +74,15 @@ Page({
       return;
     }
 
-    // 不是管理员
-    if (userInfo.role !== 'admin') {
-      console.log('用户不是管理员，role:', userInfo.role);
-      wx.showModal({
-        title: '权限不足',
-        content: '只有管理员才能上传DJ资料',
-        showCancel: false,
-        confirmText: '知道了',
-        success: () => {
-          wx.navigateBack();
-        }
-      });
-      return;
-    }
+    const isAdmin = userInfo.role === 'admin';
+    this.setData({ isAdmin });
 
-    console.log('权限检查通过，用户是管理员');
+    // 设置导航栏标题
+    if (!this.data.isEditMode) {
+      wx.setNavigationBarTitle({
+        title: isAdmin ? '上传DJ资料' : '提交DJ资料'
+      });
+    }
 
     // 加载数据
     await this.loadFormData();
@@ -498,41 +486,40 @@ Page({
         console.log('图片上传成功，URL:', photoUrl);
       }
 
-      const actionText = this.data.isEditMode ? '更新' : '创建';
-      showLoading(`正在${actionText}DJ...`);
-
       // 组装音乐风格字符串
       const music_style = this.data.selectedStyles.join(',') || null;
+      const djData = {
+        name: this.data.name,
+        city: this.data.city,
+        label: this.data.label || null,
+        music_style: music_style,
+        photo_url: photoUrl
+      };
 
-      // 提交DJ信息
+      // 根据模式选择 API
       let res;
+      let successMsg;
       if (this.data.isEditMode) {
-        res = await djAPI.update(this.data.djId, {
-          name: this.data.name,
-          city: this.data.city,
-          label: this.data.label || null,
-          music_style: music_style,
-          photo_url: photoUrl
-        });
+        showLoading('正在更新DJ...');
+        res = await djAPI.update(this.data.djId, djData);
+        successMsg = 'DJ更新成功';
+      } else if (this.data.isAdmin) {
+        showLoading('正在创建DJ...');
+        res = await djAPI.create(djData);
+        successMsg = 'DJ创建成功';
       } else {
-        res = await djAPI.create({
-          name: this.data.name,
-          city: this.data.city,
-          label: this.data.label || null,
-          music_style: music_style,
-          photo_url: photoUrl
-        });
+        showLoading('正在提交...');
+        res = await djAPI.submit(djData);
+        successMsg = '提交成功，等待审核';
       }
 
-      console.log(`${actionText}DJ响应:`, res);
-
       if (res.success) {
-        showToast(`DJ${actionText}成功`);
+        showToast(successMsg);
         setTimeout(() => {
           wx.navigateBack();
         }, 1500);
       } else {
-        showToast(res.message || `${actionText}失败`);
+        showToast(res.message || '提交失败');
       }
     } catch (error) {
       console.error('提交失败:', error);

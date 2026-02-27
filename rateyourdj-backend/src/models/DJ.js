@@ -28,7 +28,7 @@ class DJ {
   static async getList(filters = {}) {
     const { city, style, letter, sort = 'weighted_score', order = 'DESC', page = 1, limit = 20 } = filters;
 
-    let query = 'SELECT * FROM djs WHERE 1=1';
+    let query = 'SELECT * FROM djs WHERE status = \'approved\'';
     const params = [];
 
     // 城市筛选
@@ -69,7 +69,7 @@ class DJ {
     const [rows] = await pool.query(query, params);
 
     // 获取总数
-    let countQuery = 'SELECT COUNT(*) as total FROM djs WHERE 1=1';
+    let countQuery = 'SELECT COUNT(*) as total FROM djs WHERE status = \'approved\'';
     const countParams = [];
     if (city) {
       countQuery += ' AND city = ?';
@@ -117,7 +117,7 @@ class DJ {
 
     const [rows] = await pool.query(
       `SELECT * FROM djs
-       WHERE name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?
+       WHERE status = 'approved' AND (name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?)
        ORDER BY weighted_score DESC, id ASC
        LIMIT ? OFFSET ?`,
       [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`, parseInt(limit), parseInt(offset)]
@@ -125,7 +125,7 @@ class DJ {
 
     const [countResult] = await pool.query(
       `SELECT COUNT(*) as total FROM djs
-       WHERE name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?`,
+       WHERE status = 'approved' AND (name LIKE ? OR city LIKE ? OR label LIKE ? OR music_style LIKE ?)`,
       [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`, `%${keyword}%`]
     );
 
@@ -144,6 +144,7 @@ class DJ {
   static async getHotDJs(limit = 10) {
     const [rows] = await pool.query(
       `SELECT * FROM djs
+       WHERE status = 'approved'
        ORDER BY weighted_score DESC, review_count DESC, id ASC
        LIMIT ?`,
       [limit]
@@ -156,6 +157,7 @@ class DJ {
     const [rows] = await pool.query(
       `SELECT city, COUNT(*) as dj_count
        FROM djs
+       WHERE status = 'approved'
        GROUP BY city
        ORDER BY dj_count DESC`
     );
@@ -167,11 +169,59 @@ class DJ {
     const [rows] = await pool.query(
       `SELECT label, COUNT(*) as dj_count
        FROM djs
-       WHERE label IS NOT NULL AND label != ''
+       WHERE status = 'approved' AND label IS NOT NULL AND label != ''
        GROUP BY label
        ORDER BY dj_count DESC`
     );
     return rows;
+  }
+
+  // 用户提交DJ（待审核）
+  static async submit(djData) {
+    const { name, city, label, photo_url, music_style, submitted_by } = djData;
+    const httpsPhotoUrl = convertToHttps(photo_url);
+
+    const [result] = await pool.query(
+      `INSERT INTO djs (name, city, label, photo_url, music_style, status, submitted_by)
+       VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
+      [name, city, label, httpsPhotoUrl, music_style, submitted_by]
+    );
+    return this.findById(result.insertId);
+  }
+
+  // 获取待审核DJ列表
+  static async getPending(page = 1, limit = 20) {
+    const offset = (page - 1) * limit;
+
+    const [rows] = await pool.query(
+      `SELECT * FROM djs WHERE status = 'pending'
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`,
+      [parseInt(limit), parseInt(offset)]
+    );
+
+    const [countResult] = await pool.query(
+      `SELECT COUNT(*) as total FROM djs WHERE status = 'pending'`
+    );
+
+    return {
+      data: processDJArray(rows),
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: countResult[0].total,
+        totalPages: Math.ceil(countResult[0].total / limit)
+      }
+    };
+  }
+
+  // 更新DJ状态（审核通过/拒绝）
+  static async updateStatus(id, status) {
+    await pool.query(
+      'UPDATE djs SET status = ? WHERE id = ?',
+      [status, id]
+    );
+    return this.findById(id);
   }
 
   // 更新DJ评分
