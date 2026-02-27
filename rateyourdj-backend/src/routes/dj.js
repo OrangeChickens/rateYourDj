@@ -13,7 +13,8 @@ const {
   submitDJ,
   getPendingDJs,
   approveDJ,
-  rejectDJ
+  rejectDJ,
+  getSoundCloudStream
 } = require('../controllers/djController');
 
 // 获取DJ列表（支持筛选、排序）
@@ -30,6 +31,9 @@ router.get('/cities/all', getCities);
 
 // 获取所有厂牌
 router.get('/labels/all', getLabels);
+
+// SoundCloud stream URL 解析
+router.get('/soundcloud/stream', getSoundCloudStream);
 
 // 用户提交DJ（需登录）
 router.post('/submit', authenticate, submitDJ);

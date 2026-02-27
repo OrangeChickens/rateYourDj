@@ -60,7 +60,7 @@
           data-id="{{item.id}}"
         >
           <view class="audio-play-btn">
-            <text class="play-icon">{{currentAudioId === item.id && isPlaying ? '■' : '▶'}}</text>
+            <text class="play-icon">{{audioLoading && currentAudioId !== item.id ? '...' : (currentAudioId === item.id && isPlaying ? '■' : '▶')}}</text>
           </view>
           <view class="audio-info">
             <text class="audio-title">{{item.title}}</text>

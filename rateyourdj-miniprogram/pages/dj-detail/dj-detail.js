@@ -39,6 +39,7 @@ Page({
     audioTracks: [],
     currentAudioId: null,
     isPlaying: false,
+    audioLoading: false,
     audioProgress: 0,
     audioCurrentTime: '0:00',
     audioDuration: '0:00',
@@ -1020,19 +1021,20 @@ Page({
   loadMediaDemo(djId) {
     if (djId !== 9) return;
 
+    // Disclosure Boiler Room Shanghai DJ Set (SoundCloud track ID: 265848436)
     this.setData({
       audioTracks: [
         {
           id: 1,
-          title: 'Test Mix',
-          duration: '0:30',
-          src: 'https://rateyourdj-images.oss-cn-beijing.aliyuncs.com/dj-audio/demo/test-mix-30s.wav'
+          title: 'DISCLOSURE BOILER ROOM SHANGHAI DJ SET',
+          duration: '89:09',
+          scTrackId: '265848436'
         }
       ],
       channelVideos: [
         {
           id: 1,
-          feedId: 'export/UzFfAgtgekIEAQAAAAAAaI4pXAq25QAAAAstQy6ubaLX4KHWvLEZgBPEmqMkCS5xfsWOzNPgMJowUOibNchYPPmXkPKIXTko',
+          feedId: 'UzFfAgtgekIEAQAAAAAAaI4pXAq25QAAAAstQy6ubaLX4KHWvLEZgBPEmqMkCS5xfsWOzNPgMJowUOibNchYPPmXkPKIXTko',
           finderUserName: 'sph2F9cRFPGM2Pk',
           title: ''
         }
@@ -1041,7 +1043,7 @@ Page({
   },
 
   // 切换音频播放
-  toggleAudio(e) {
+  async toggleAudio(e) {
     const { id } = e.currentTarget.dataset;
     const track = this.data.audioTracks.find(t => t.id === id);
     if (!track) return;
@@ -1058,7 +1060,29 @@ Page({
       return;
     }
 
-    // 播放新曲目
+    // 如果有 SoundCloud trackId，先拿 stream URL
+    if (track.scTrackId) {
+      this.setData({ audioLoading: true });
+      try {
+        const res = await app.request({
+          url: `/dj/soundcloud/stream?trackId=${track.scTrackId}`,
+          method: 'GET'
+        });
+        if (res.success && res.data.url) {
+          this.playAudio({ ...track, src: res.data.url });
+        } else {
+          wx.showToast({ title: '获取音频失败', icon: 'none' });
+        }
+      } catch (err) {
+        console.error('SoundCloud stream error:', err);
+        wx.showToast({ title: '获取音频失败', icon: 'none' });
+      } finally {
+        this.setData({ audioLoading: false });
+      }
+      return;
+    }
+
+    // 直接播放（有 src 的曲目）
     this.playAudio(track);
   },
 

@@ -328,6 +328,72 @@ async function rejectDJ(req, res, next) {
   }
 }
 
+// 解析 SoundCloud stream URL
+const SC_CLIENT_ID = 'u2ydppvwXCUxV6VITwH4OXk8JBySpoNr';
+
+async function getSoundCloudStream(req, res, next) {
+  try {
+    const { trackId } = req.query;
+    if (!trackId) {
+      return res.status(400).json({ success: false, message: '缺少 trackId' });
+    }
+
+    // 1. 获取 track 信息，拿到 progressive stream 的 media URL
+    const https = require('https');
+
+    const trackData = await new Promise((resolve, reject) => {
+      https.get(
+        `https://api-v2.soundcloud.com/tracks/${trackId}?client_id=${SC_CLIENT_ID}`,
+        (resp) => {
+          let data = '';
+          resp.on('data', chunk => data += chunk);
+          resp.on('end', () => {
+            try { resolve(JSON.parse(data)); }
+            catch (e) { reject(new Error('SoundCloud API 返回无效数据')); }
+          });
+        }
+      ).on('error', reject);
+    });
+
+    // 找 progressive mp3 transcoding
+    const transcodings = trackData.media && trackData.media.transcodings || [];
+    const progressive = transcodings.find(
+      t => t.format && t.format.protocol === 'progressive' && t.format.mime_type === 'audio/mpeg'
+    );
+
+    if (!progressive) {
+      return res.status(404).json({ success: false, message: '未找到可用的音频流' });
+    }
+
+    // 2. 请求 media URL 拿到实际的 stream URL
+    const streamData = await new Promise((resolve, reject) => {
+      https.get(
+        `${progressive.url}?client_id=${SC_CLIENT_ID}`,
+        (resp) => {
+          let data = '';
+          resp.on('data', chunk => data += chunk);
+          resp.on('end', () => {
+            try { resolve(JSON.parse(data)); }
+            catch (e) { reject(new Error('无法获取 stream URL')); }
+          });
+        }
+      ).on('error', reject);
+    });
+
+    res.json({
+      success: true,
+      data: {
+        url: streamData.url,
+        title: trackData.title,
+        duration: trackData.duration, // ms
+        artwork: trackData.artwork_url
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getDJList,
   getDJDetail,
@@ -340,5 +406,6 @@ module.exports = {
   submitDJ,
   getPendingDJs,
   approveDJ,
-  rejectDJ
+  rejectDJ,
+  getSoundCloudStream
 };
