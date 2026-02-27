@@ -3,9 +3,10 @@
  * Single source of truth for version tracking.
  */
 module.exports = {
-  version: '0.1.8-beta',
-  buildDate: '2026-02-26',
+  version: '0.1.9-beta',
+  buildDate: '2026-02-27',
   changelog: [
+    '0.1.9-beta - DJ用户提交+管理员审核系统',
     '0.1.8-beta - 评论默认按热度排序，两步提交评价',
     '0.1.7-beta - 曲风分类重构：genre→subgenre两级嵌套，72个风格标签',
     '0.1.6-beta - 评价页支持自定义标签输入',

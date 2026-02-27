@@ -106,8 +106,6 @@
 
       <!-- 空状态 -->
       <view wx:else class="empty-state">
-        <text class="icon">—</text>
-        <text class="text">{{texts.noResult}}</text>
         <view class="submit-dj-btn" bindtap="goToSubmitDJ">找不到？提交新DJ</view>
       </view>
     </view>

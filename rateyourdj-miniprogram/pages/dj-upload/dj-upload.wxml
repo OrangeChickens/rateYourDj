@@ -16,7 +16,7 @@
   };
 </wxs>
 
-<view class="container">
+<view class="container {{animationPhase === 'slide-up' ? 'sliding-up' : ''}}">
   <view class="form-section">
     <view class="form-title">{{isAdmin ? '上传DJ资料' : '提交DJ资料'}}</view>
 
@@ -26,8 +26,8 @@
       <view class="image-upload" bindtap="chooseImage">
         <image wx:if="{{localImagePath}}" src="{{localImagePath}}" mode="aspectFill" class="preview-image" />
         <view wx:else class="upload-placeholder">
-          <text class="upload-icon">📷</text>
-          <text class="upload-text">点击选择照片</text>
+          <text class="upload-icon">+</text>
+          <text class="upload-text">SELECT PHOTO</text>
         </view>
       </view>
     </view>
@@ -145,13 +145,52 @@
       <view class="hint-text">最多选择 5 个标签</view>
     </view>
 
-    <!-- 提交按钮 -->
-    <button
-      class="submit-btn"
-      bindtap="handleSubmit"
-      disabled="{{uploading}}"
-    >
-      {{uploading ? '上传中...' : (isAdmin ? '提交' : '提交审核')}}
-    </button>
+    <!-- 底部间距 -->
+    <view style="height: 280rpx;"></view>
+  </view>
+
+  <!-- 步骤1：确认提交 -->
+  <view
+    wx:if="{{!readyToSwipe}}"
+    class="swipe-submit-area"
+    bindtap="confirmReady"
+  >
+    <view class="swipe-indicator">
+      <text class="swipe-icon">↑</text>
+      <text class="swipe-text">确定提交?</text>
+    </view>
+  </view>
+
+  <!-- 步骤2：上滑提交 -->
+  <view
+    wx:if="{{readyToSwipe}}"
+    class="swipe-submit-area {{swipeProgress > 0 ? 'active' : ''}}"
+    bindtouchstart="handleTouchStart"
+    bindtouchmove="handleTouchMove"
+    bindtouchend="handleTouchEnd"
+  >
+    <view class="swipe-indicator" style="transform: translateY({{-swipeProgress * 0.3}}rpx)">
+      <text class="swipe-icon">↑</text>
+      <text class="swipe-text">{{swipeProgress >= 100 ? '松手提交' : '向上滑动提交'}}</text>
+    </view>
+    <view class="swipe-progress-bar">
+      <view class="swipe-progress-fill" style="width: {{swipeProgress}}%"></view>
+    </view>
+  </view>
+</view>
+
+<!-- 提交动画遮罩层 -->
+<view class="submit-animation-overlay {{showSubmitAnimation ? 'show' : ''}}">
+  <view class="animation-content {{animationPhase}}">
+    <view class="confetti-container" wx:if="{{animationPhase === 'success'}}">
+      <view wx:for="{{confettiPieces}}" wx:key="index"
+            class="confetti"
+            style="left: {{item.left}}%; animation-delay: {{item.delay}}s; background-color: {{item.color}}; animation-duration: {{item.duration}}s;">
+      </view>
+    </view>
+    <view class="success-content" wx:if="{{animationPhase === 'success'}}">
+      <view class="success-icon">✓</view>
+      <text class="success-text">{{isAdmin ? 'DJ已创建' : '已提交审核'}}</text>
+    </view>
   </view>
 </view>

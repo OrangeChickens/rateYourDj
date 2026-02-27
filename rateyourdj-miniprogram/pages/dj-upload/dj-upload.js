@@ -31,7 +31,18 @@ Page({
 
     photo_url: '',
     localImagePath: '',
-    uploading: false
+    uploading: false,
+
+    // 滑动提交
+    readyToSwipe: false,
+    swipeProgress: 0,
+    touchStartY: 0,
+    touchStartTime: 0,
+
+    // 提交动画
+    showSubmitAnimation: false,
+    animationPhase: '',
+    confettiPieces: []
   },
 
   async onLoad(options) {
@@ -153,11 +164,8 @@ Page({
         // 对标签进行分类（数据驱动两级结构）
         const styleCategories = this.categorizeStyles(styleTagOptions);
 
-        // 默认展开第一个分类
+        // 默认全部折叠
         const expandedGroups = {};
-        if (styleCategories.length > 0) {
-          expandedGroups[styleCategories[0].name] = true;
-        }
 
         this.setData({
           styleTagOptions,
@@ -458,32 +466,93 @@ Page({
     });
   },
 
-  // 提交表单
-  async handleSubmit() {
-    // 验证必填字段
+  // 验证表单
+  validateForm() {
     if (!this.data.name || !this.data.city) {
       showToast('请填写DJ名称和城市');
-      return;
+      return false;
     }
-
-    // 新建模式必须选择图片
     if (!this.data.isEditMode && !this.data.localImagePath) {
       showToast('请选择DJ照片');
-      return;
+      return false;
     }
+    return true;
+  },
+
+  // 确认提交（第一步）
+  confirmReady() {
+    if (!this.validateForm()) return;
+    wx.vibrateShort({ type: 'light' });
+    this.setData({ readyToSwipe: true });
+  },
+
+  // 触摸开始
+  handleTouchStart(e) {
+    if (this.data.uploading) return;
+    this.setData({
+      touchStartY: e.touches[0].pageY,
+      touchStartTime: Date.now()
+    });
+  },
+
+  // 触摸移动
+  handleTouchMove(e) {
+    if (this.data.uploading) return;
+    const deltaY = this.data.touchStartY - e.touches[0].pageY;
+    if (deltaY > 0) {
+      const progress = Math.min((deltaY / 150) * 100, 100);
+      this.setData({ swipeProgress: progress });
+    } else {
+      this.setData({ swipeProgress: 0 });
+    }
+  },
+
+  // 触摸结束
+  handleTouchEnd(e) {
+    if (this.data.uploading) return;
+    const deltaY = this.data.touchStartY - e.changedTouches[0].pageY;
+    const deltaTime = Date.now() - this.data.touchStartTime;
+    const velocity = deltaY / deltaTime;
+
+    if (this.data.swipeProgress >= 100 || (deltaY > 50 && velocity > 0.5)) {
+      wx.vibrateShort({ type: 'medium' });
+      this.handleSubmit();
+    }
+    this.setData({ swipeProgress: 0 });
+  },
+
+  // 生成五彩纸屑
+  generateConfetti() {
+    const confettiPieces = [];
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+    for (let i = 0; i < 50; i++) {
+      confettiPieces.push({
+        left: Math.random() * 100,
+        delay: Math.random() * 0.5,
+        duration: 2 + Math.random() * 2,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+    this.setData({ confettiPieces });
+  },
+
+  // 提交表单
+  async handleSubmit() {
+    if (this.data.uploading) return;
+    if (!this.validateForm()) return;
 
     try {
       this.setData({ uploading: true });
 
-      console.log('开始提交DJ信息...');
+      // 第一阶段：页面向上滑动
+      this.setData({ showSubmitAnimation: true, animationPhase: 'slide-up' });
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      let photoUrl = this.data.photo_url; // 使用现有URL
+      let photoUrl = this.data.photo_url;
 
       // 如果选择了新图片，先上传
       if (this.data.localImagePath && this.data.localImagePath !== this.data.photo_url) {
-        showLoading('正在上传图片...');
         photoUrl = await this.uploadImageToAliyun(this.data.localImagePath);
-        console.log('图片上传成功，URL:', photoUrl);
       }
 
       // 组装音乐风格字符串
@@ -498,33 +567,31 @@ Page({
 
       // 根据模式选择 API
       let res;
-      let successMsg;
       if (this.data.isEditMode) {
-        showLoading('正在更新DJ...');
         res = await djAPI.update(this.data.djId, djData);
-        successMsg = 'DJ更新成功';
       } else if (this.data.isAdmin) {
-        showLoading('正在创建DJ...');
         res = await djAPI.create(djData);
-        successMsg = 'DJ创建成功';
       } else {
-        showLoading('正在提交...');
         res = await djAPI.submit(djData);
-        successMsg = '提交成功，等待审核';
       }
 
       if (res.success) {
-        showToast(successMsg);
+        // 第二阶段：显示成功动画
+        this.generateConfetti();
+        this.setData({ animationPhase: 'success' });
+        wx.vibrateShort({ type: 'heavy' });
+
         setTimeout(() => {
           wx.navigateBack();
-        }, 1500);
+        }, 2500);
       } else {
+        this.setData({ showSubmitAnimation: false, animationPhase: '' });
         showToast(res.message || '提交失败');
       }
     } catch (error) {
       console.error('提交失败:', error);
+      this.setData({ showSubmitAnimation: false, animationPhase: '' });
 
-      // 根据错误类型给出不同的提示
       let errorMsg = '提交失败，请重试';
       if (error.message) {
         if (error.message.includes('网络')) {
@@ -537,7 +604,6 @@ Page({
           errorMsg = error.message;
         }
       }
-
       showToast(errorMsg);
     } finally {
       this.setData({ uploading: false });
