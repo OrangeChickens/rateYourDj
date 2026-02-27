@@ -94,16 +94,42 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 切换开关区域 */
-.toggle-section {
+/* 会再选区域 */
+.choose-again-section {
   background: #FFF;
-  padding: 48rpx;
+  padding: 64rpx 48rpx;
   margin: 0 32rpx 32rpx 32rpx;
   border: 2rpx solid #000;
   border-radius: 0;
+}
+
+.choose-again-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 16rpx;
+}
+
+.choose-again-btn {
+  flex: 1;
+  padding: 32rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #000;
+  background: #FFF;
+  border: 2rpx solid #000;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  transition: all 0.2s;
+}
+
+.choose-again-btn:active {
+  opacity: 0.8;
+}
+
+.choose-again-btn.selected {
+  background: #000;
+  color: #FFF;
 }
 
 /* 标签选择区域 */

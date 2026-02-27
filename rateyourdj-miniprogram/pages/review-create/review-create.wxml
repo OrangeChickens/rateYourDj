@@ -87,13 +87,20 @@
     </view>
 
     <!-- 是否会再选 -->
-    <view class="toggle-section">
-      <text class="section-title">{{texts.wouldChooseAgain}}</text>
-      <switch
-        checked="{{wouldChooseAgain}}"
-        bindchange="toggleWouldChoose"
-        color="#FFD700"
-      />
+    <view class="choose-again-section">
+      <view class="section-title">{{texts.wouldChooseAgain}} *</view>
+      <view class="choose-again-buttons">
+        <view
+          class="choose-again-btn {{wouldChooseAgain === true ? 'selected' : ''}}"
+          bindtap="setWouldChoose"
+          data-value="yes"
+        >{{texts.wouldYes}}</view>
+        <view
+          class="choose-again-btn {{wouldChooseAgain === false ? 'selected' : ''}}"
+          bindtap="setWouldChoose"
+          data-value="no"
+        >{{texts.wouldNo}}</view>
+      </view>
     </view>
 
     <!-- 标签选择 -->

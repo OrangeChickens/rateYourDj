@@ -14,8 +14,8 @@ Page({
     performanceRating: 0,
     personalityRating: 0,
 
-    // 是否会再选
-    wouldChooseAgain: false,
+    // 是否会再选（null = 未选择）
+    wouldChooseAgain: null,
 
     // 评论内容
     comment: '',
@@ -86,6 +86,9 @@ Page({
         ratePerformance: i18n.t('review.ratePerformance'),
         ratePersonality: i18n.t('review.ratePersonality'),
         wouldChooseAgain: i18n.t('review.wouldChooseAgain'),
+        wouldYes: i18n.t('review.wouldYes'),
+        wouldNo: i18n.t('review.wouldNo'),
+        pleaseChooseAgain: i18n.t('review.pleaseChooseAgain'),
         selectTags: i18n.t('review.selectTags'),
         styleTags: i18n.t('review.styleTags'),
         performanceTags: i18n.t('review.performanceTags'),
@@ -307,9 +310,10 @@ Page({
     this.setData({ [type]: value });
   },
 
-  // 切换会再选
-  toggleWouldChoose(e) {
-    this.setData({ wouldChooseAgain: e.detail.value });
+  // 设置会再选
+  setWouldChoose(e) {
+    const value = e.currentTarget.dataset.value === 'yes';
+    this.setData({ wouldChooseAgain: value });
   },
 
   // 切换标签选择
@@ -412,11 +416,17 @@ Page({
 
   // 验证表单
   validateForm() {
-    const { overallRating, setRating, performanceRating, personalityRating, comment } = this.data;
+    const { overallRating, setRating, performanceRating, personalityRating, wouldChooseAgain, comment } = this.data;
 
     // 检查是否所有评分都已完成
     if (!overallRating || !setRating || !performanceRating || !personalityRating) {
       showToast(this.data.texts.pleaseRate);
+      return false;
+    }
+
+    // 检查是否选择了会再选
+    if (wouldChooseAgain === null) {
+      showToast(this.data.texts.pleaseChooseAgain);
       return false;
     }
 
