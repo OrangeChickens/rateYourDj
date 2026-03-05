@@ -1,0 +1,67 @@
+<view class="container">
+  <!-- 输入区域 -->
+  <view class="input-section" wx:if="{{isLoggedIn}}">
+    <textarea
+      class="input-area"
+      placeholder="你对 RateYourDJ 有什么建议？"
+      placeholder-class="placeholder"
+      maxlength="500"
+      value="{{inputContent}}"
+      bindinput="onInput"
+    />
+    <view class="input-footer">
+      <text class="char-count">{{inputContent.length}}/500</text>
+      <view class="submit-btn {{submitting || !inputContent.trim() ? 'disabled' : ''}}" bindtap="handleSubmit">
+        SUBMIT
+      </view>
+    </view>
+  </view>
+
+  <!-- 未登录提示 -->
+  <view class="login-prompt" wx:if="{{!isLoggedIn}}">
+    <text class="prompt-text">登录后可以提交建议和投票</text>
+    <view class="login-btn" bindtap="handleLogin">LOGIN</view>
+  </view>
+
+  <!-- 建议列表 -->
+  <view class="suggestion-list">
+    <view class="suggestion-card" wx:for="{{suggestions}}" wx:key="id">
+      <view class="card-content">{{item.content}}</view>
+      <view class="card-meta">
+        <text class="meta-author">{{item.nickname || '匿名'}}</text>
+        <text class="meta-dot">·</text>
+        <text class="meta-time">{{item.timeAgo}}</text>
+        <text class="meta-dot" wx:if="{{item.status !== 'open'}}">·</text>
+        <text class="meta-status status-{{item.status}}" wx:if="{{item.status !== 'open'}}">{{item.status === 'planned' ? 'PLANNED' : item.status === 'done' ? 'DONE' : 'REJECTED'}}</text>
+      </view>
+      <view class="card-actions">
+        <view class="vote-btn {{item.user_vote === 'up' ? 'active' : ''}}" data-id="{{item.id}}" data-type="up" bindtap="handleVote">
+          <text class="vote-icon">+</text>
+          <text class="vote-count">{{item.upvote_count}}</text>
+        </view>
+        <view class="vote-btn {{item.user_vote === 'down' ? 'active' : ''}}" data-id="{{item.id}}" data-type="down" bindtap="handleVote">
+          <text class="vote-icon">-</text>
+          <text class="vote-count">{{item.downvote_count}}</text>
+        </view>
+        <view class="delete-btn" wx:if="{{currentUserId === item.user_id}}" data-id="{{item.id}}" bindtap="handleDelete">
+          DEL
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && suggestions.length === 0}}">
+    <text class="empty-text">还没有建议，来提第一条吧</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">LOADING...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{!hasMore && suggestions.length > 0 && !loading}}">
+    <text class="no-more-text">- END -</text>
+  </view>
+</view>

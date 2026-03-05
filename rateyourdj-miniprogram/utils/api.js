@@ -12,25 +12,6 @@ export const authAPI = {
       method: 'POST',
       data: { code }
     });
-  },
-
-  // 验证邀请码（公开接口，无需登录）
-  verifyInviteCode(code) {
-    return app.request({
-      url: '/auth/verify-invite-code',
-      method: 'POST',
-      data: { code }
-    });
-  },
-
-  // 使用邀请码（需登录）
-  useInviteCode(code) {
-    return app.request({
-      url: '/auth/use-invite-code',
-      method: 'POST',
-      data: { code },
-      needAuth: true
-    });
   }
 };
 
@@ -322,6 +303,50 @@ export const userAPI = {
     return app.request({
       url: '/user/search-history',
       method: 'GET',
+      needAuth: true
+    });
+  }
+};
+
+/**
+ * 建议相关API
+ */
+export const suggestionAPI = {
+  // 创建建议
+  create(content) {
+    return app.request({
+      url: '/suggestion/create',
+      method: 'POST',
+      data: { content },
+      needAuth: true
+    });
+  },
+
+  // 获取建议列表
+  getList(page = 1, limit = 20) {
+    return app.request({
+      url: '/suggestion/list',
+      method: 'GET',
+      data: { page, limit },
+      needAuth: true
+    });
+  },
+
+  // 投票
+  vote(id, voteType) {
+    return app.request({
+      url: `/suggestion/${id}/vote`,
+      method: 'POST',
+      data: { voteType },
+      needAuth: true
+    });
+  },
+
+  // 删除建议
+  delete(id) {
+    return app.request({
+      url: `/suggestion/${id}`,
+      method: 'DELETE',
       needAuth: true
     });
   }

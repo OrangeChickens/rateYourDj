@@ -1,9 +1,6 @@
 {
   "pages": [
-    "pages/waitlist/waitlist",
     "pages/index/index",
-    "pages/tasks/tasks",
-    "pages/my-invites/my-invites",
     "pages/login/login",
     "pages/search/search",
     "pages/dj-detail/dj-detail",
@@ -15,7 +12,8 @@
     "pages/dj-upload/dj-upload",
     "pages/dj-pending/dj-pending",
     "pages/all-reviews/all-reviews",
-    "pages/agreement/agreement"
+    "pages/agreement/agreement",
+    "pages/suggestions/suggestions"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -38,6 +36,10 @@
       {
         "pagePath": "pages/my-favorites/my-favorites",
         "text": "收藏"
+      },
+      {
+        "pagePath": "pages/suggestions/suggestions",
+        "text": "建议"
       },
       {
         "pagePath": "pages/settings/settings",

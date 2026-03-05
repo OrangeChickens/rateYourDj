@@ -15,14 +15,9 @@ Page({
   },
 
   async onLoad(options) {
-    // 如果已经登录，根据 access_level 跳转
+    // 如果已经登录，直接跳转首页
     if (app.globalData.token) {
-      const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-      if (userInfo && userInfo.access_level === 'full') {
-        wx.switchTab({ url: '/pages/index/index' });
-      } else {
-        wx.redirectTo({ url: '/pages/waitlist/waitlist' });
-      }
+      wx.switchTab({ url: '/pages/index/index' });
       return;
     }
 
@@ -249,13 +244,6 @@ Page({
       }
       // 老用户没上传新头像，不传avatarUrl字段
 
-      // 邀请码逻辑：如果存在 pendingInviteCode，携带给后端进行激活
-      const pendingInviteCode = wx.getStorageSync('pendingInviteCode');
-      if (pendingInviteCode) {
-        loginData.inviteCode = pendingInviteCode;
-        console.log('🎫 携带邀请码登录:', pendingInviteCode);
-      }
-
       // 第三步：发送到后端登录
       const apiRes = await app.request({
         url: '/auth/login',
@@ -272,29 +260,6 @@ Page({
 
         wx.setStorageSync('token', apiRes.data.token);
         wx.setStorageSync('userInfo', apiRes.data.user);
-
-        // 清除 pendingInviteCode（已经激活）
-        if (pendingInviteCode) {
-          wx.removeStorageSync('pendingInviteCode');
-          console.log('✅ 邀请码已激活并清除');
-        }
-
-        // 检查 access_level，非 full 用户跳回 waitlist
-        const accessLevel = apiRes.data.user.access_level;
-        if (accessLevel !== 'full') {
-          console.log('⚠️ 用户 access_level 为', accessLevel, '，跳回 waitlist');
-          wx.showToast({
-            title: '请先使用邀请码',
-            icon: 'none',
-            duration: 2000
-          });
-          setTimeout(() => {
-            wx.redirectTo({
-              url: '/pages/waitlist/waitlist'
-            });
-          }, 1500);
-          return;
-        }
 
         console.log('✅ 登录成功，跳转到首页');
         wx.showToast({

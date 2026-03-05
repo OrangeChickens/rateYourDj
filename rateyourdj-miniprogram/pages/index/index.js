@@ -27,33 +27,6 @@ Page({
   },
 
   onLoad() {
-    const app = getApp();
-    const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-
-    // 情况1：已登录用户（必定是 full access，因为登录时会激活邀请码）
-    if (userInfo) {
-      console.log('✅ 已登录用户，加载内容');
-      // 直接加载内容
-      this.updateLanguage();
-      this.loadDashboard();
-      this.loadHotDJs();
-      return;
-    }
-
-    // 情况2：未登录用户，检查是否验证过邀请码
-    const pendingInviteCode = wx.getStorageSync('pendingInviteCode');
-    if (!pendingInviteCode) {
-      console.log('❌ 未验证邀请码，返回 waitlist');
-      // 未验证邀请码，返回 waitlist
-      wx.reLaunch({
-        url: '/pages/waitlist/waitlist'
-      });
-      return;
-    }
-
-    console.log('✅ 验证过邀请码，允许浏览');
-    // 验证过邀请码，允许浏览
-
     // 从 storage 读取上次选择的城市（如果有）
     const selectedCity = wx.getStorageSync('selectedCity') || '全部城市';
     this.setData({ selectedCity });

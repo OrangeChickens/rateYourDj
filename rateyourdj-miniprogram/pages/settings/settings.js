@@ -28,7 +28,7 @@ Page({
     // 设置 TabBar 选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 2
+        selected: 3
       });
     }
 
@@ -181,30 +181,6 @@ Page({
 
     wx.switchTab({
       url: '/pages/my-favorites/my-favorites'
-    });
-  },
-
-  // 跳转到任务中心
-  goToTasks() {
-    if (!this.data.isLoggedIn) {
-      showToast('请先登录');
-      return;
-    }
-
-    wx.navigateTo({
-      url: '/pages/tasks/tasks'
-    });
-  },
-
-  // 跳转到我的邀请码
-  goToMyInvites() {
-    if (!this.data.isLoggedIn) {
-      showToast('请先登录');
-      return;
-    }
-
-    wx.navigateTo({
-      url: '/pages/my-invites/my-invites'
     });
   },
 

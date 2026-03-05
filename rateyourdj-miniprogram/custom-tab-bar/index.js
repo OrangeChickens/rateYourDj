@@ -13,6 +13,11 @@ Component({
         emoji: "FAV"
       },
       {
+        pagePath: "/pages/suggestions/suggestions",
+        text: "建议",
+        emoji: "IDEA"
+      },
+      {
         pagePath: "/pages/settings/settings",
         text: "我的",
         emoji: "ME"
