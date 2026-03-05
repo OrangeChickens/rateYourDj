@@ -49,7 +49,7 @@ async function updateDJRatings(djId) {
     const n = reviews.length;
     const R = overallRating;
     const [globalAvgResult] = await pool.query(
-      'SELECT AVG(overall_rating) as global_avg FROM djs WHERE review_count > 0'
+      "SELECT AVG(overall_rating) as global_avg FROM reviews WHERE status = 'approved'"
     );
     const G = globalAvgResult[0].global_avg || 0;
     const weightedScore = (n / (n + BAYESIAN_C)) * R + (BAYESIAN_C / (n + BAYESIAN_C)) * G;
