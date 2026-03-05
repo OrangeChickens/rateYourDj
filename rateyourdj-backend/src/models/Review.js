@@ -200,7 +200,7 @@ class Review {
       `SELECT r.*, d.name as dj_name, d.city
        FROM reviews r
        JOIN djs d ON r.dj_id = d.id
-       WHERE r.user_id = ?
+       WHERE r.user_id = ? AND r.status = 'approved'
        ORDER BY r.created_at DESC
        LIMIT ? OFFSET ?`,
       [userId, parseInt(limit), parseInt(offset)]
@@ -215,7 +215,7 @@ class Review {
     }
 
     const [countResult] = await pool.query(
-      'SELECT COUNT(*) as total FROM reviews WHERE user_id = ?',
+      "SELECT COUNT(*) as total FROM reviews WHERE user_id = ? AND status = 'approved'",
       [userId]
     );
 

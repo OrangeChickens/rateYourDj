@@ -17,7 +17,7 @@ async function getUserProfile(req, res, next) {
 
     // 获取用户统计信息
     const [reviewCount] = await pool.query(
-      'SELECT COUNT(*) as count FROM reviews WHERE user_id = ?',
+      "SELECT COUNT(*) as count FROM reviews WHERE user_id = ? AND status = 'approved'",
       [req.user.userId]
     );
 
