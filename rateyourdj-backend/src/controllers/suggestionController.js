@@ -12,13 +12,6 @@ async function createSuggestion(req, res, next) {
       });
     }
 
-    if (content.trim().length > 500) {
-      return res.status(400).json({
-        success: false,
-        message: '建议内容不能超过500字'
-      });
-    }
-
     const suggestion = await Suggestion.create(req.user.userId, content.trim());
 
     res.status(201).json({

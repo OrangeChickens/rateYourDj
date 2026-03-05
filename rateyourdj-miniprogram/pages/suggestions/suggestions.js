@@ -80,11 +80,6 @@ Page({
       showToast('请输入建议内容');
       return;
     }
-    if (content.length > 500) {
-      showToast('建议内容不能超过500字');
-      return;
-    }
-
     this.setData({ submitting: true });
 
     try {

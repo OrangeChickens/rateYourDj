@@ -3,14 +3,14 @@
   <view class="input-section" wx:if="{{isLoggedIn}}">
     <textarea
       class="input-area"
-      placeholder="你对 RateYourDJ 有什么建议？"
+      placeholder="你希望我们改进或者新增什么功能？"
       placeholder-class="placeholder"
-      maxlength="500"
+      maxlength="-1"
       value="{{inputContent}}"
       bindinput="onInput"
     />
     <view class="input-footer">
-      <text class="char-count">{{inputContent.length}}/500</text>
+      <text class="char-count">{{inputContent.length}}</text>
       <view class="submit-btn {{submitting || !inputContent.trim() ? 'disabled' : ''}}" bindtap="handleSubmit">
         SUBMIT
       </view>
