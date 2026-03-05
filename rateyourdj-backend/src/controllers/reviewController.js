@@ -214,19 +214,69 @@ async function markNotHelpful(req, res, next) {
 // 获取所有评价（用于"所有评价"页面）
 async function getAllReviews(req, res, next) {
   try {
-    const { page = 1, limit = 20, sort = 'created_at', order = 'DESC' } = req.query;
+    const { page = 1, limit = 20, sort = 'created_at', order = 'DESC', status, filter } = req.query;
+
+    // 检查是否管理员
+    let isAdmin = false;
+    if (req.user) {
+      const User = require('../models/User');
+      const user = await User.findById(req.user.userId);
+      isAdmin = user && user.role === 'admin';
+    }
 
     const result = await Review.getAllReviews({
       page: parseInt(page),
       limit: parseInt(limit),
       sort,
-      order
+      order,
+      isAdmin: isAdmin && status === 'all',
+      filter: isAdmin ? filter : null
     });
 
     res.json({
       success: true,
       data: result.data,
       pagination: result.pagination
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 更新评价状态（管理员）
+async function updateReviewStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !['pending', 'approved', 'rejected'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供有效的状态值 (pending/approved/rejected)'
+      });
+    }
+
+    const { djId } = await Review.updateStatus(id, status);
+
+    // 重新计算DJ评分
+    await updateDJRatings(djId);
+
+    res.json({
+      success: true,
+      message: '评价状态更新成功'
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 获取被举报评价数量（管理员）
+async function getReportedCount(req, res, next) {
+  try {
+    const count = await Review.getReportedCount();
+    res.json({
+      success: true,
+      data: { count }
     });
   } catch (error) {
     next(error);
@@ -240,5 +290,7 @@ module.exports = {
   markReviewHelpful,
   markNotHelpful,
   reportReview,
-  getAllReviews
+  getAllReviews,
+  updateReviewStatus,
+  getReportedCount
 };

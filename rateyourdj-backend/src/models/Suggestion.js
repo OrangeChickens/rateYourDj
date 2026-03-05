@@ -33,7 +33,8 @@ class Suggestion {
   }
 
   // 获取建议列表（按 upvote_count 降序）
-  static async getList(page = 1, limit = 20, userId = null) {
+  // isAdmin=true 时显示所有建议，否则隐藏 rejected
+  static async getList(page = 1, limit = 20, userId = null, isAdmin = false) {
     const offset = (page - 1) * limit;
 
     const userVoteJoin = userId
@@ -42,6 +43,8 @@ class Suggestion {
     const userVoteSelect = userId
       ? ', sv.vote_type as user_vote'
       : ', NULL as user_vote';
+
+    const statusFilter = isAdmin ? '' : "AND s.status != 'rejected'";
 
     const params = userId
       ? [userId, parseInt(limit), parseInt(offset)]
@@ -52,13 +55,14 @@ class Suggestion {
        FROM suggestions s
        LEFT JOIN users u ON s.user_id = u.id
        ${userVoteJoin}
+       WHERE 1=1 ${statusFilter}
        ORDER BY s.upvote_count DESC, s.created_at DESC
        LIMIT ? OFFSET ?`,
       params
     );
 
     const [countResult] = await pool.query(
-      'SELECT COUNT(*) as total FROM suggestions'
+      `SELECT COUNT(*) as total FROM suggestions WHERE 1=1 ${statusFilter}`
     );
 
     return {
@@ -133,6 +137,25 @@ class Suggestion {
     } finally {
       connection.release();
     }
+  }
+
+  // 更新建议状态（管理员）
+  static async updateStatus(id, status) {
+    const validStatuses = ['open', 'planned', 'done', 'rejected'];
+    if (!validStatuses.includes(status)) {
+      throw new Error('无效的状态值');
+    }
+
+    const [result] = await pool.query(
+      'UPDATE suggestions SET status = ? WHERE id = ?',
+      [status, id]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('建议不存在');
+    }
+
+    return true;
   }
 
   // 删除建议（仅本人）

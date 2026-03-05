@@ -1,4 +1,5 @@
 const Suggestion = require('../models/Suggestion');
+const User = require('../models/User');
 
 // 创建建议
 async function createSuggestion(req, res, next) {
@@ -31,7 +32,14 @@ async function getSuggestions(req, res, next) {
     const limit = parseInt(req.query.limit) || 20;
     const userId = req.user ? req.user.userId : null;
 
-    const result = await Suggestion.getList(page, limit, userId);
+    // 检查是否管理员
+    let isAdmin = false;
+    if (userId) {
+      const user = await User.findById(userId);
+      isAdmin = user && user.role === 'admin';
+    }
+
+    const result = await Suggestion.getList(page, limit, userId, isAdmin);
 
     res.json({
       success: true,
@@ -83,9 +91,34 @@ async function deleteSuggestion(req, res, next) {
   }
 }
 
+// 更新建议状态（管理员）
+async function updateSuggestionStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供状态值'
+      });
+    }
+
+    await Suggestion.updateStatus(id, status);
+
+    res.json({
+      success: true,
+      message: '状态更新成功'
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createSuggestion,
   getSuggestions,
   voteSuggestion,
-  deleteSuggestion
+  deleteSuggestion,
+  updateSuggestionStatus
 };

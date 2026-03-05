@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, optionalAuth } = require('../middleware/auth');
+const { authenticate, optionalAuth, requireAdmin } = require('../middleware/auth');
 const {
   createReview,
   getDJReviews,
@@ -8,17 +8,25 @@ const {
   markReviewHelpful,
   markNotHelpful,
   reportReview,
-  getAllReviews
+  getAllReviews,
+  updateReviewStatus,
+  getReportedCount
 } = require('../controllers/reviewController');
 
 // 创建评论（需要登录）
 router.post('/create', authenticate, createReview);
 
-// 获取所有评价列表（无需登录）
-router.get('/all', getAllReviews);
+// 获取所有评价列表（可选登录，管理员可看全部状态）
+router.get('/all', optionalAuth, getAllReviews);
+
+// 获取被举报评价数量（管理员）
+router.get('/reported/count', requireAdmin, getReportedCount);
 
 // 获取DJ的评论列表（可选登录，登录用户返回投票状态）
 router.get('/list/:djId', optionalAuth, getDJReviews);
+
+// 更新评价状态（管理员）
+router.put('/:id/status', requireAdmin, updateReviewStatus);
 
 // 删除评论（需要登录）
 router.delete('/:id', authenticate, deleteReview);

@@ -323,7 +323,8 @@ class Review {
   }
 
   // 获取所有评价（用于"所有评价"页面）
-  static async getAllReviews({ page = 1, limit = 20, sort = 'created_at', order = 'DESC' }) {
+  // isAdmin=true 时返回所有状态并包含 status 字段；filter='reported' 只返回被举报的
+  static async getAllReviews({ page = 1, limit = 20, sort = 'created_at', order = 'DESC', isAdmin = false, filter = null }) {
     const offset = (page - 1) * limit;
 
     // 验证排序字段（白名单）
@@ -337,7 +338,20 @@ class Review {
     // 验证排序方向
     const orderDir = (order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
 
-    // 获取评价列表（仅已审核）
+    // 状态过滤
+    let statusCondition;
+    let statusParams;
+    if (filter === 'reported' && isAdmin) {
+      statusCondition = 'r.report_count > 0';
+      statusParams = [];
+    } else if (isAdmin) {
+      statusCondition = '1=1';
+      statusParams = [];
+    } else {
+      statusCondition = 'r.status = ?';
+      statusParams = ['approved'];
+    }
+
     const query = `
       SELECT
         r.id,
@@ -348,6 +362,8 @@ class Review {
         r.is_anonymous,
         r.helpful_count,
         r.not_helpful_count,
+        r.report_count,
+        r.status,
         u.nickname,
         u.avatar_url,
         d.name as dj_name,
@@ -355,16 +371,16 @@ class Review {
       FROM reviews r
       JOIN users u ON r.user_id = u.id
       JOIN djs d ON r.dj_id = d.id
-      WHERE r.status = ?
+      WHERE ${statusCondition}
       ORDER BY ${sortField} ${orderDir}
       LIMIT ? OFFSET ?
     `;
 
-    const [reviews] = await pool.query(query, ['approved', limit, offset]);
+    const [reviews] = await pool.query(query, [...statusParams, limit, offset]);
 
     // 获取总数
-    const countQuery = 'SELECT COUNT(*) as total FROM reviews WHERE status = ?';
-    const [[{ total }]] = await pool.query(countQuery, ['approved']);
+    const countQuery = `SELECT COUNT(*) as total FROM reviews r WHERE ${statusCondition}`;
+    const [[{ total }]] = await pool.query(countQuery, statusParams);
 
     // 处理匿名评价
     const processedReviews = reviews.map(review => {
@@ -384,6 +400,32 @@ class Review {
         totalPages: Math.ceil(total / limit)
       }
     };
+  }
+
+  // 更新评价状态（管理员）
+  static async updateStatus(id, status) {
+    const validStatuses = ['pending', 'approved', 'rejected'];
+    if (!validStatuses.includes(status)) {
+      throw new Error('无效的状态值');
+    }
+
+    // 获取评价信息（用于返回 dj_id）
+    const [rows] = await pool.query('SELECT dj_id FROM reviews WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      throw new Error('评价不存在');
+    }
+
+    await pool.query('UPDATE reviews SET status = ? WHERE id = ?', [status, id]);
+
+    return { djId: rows[0].dj_id };
+  }
+
+  // 获取被举报评价数量
+  static async getReportedCount() {
+    const [[{ total }]] = await pool.query(
+      'SELECT COUNT(*) as total FROM reviews WHERE report_count > 0'
+    );
+    return total;
   }
 }
 
