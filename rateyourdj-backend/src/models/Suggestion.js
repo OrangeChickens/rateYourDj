@@ -44,7 +44,7 @@ class Suggestion {
       ? ', sv.vote_type as user_vote'
       : ', NULL as user_vote';
 
-    const statusFilter = isAdmin ? '' : "AND (s.status IS NULL OR s.status != 'rejected')";
+    const statusFilter = isAdmin ? '' : "AND (status IS NULL OR status != 'rejected')";
 
     const params = userId
       ? [userId, parseInt(limit), parseInt(offset)]
