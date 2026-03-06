@@ -10,7 +10,8 @@ const {
   reportReview,
   getAllReviews,
   updateReviewStatus,
-  getReportedCount
+  getReportedCount,
+  getPendingReviewCount
 } = require('../controllers/reviewController');
 
 // 创建评论（需要登录）
@@ -21,6 +22,9 @@ router.get('/all', optionalAuth, getAllReviews);
 
 // 获取被举报评价数量（管理员）
 router.get('/reported/count', requireAdmin, getReportedCount);
+
+// 获取待审核评价数量（管理员）
+router.get('/pending/count', requireAdmin, getPendingReviewCount);
 
 // 获取DJ的评论列表（可选登录，登录用户返回投票状态）
 router.get('/list/:djId', optionalAuth, getDJReviews);

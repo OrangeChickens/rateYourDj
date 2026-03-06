@@ -346,6 +346,9 @@ class Review {
     if (filter === 'reported' && isAdmin) {
       statusCondition = 'r.report_count > 0';
       statusParams = [];
+    } else if (filter === 'pending' && isAdmin) {
+      statusCondition = '1=1';
+      statusParams = [];
     } else if (isAdmin) {
       statusCondition = '1=1';
       statusParams = [];
@@ -426,6 +429,14 @@ class Review {
   static async getReportedCount() {
     const [[{ total }]] = await pool.query(
       'SELECT COUNT(*) as total FROM reviews WHERE report_count > 0'
+    );
+    return total;
+  }
+
+  // 获取待审核评价数量
+  static async getPendingCount() {
+    const [[{ total }]] = await pool.query(
+      "SELECT COUNT(*) as total FROM reviews WHERE status = 'pending'"
     );
     return total;
   }

@@ -300,6 +300,19 @@ async function getReportedCount(req, res, next) {
   }
 }
 
+// 获取待审核评价数量（管理员）
+async function getPendingReviewCount(req, res, next) {
+  try {
+    const count = await Review.getPendingCount();
+    res.json({
+      success: true,
+      data: { count }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createReview,
   getDJReviews,
@@ -309,5 +322,6 @@ module.exports = {
   reportReview,
   getAllReviews,
   updateReviewStatus,
-  getReportedCount
+  getReportedCount,
+  getPendingReviewCount
 };
