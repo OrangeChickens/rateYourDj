@@ -13,7 +13,8 @@
     "pages/dj-pending/dj-pending",
     "pages/all-reviews/all-reviews",
     "pages/agreement/agreement",
-    "pages/suggestions/suggestions"
+    "pages/suggestions/suggestions",
+    "pages/dj-edit-pending/dj-edit-pending"
   ],
   "window": {
     "backgroundTextStyle": "light",

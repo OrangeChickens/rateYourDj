@@ -47,7 +47,9 @@ export default {
       title: '最近评价',
       ratedDJ: '评价了',
       noReviews: '暂无评价',
-      viewAll: '查看全部 →'
+      viewAll: '查看全部 →',
+      last24h: '过去24h',
+      reviewUnit: '个评价'
     }
   },
 
@@ -101,7 +103,7 @@ export default {
     performanceTags: '表现力',
     personalityTags: '性格',
     writeComment: '写下你的评价...',
-    commentPlaceholder: '分享你对这位DJ的看法，帮助其他人做出选择',
+    commentPlaceholder: '请基于真实体验，客观评价DJ的音乐表现',
     anonymous: '匿名评论',
     anonymousUser: '匿名用户',
     tagsSelected: '已选择',
@@ -187,6 +189,18 @@ export default {
     title: '所有评价',
     djName: 'DJ',
     noReviews: '暂无评价'
+  },
+
+  djEdit: {
+    suggestEdit: '申请修改',
+    editWarning: '请确保信息真实准确，恶意修改将永久封号。',
+    editRequestTitle: '申请修改DJ资料',
+    editRequestSubmitted: '修改申请已提交',
+    editRequestMenu: 'DJ资料修改申请',
+    bioLabel: 'DJ简介 / BIO',
+    bioPlaceholder: '请输入DJ简介（选填）',
+    expandBio: '展开',
+    collapseBio: '收起'
   },
 
   error: {

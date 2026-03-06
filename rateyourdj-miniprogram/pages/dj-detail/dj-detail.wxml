@@ -39,11 +39,23 @@
       <view class="style-tags">
         <text wx:for="{{dj.styleList}}" wx:key="index" class="tag">{{item}}</text>
       </view>
-      <!-- 管理员编辑按钮 -->
-      <view wx:if="{{isAdmin}}" class="edit-btn" bindtap="goToEdit">
-        <text class="edit-icon">✎</text>
-        <text class="edit-text">编辑</text>
+      <view class="edit-actions">
+        <!-- 管理员编辑按钮 -->
+        <view wx:if="{{isAdmin}}" class="edit-btn" bindtap="goToEdit">
+          <text class="edit-icon">✎</text>
+          <text class="edit-text">编辑</text>
+        </view>
+        <!-- 普通用户：申请修改资料 -->
+        <view wx:elif="{{isLoggedIn}}" class="edit-btn suggest-edit-btn" bindtap="goToEditRequest">
+          <text class="edit-text">申请修改</text>
+        </view>
       </view>
+    </view>
+
+    <!-- Bio -->
+    <view wx:if="{{dj.bio}}" class="bio-section">
+      <text class="bio-text {{bioExpanded ? '' : 'bio-collapsed'}}">{{dj.bio}}</text>
+      <text wx:if="{{dj.bio.length > 80}}" class="bio-toggle" bindtap="toggleBio">{{bioExpanded ? '收起' : '展开'}}</text>
     </view>
 
     <!-- 评分统计 -->

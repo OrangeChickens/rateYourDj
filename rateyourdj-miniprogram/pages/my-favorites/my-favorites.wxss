@@ -69,7 +69,6 @@
   color: #000;
   line-height: 1.2;
   padding-right: 60rpx;
-  text-transform: uppercase;
   letter-spacing: 0.5rpx;
 }
 

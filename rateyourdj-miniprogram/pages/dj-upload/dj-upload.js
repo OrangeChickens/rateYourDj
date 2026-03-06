@@ -1,6 +1,6 @@
 // pages/dj-upload/dj-upload.js
-import { showLoading, hideLoading, showToast, checkFullAccess } from '../../utils/util';
-import { djAPI, tagAPI } from '../../utils/api';
+import { showLoading, hideLoading, showToast, showConfirm, checkFullAccess } from '../../utils/util';
+import { djAPI, tagAPI, djEditRequestAPI } from '../../utils/api';
 
 const app = getApp();
 
@@ -8,7 +8,9 @@ Page({
   data: {
     djId: null, // DJ ID（编辑模式）
     isEditMode: false, // 是否编辑模式
+    isEditRequestMode: false, // 是否申请修改模式
     isAdmin: false, // 是否管理员
+    bio: '', // DJ简介
 
     name: '',
     city: '',
@@ -42,7 +44,10 @@ Page({
     // 提交动画
     showSubmitAnimation: false,
     animationPhase: '',
-    confettiPieces: []
+    confettiPieces: [],
+
+    // DJ审核状态（编辑模式）
+    djStatus: null
   },
 
   async onLoad(options) {
@@ -51,14 +56,16 @@ Page({
       return;
     }
 
-    // 检查是否是编辑模式
+    // 检查是否是编辑模式或申请修改模式
     if (options.id) {
+      const isEditRequestMode = options.mode === 'editRequest';
       this.setData({
         djId: options.id,
-        isEditMode: true
+        isEditMode: !isEditRequestMode,
+        isEditRequestMode
       });
       wx.setNavigationBarTitle({
-        title: '编辑DJ资料'
+        title: isEditRequestMode ? '申请修改DJ资料' : '编辑DJ资料'
       });
     }
 
@@ -89,7 +96,7 @@ Page({
     this.setData({ isAdmin });
 
     // 设置导航栏标题
-    if (!this.data.isEditMode) {
+    if (!this.data.isEditMode && !this.data.isEditRequestMode) {
       wx.setNavigationBarTitle({
         title: isAdmin ? '上传DJ资料' : '提交DJ资料'
       });
@@ -110,8 +117,8 @@ Page({
         tagAPI.getPresets()
       ];
 
-      // 如果是编辑模式，加载DJ详情
-      if (this.data.isEditMode) {
+      // 如果是编辑模式或申请修改模式，加载DJ详情
+      if (this.data.isEditMode || this.data.isEditRequestMode) {
         promises.push(djAPI.getDetail(this.data.djId));
       }
 
@@ -175,8 +182,8 @@ Page({
         });
       }
 
-      // 编辑模式：填充现有数据
-      if (this.data.isEditMode && djRes && djRes.success) {
+      // 编辑模式或申请修改模式：填充现有数据
+      if ((this.data.isEditMode || this.data.isEditRequestMode) && djRes && djRes.success) {
         const dj = djRes.data;
 
         // 处理厂牌
@@ -207,8 +214,10 @@ Page({
           showCustomLabel,
           customLabel,
           selectedStyles,
+          bio: dj.bio || '',
           photo_url: dj.photo_url || '',
-          localImagePath: dj.photo_url || '' // 显示现有图片
+          localImagePath: dj.photo_url || '', // 显示现有图片
+          djStatus: dj.status || null
         });
       }
 
@@ -223,6 +232,11 @@ Page({
   // 输入DJ名称
   onNameInput(e) {
     this.setData({ name: e.detail.value });
+  },
+
+  // 输入Bio
+  onBioInput(e) {
+    this.setData({ bio: e.detail.value });
   },
 
   // 城市选择变化
@@ -472,7 +486,7 @@ Page({
       showToast('请填写DJ名称和城市');
       return false;
     }
-    if (!this.data.isEditMode && !this.data.localImagePath) {
+    if (!this.data.isEditMode && !this.data.isEditRequestMode && !this.data.localImagePath) {
       showToast('请选择DJ照片');
       return false;
     }
@@ -543,10 +557,7 @@ Page({
 
     try {
       this.setData({ uploading: true });
-
-      // 第一阶段：页面向上滑动
-      this.setData({ showSubmitAnimation: true, animationPhase: 'slide-up' });
-      await new Promise(resolve => setTimeout(resolve, 500));
+      showLoading('提交中...');
 
       let photoUrl = this.data.photo_url;
 
@@ -562,12 +573,18 @@ Page({
         city: this.data.city,
         label: this.data.label || null,
         music_style: music_style,
+        bio: this.data.bio || null,
         photo_url: photoUrl
       };
 
       // 根据模式选择 API
       let res;
-      if (this.data.isEditMode) {
+      if (this.data.isEditRequestMode) {
+        res = await djEditRequestAPI.create({
+          dj_id: parseInt(this.data.djId),
+          proposed_data: djData
+        });
+      } else if (this.data.isEditMode) {
         res = await djAPI.update(this.data.djId, djData);
       } else if (this.data.isAdmin) {
         res = await djAPI.create(djData);
@@ -575,8 +592,13 @@ Page({
         res = await djAPI.submit(djData);
       }
 
+      hideLoading();
+
       if (res.success) {
-        // 第二阶段：显示成功动画
+        // 上传+API成功后才播放动画
+        this.setData({ showSubmitAnimation: true, animationPhase: 'slide-up' });
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         this.generateConfetti();
         this.setData({ animationPhase: 'success' });
         wx.vibrateShort({ type: 'heavy' });
@@ -608,6 +630,35 @@ Page({
     } finally {
       this.setData({ uploading: false });
       hideLoading();
+    }
+  },
+
+  // 管理员：通过DJ
+  async handleApproveDJ() {
+    try {
+      const res = await djAPI.approve(this.data.djId);
+      if (res.success) {
+        showToast('DJ已通过');
+        this.setData({ djStatus: 'approved' });
+      }
+    } catch (error) {
+      showToast('操作失败');
+    }
+  },
+
+  // 管理员：拒绝DJ
+  async handleRejectDJ() {
+    const confirmed = await showConfirm('拒绝DJ', '拒绝后该DJ将对用户不可见，确定吗？');
+    if (!confirmed) return;
+
+    try {
+      const res = await djAPI.reject(this.data.djId);
+      if (res.success) {
+        showToast('DJ已拒绝');
+        this.setData({ djStatus: 'rejected' });
+      }
+    } catch (error) {
+      showToast('操作失败');
     }
   },
 

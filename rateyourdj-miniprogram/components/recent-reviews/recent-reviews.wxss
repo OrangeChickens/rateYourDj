@@ -20,6 +20,19 @@
   letter-spacing: 1rpx;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.count-24h {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 0.5rpx;
+}
+
 .view-all {
   font-size: 20rpx;
   font-weight: 700;
@@ -59,7 +72,6 @@
   font-size: 20rpx;
   font-weight: 900;
   color: #000;
-  text-transform: uppercase;
   line-height: 1.2;
   white-space: normal;
   word-break: break-word;
@@ -73,6 +85,14 @@
 .rating-row {
   display: flex;
   align-items: center;
+  gap: 4rpx;
+}
+
+.rating-number {
+  font-size: 20rpx;
+  font-weight: 900;
+  color: #000;
+  line-height: 1;
 }
 
 .stars {

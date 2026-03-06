@@ -1,0 +1,109 @@
+<!--pages/dj-edit-pending/dj-edit-pending.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>LOADING...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{requests.length === 0}}" class="empty-state">
+    <text>NO PENDING REQUESTS</text>
+  </view>
+
+  <!-- 申请列表 -->
+  <view wx:else class="request-list">
+    <view wx:for="{{requests}}" wx:key="id" class="request-card" bindtap="viewDetail" data-id="{{item.id}}">
+      <view class="request-header">
+        <text class="dj-name">{{item.dj_name}}</text>
+        <text class="status-badge">PENDING</text>
+      </view>
+      <view class="request-meta">
+        <text class="submitter">{{item.submitter_nickname}}</text>
+        <text class="date">{{item.created_at_formatted}}</text>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{hasMore}}" class="load-more" bindtap="loadMore">
+      <text>LOAD MORE</text>
+    </view>
+  </view>
+
+  <!-- 详情弹窗 -->
+  <view wx:if="{{showDetail}}" class="detail-overlay" bindtap="closeDetail">
+    <view class="detail-modal" catchtap="">
+      <view class="detail-header">
+        <text class="detail-title">{{detail.dj_name}}</text>
+        <text class="close-btn" bindtap="closeDetail">X</text>
+      </view>
+
+      <view class="detail-submitter">
+        <text>SUBMITTED BY: {{detail.submitter_nickname}}</text>
+      </view>
+
+      <!-- Diff: 当前 vs 建议 -->
+      <scroll-view scroll-y class="diff-scroll">
+        <view class="diff-section">
+          <!-- Photo diff -->
+          <view wx:if="{{proposedData.photo_url || detail.dj_photo_url}}" class="diff-row photo-diff-row">
+            <text class="diff-label">PHOTO</text>
+            <view class="photo-compare">
+              <view class="photo-side">
+                <image wx:if="{{detail.dj_photo_url}}" src="{{detail.dj_photo_url}}" mode="aspectFill" class="diff-photo" />
+                <text wx:else class="no-photo">-</text>
+                <text class="photo-label">CURRENT</text>
+              </view>
+              <text class="diff-arrow">→</text>
+              <view class="photo-side">
+                <image wx:if="{{proposedData.photo_url}}" src="{{proposedData.photo_url}}" mode="aspectFill" class="diff-photo {{proposedData.photo_url !== detail.dj_photo_url ? 'changed' : ''}}" />
+                <text wx:else class="no-photo">-</text>
+                <text class="photo-label">PROPOSED</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="diff-row">
+            <text class="diff-label">NAME</text>
+            <text class="diff-current">{{detail.dj_name}}</text>
+            <text class="diff-arrow">→</text>
+            <text class="diff-proposed {{proposedData.name !== detail.dj_name ? 'changed' : ''}}">{{proposedData.name || detail.dj_name}}</text>
+          </view>
+
+          <view class="diff-row">
+            <text class="diff-label">CITY</text>
+            <text class="diff-current">{{detail.dj_city}}</text>
+            <text class="diff-arrow">→</text>
+            <text class="diff-proposed {{proposedData.city !== detail.dj_city ? 'changed' : ''}}">{{proposedData.city || detail.dj_city}}</text>
+          </view>
+
+          <view class="diff-row">
+            <text class="diff-label">LABEL</text>
+            <text class="diff-current">{{detail.dj_label || '-'}}</text>
+            <text class="diff-arrow">→</text>
+            <text class="diff-proposed {{proposedData.label !== detail.dj_label ? 'changed' : ''}}">{{proposedData.label || '-'}}</text>
+          </view>
+
+          <view class="diff-row">
+            <text class="diff-label">STYLE</text>
+            <text class="diff-current">{{detail.dj_music_style || '-'}}</text>
+            <text class="diff-arrow">→</text>
+            <text class="diff-proposed {{proposedData.music_style !== detail.dj_music_style ? 'changed' : ''}}">{{proposedData.music_style || '-'}}</text>
+          </view>
+
+          <view class="diff-row">
+            <text class="diff-label">BIO</text>
+            <text class="diff-current bio-text">{{detail.dj_bio || '-'}}</text>
+            <text class="diff-arrow">→</text>
+            <text class="diff-proposed bio-text {{proposedData.bio !== detail.dj_bio ? 'changed' : ''}}">{{proposedData.bio || '-'}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 操作按钮 -->
+      <view class="detail-actions">
+        <view class="btn-approve" bindtap="handleApprove">APPROVE</view>
+        <view class="btn-reject" bindtap="handleReject">REJECT</view>
+      </view>
+    </view>
+  </view>
+</view>

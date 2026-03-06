@@ -3,9 +3,14 @@
  * Single source of truth for version tracking.
  */
 module.exports = {
-  version: '0.2.0-beta',
-  buildDate: '2026-03-05',
+  version: '0.2.4-beta',
+  buildDate: '2026-03-07',
+  userChangelog: 'DJ Bio + 资料修改申请，DJ名称支持大小写',
   changelog: [
+    '0.2.4-beta - DJ Bio字段，用户申请修改DJ资料，admin审核，DJ名称保留原始大小写',
+    '0.2.3-beta - 合并评价审核页面(PENDING/REPORTED/APPROVED/REJECTED)',
+    '0.2.2-beta - 待审核评价页面，ID类型修复，评价placeholder更新',
+    '0.2.1-beta - 管理员内容审核：建议/评价/DJ审核，举报评价管理',
     '0.2.0-beta - 新增建议Tab，用户可提交产品建议并投票',
     '0.1.9-beta - DJ用户提交+管理员审核系统',
     '0.1.8-beta - 评论默认按热度排序，两步提交评价',

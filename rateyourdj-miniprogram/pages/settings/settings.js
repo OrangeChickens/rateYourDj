@@ -1,5 +1,5 @@
 // pages/settings/settings.js
-import { userAPI, djAPI } from '../../utils/api';
+import { userAPI, djAPI, reviewAPI, djEditRequestAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, showConfirm } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
@@ -15,6 +15,8 @@ Page({
     reviewCount: 0,
     favoriteCount: 0,
     pendingCount: 0,
+    moderationCount: 0,
+    editRequestCount: 0,
 
     // 国际化文本
     texts: {}
@@ -37,6 +39,8 @@ Page({
       this.loadUserProfile();
       if (this.data.isAdmin) {
         this.loadPendingCount();
+        this.loadModerationCount();
+        this.loadEditRequestCount();
       }
     }
   },
@@ -215,6 +219,47 @@ Page({
     } catch (error) {
       console.error('加载待审核数量失败:', error);
     }
+  },
+
+  // 加载评价审核数量（pending + reported）
+  async loadModerationCount() {
+    try {
+      const [pendingRes, reportedRes] = await Promise.all([
+        reviewAPI.getPendingReviewCount(),
+        reviewAPI.getReportedCount()
+      ]);
+      const pending = pendingRes.success ? pendingRes.data.count : 0;
+      const reported = reportedRes.success ? reportedRes.data.count : 0;
+      this.setData({ moderationCount: pending + reported });
+    } catch (error) {
+      console.error('加载审核数量失败:', error);
+    }
+  },
+
+  // 加载DJ资料修改申请数量
+  async loadEditRequestCount() {
+    try {
+      const res = await djEditRequestAPI.getPendingCount();
+      if (res.success) {
+        this.setData({ editRequestCount: res.data.count });
+      }
+    } catch (error) {
+      console.error('加载修改申请数量失败:', error);
+    }
+  },
+
+  // 跳转到DJ资料修改申请页面
+  goToEditRequests() {
+    wx.navigateTo({
+      url: '/pages/dj-edit-pending/dj-edit-pending'
+    });
+  },
+
+  // 跳转到评价审核页面
+  goToReviewModeration() {
+    wx.navigateTo({
+      url: '/pages/all-reviews/all-reviews?filter=moderation'
+    });
   },
 
   // 关于

@@ -14,6 +14,8 @@ Page({
     reviewsLoading: false,
     isFavorited: false,
     isAdmin: false, // 是否是管理员
+    isLoggedIn: false, // 是否已登录
+    bioExpanded: false, // bio是否展开
     djNameFontSize: '72rpx', // DJ 名字字体大小（自适应）
 
     // 分页
@@ -987,18 +989,32 @@ Page({
     wx.stopPullDownRefresh();
   },
 
-  // 检查管理员权限
+  // 检查管理员权限和登录状态
   checkAdminStatus() {
     const userInfo = app.globalData.userInfo;
-    if (userInfo && userInfo.role === 'admin') {
-      this.setData({ isAdmin: true });
-    }
+    const token = app.globalData.token;
+    this.setData({
+      isLoggedIn: !!token,
+      isAdmin: !!(userInfo && userInfo.role === 'admin')
+    });
   },
 
-  // 跳转到编辑页面
+  // 展开/收起 bio
+  toggleBio() {
+    this.setData({ bioExpanded: !this.data.bioExpanded });
+  },
+
+  // 跳转到编辑页面（管理员）
   goToEdit() {
     wx.navigateTo({
       url: `/pages/dj-upload/dj-upload?id=${this.data.djId}`
+    });
+  },
+
+  // 跳转到申请修改页面（普通用户）
+  goToEditRequest() {
+    wx.navigateTo({
+      url: `/pages/dj-upload/dj-upload?id=${this.data.djId}&mode=editRequest`
     });
   },
 

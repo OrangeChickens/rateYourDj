@@ -47,7 +47,9 @@ export default {
       title: 'Recent Reviews',
       ratedDJ: 'rated',
       noReviews: 'No reviews yet',
-      viewAll: 'VIEW ALL →'
+      viewAll: 'VIEW ALL →',
+      last24h: 'LAST 24H',
+      reviewUnit: ' REVIEWS'
     }
   },
 
@@ -101,7 +103,7 @@ export default {
     performanceTags: 'Performance',
     personalityTags: 'Personality',
     writeComment: 'Write your review...',
-    commentPlaceholder: 'Share your thoughts about this DJ to help others',
+    commentPlaceholder: 'Rate the DJ based on your real experience',
     anonymous: 'Anonymous',
     anonymousUser: 'Anonymous',
     tagsSelected: 'Selected',
@@ -187,6 +189,18 @@ export default {
     title: 'All Reviews',
     djName: 'DJ',
     noReviews: 'No reviews yet'
+  },
+
+  djEdit: {
+    suggestEdit: 'SUGGEST EDIT',
+    editWarning: 'Please ensure all info is accurate. Malicious edits will result in a permanent ban.',
+    editRequestTitle: 'Suggest DJ Edit',
+    editRequestSubmitted: 'Edit request submitted',
+    editRequestMenu: 'DJ Edit Requests',
+    bioLabel: 'DJ BIO',
+    bioPlaceholder: 'Enter DJ bio (optional)',
+    expandBio: 'More',
+    collapseBio: 'Less'
   },
 
   error: {

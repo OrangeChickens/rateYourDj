@@ -194,7 +194,36 @@ export const reviewAPI = {
     return app.request({
       url: '/review/all',
       method: 'GET',
-      data: params
+      data: params,
+      needAuth: true
+    });
+  },
+
+  // 更新评价状态（管理员）
+  updateStatus(reviewId, status) {
+    return app.request({
+      url: `/review/${reviewId}/status`,
+      method: 'PUT',
+      data: { status },
+      needAuth: true
+    });
+  },
+
+  // 获取被举报评价数量（管理员）
+  getReportedCount() {
+    return app.request({
+      url: '/review/reported/count',
+      method: 'GET',
+      needAuth: true
+    });
+  },
+
+  // 获取待审核评价数量（管理员）
+  getPendingReviewCount() {
+    return app.request({
+      url: '/review/pending/count',
+      method: 'GET',
+      needAuth: true
     });
   }
 };
@@ -327,8 +356,7 @@ export const suggestionAPI = {
     return app.request({
       url: '/suggestion/list',
       method: 'GET',
-      data: { page, limit },
-      needAuth: true
+      data: { page, limit }
     });
   },
 
@@ -347,6 +375,77 @@ export const suggestionAPI = {
     return app.request({
       url: `/suggestion/${id}`,
       method: 'DELETE',
+      needAuth: true
+    });
+  },
+
+  // 更新建议状态（管理员）
+  updateStatus(id, status) {
+    return app.request({
+      url: `/suggestion/${id}/status`,
+      method: 'PUT',
+      data: { status },
+      needAuth: true
+    });
+  }
+};
+
+/**
+ * DJ资料修改申请API
+ */
+export const djEditRequestAPI = {
+  // 创建修改申请
+  create(data) {
+    return app.request({
+      url: '/dj-edit-request/create',
+      method: 'POST',
+      data,
+      needAuth: true
+    });
+  },
+
+  // 获取待审核列表（管理员）
+  getPending(page = 1, limit = 20) {
+    return app.request({
+      url: '/dj-edit-request/pending/list',
+      method: 'GET',
+      data: { page, limit },
+      needAuth: true
+    });
+  },
+
+  // 获取待审核数量（管理员）
+  getPendingCount() {
+    return app.request({
+      url: '/dj-edit-request/pending/count',
+      method: 'GET',
+      needAuth: true
+    });
+  },
+
+  // 获取申请详情（管理员）
+  getDetail(id) {
+    return app.request({
+      url: `/dj-edit-request/${id}`,
+      method: 'GET',
+      needAuth: true
+    });
+  },
+
+  // 审核通过（管理员）
+  approve(id) {
+    return app.request({
+      url: `/dj-edit-request/${id}/approve`,
+      method: 'PUT',
+      needAuth: true
+    });
+  },
+
+  // 拒绝（管理员）
+  reject(id) {
+    return app.request({
+      url: `/dj-edit-request/${id}/reject`,
+      method: 'PUT',
       needAuth: true
     });
   }

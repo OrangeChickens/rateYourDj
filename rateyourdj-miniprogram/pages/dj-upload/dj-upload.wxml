@@ -18,7 +18,24 @@
 
 <view class="container {{animationPhase === 'slide-up' ? 'sliding-up' : ''}}">
   <view class="form-section">
-    <view class="form-title">{{isAdmin ? '上传DJ资料' : '提交DJ资料'}}</view>
+    <view class="form-title">{{isEditRequestMode ? '申请修改DJ资料' : (isAdmin ? '上传DJ资料' : '提交DJ资料')}}</view>
+
+    <!-- 管理员：DJ审核状态与操作（编辑模式） -->
+    <view class="dj-moderation" wx:if="{{isEditMode && isAdmin && djStatus}}">
+      <view class="moderation-status">
+        <text class="moderation-label">STATUS</text>
+        <text class="moderation-value status-{{djStatus}}">{{djStatus === 'approved' ? 'APPROVED' : djStatus === 'rejected' ? 'REJECTED' : 'PENDING'}}</text>
+      </view>
+      <view class="action-buttons">
+        <view class="btn-approve" wx:if="{{djStatus !== 'approved'}}" bindtap="handleApproveDJ">APPROVE</view>
+        <view class="btn-reject" wx:if="{{djStatus !== 'rejected'}}" bindtap="handleRejectDJ">REJECT</view>
+      </view>
+    </view>
+
+    <!-- 申请修改模式警告 -->
+    <view wx:if="{{isEditRequestMode}}" class="edit-warning">
+      <text>请确保信息真实准确，恶意修改将永久封号。</text>
+    </view>
 
     <!-- DJ照片 -->
     <view class="form-item">
@@ -81,6 +98,20 @@
         value="{{customLabel}}"
         bindinput="onCustomLabelInput"
       />
+    </view>
+
+    <!-- DJ简介 -->
+    <view class="form-item">
+      <text class="label">DJ简介 / BIO</text>
+      <textarea
+        class="textarea"
+        placeholder="请输入DJ简介（选填）"
+        value="{{bio}}"
+        bindinput="onBioInput"
+        maxlength="150"
+        auto-height
+      />
+      <text class="hint-text">{{bio.length || 0}} / 150</text>
     </view>
 
     <!-- 音乐风格选择 - 分类折叠 + 搜索 -->
@@ -190,7 +221,7 @@
     </view>
     <view class="success-content" wx:if="{{animationPhase === 'success'}}">
       <view class="success-icon">✓</view>
-      <text class="success-text">{{isAdmin ? 'DJ已创建' : '已提交审核'}}</text>
+      <text class="success-text">{{isEditRequestMode ? '修改申请已提交' : (isAdmin ? 'DJ已创建' : '已提交审核')}}</text>
     </view>
   </view>
 </view>

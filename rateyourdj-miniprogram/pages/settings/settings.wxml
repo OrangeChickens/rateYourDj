@@ -67,6 +67,18 @@
       <text wx:if="{{pendingCount > 0}}" class="menu-badge">{{pendingCount}}</text>
       <text class="menu-arrow">›</text>
     </view>
+    <view class="menu-item" bindtap="goToReviewModeration">
+      <text class="menu-icon">MOD</text>
+      <text class="menu-label">评价审核</text>
+      <text wx:if="{{moderationCount > 0}}" class="menu-badge">{{moderationCount}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goToEditRequests">
+      <text class="menu-icon">EDIT</text>
+      <text class="menu-label">DJ资料修改申请</text>
+      <text wx:if="{{editRequestCount > 0}}" class="menu-badge">{{editRequestCount}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
   </view>
 
   <!-- 设置菜单 -->
