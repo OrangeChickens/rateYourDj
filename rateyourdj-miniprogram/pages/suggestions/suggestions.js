@@ -1,6 +1,7 @@
 // pages/suggestions/suggestions.js
 import { suggestionAPI } from '../../utils/api';
 import { showToast, showConfirm, requireLogin, formatDate } from '../../utils/util';
+const versionConfig = require('../../config/version');
 
 const app = getApp();
 
@@ -13,7 +14,10 @@ Page({
     inputContent: '',
     submitting: false,
     isLoggedIn: false,
-    currentUserId: null
+    currentUserId: null,
+    isAdmin: false,
+    version: versionConfig.version,
+    userChangelog: versionConfig.userChangelog
   },
 
   onLoad() {
@@ -35,7 +39,8 @@ Page({
     const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
     this.setData({
       isLoggedIn: !!token,
-      currentUserId: userInfo ? userInfo.id : null
+      currentUserId: userInfo ? userInfo.id : null,
+      isAdmin: userInfo && userInfo.role === 'admin'
     });
   },
 
@@ -105,7 +110,8 @@ Page({
     const loggedIn = await requireLogin();
     if (!loggedIn) return;
 
-    const { id, type } = e.currentTarget.dataset;
+    const { type } = e.currentTarget.dataset;
+    const id = Number(e.currentTarget.dataset.id);
     const idx = this.data.suggestions.findIndex(s => s.id === id);
     if (idx === -1) return;
 
@@ -152,7 +158,7 @@ Page({
 
   // 删除建议
   async handleDelete(e) {
-    const { id } = e.currentTarget.dataset;
+    const id = Number(e.currentTarget.dataset.id);
 
     const confirmed = await showConfirm('删除建议', '确定要删除这条建议吗？');
     if (!confirmed) return;
@@ -184,6 +190,74 @@ Page({
     if (!this.data.hasMore || this.data.loading) return;
     this.setData({ currentPage: this.data.currentPage + 1 });
     this.loadSuggestions(true);
+  },
+
+  // 管理员：审核建议
+  async handleApprove(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    try {
+      const res = await suggestionAPI.updateStatus(id, 'open');
+      if (res.success) {
+        showToast('已通过');
+        const idx = this.data.suggestions.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          this.setData({ [`suggestions[${idx}].status`]: 'open' });
+        }
+      }
+    } catch (error) {
+      showToast('操作失败');
+    }
+  },
+
+  async handleReject(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    const confirmed = await showConfirm('拒绝建议', '确定要拒绝这条建议吗？');
+    if (!confirmed) return;
+
+    try {
+      const res = await suggestionAPI.updateStatus(id, 'rejected');
+      if (res.success) {
+        showToast('已拒绝');
+        const idx = this.data.suggestions.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          this.setData({ [`suggestions[${idx}].status`]: 'rejected' });
+        }
+      }
+    } catch (error) {
+      showToast('操作失败');
+    }
+  },
+
+  async handleSetPlanned(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    try {
+      const res = await suggestionAPI.updateStatus(id, 'planned');
+      if (res.success) {
+        showToast('已标记为计划中');
+        const idx = this.data.suggestions.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          this.setData({ [`suggestions[${idx}].status`]: 'planned' });
+        }
+      }
+    } catch (error) {
+      showToast('操作失败');
+    }
+  },
+
+  async handleSetDone(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    try {
+      const res = await suggestionAPI.updateStatus(id, 'done');
+      if (res.success) {
+        showToast('已标记为完成');
+        const idx = this.data.suggestions.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          this.setData({ [`suggestions[${idx}].status`]: 'done' });
+        }
+      }
+    } catch (error) {
+      showToast('操作失败');
+    }
   },
 
   // 登录

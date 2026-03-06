@@ -10,8 +10,14 @@ Component({
         title: '最近评价',
         ratedDJ: '评价了',
         noReviews: '暂无评价',
-        viewAll: '查看全部 →'
+        viewAll: '查看全部 →',
+        last24h: '过去24h',
+        reviewUnit: '个评价'
       }
+    },
+    reviewCount24h: {
+      type: Number,
+      value: 0
     }
   },
 

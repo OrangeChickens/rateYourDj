@@ -1,8 +1,16 @@
 <!-- 所有评价页面 -->
 <view class="container">
-  <view class="reviews-list" wx:if="{{reviews.length > 0}}">
+  <!-- Tab 栏 -->
+  <view class="tab-bar" wx:if="{{filter === 'moderation'}}">
+    <view class="tab-item {{activeTab === 'pending' ? 'active' : ''}}" data-tab="pending" bindtap="switchTab">PENDING</view>
+    <view class="tab-item {{activeTab === 'reported' ? 'active' : ''}}" data-tab="reported" bindtap="switchTab">REPORTED</view>
+    <view class="tab-item {{activeTab === 'approved' ? 'active' : ''}}" data-tab="approved" bindtap="switchTab">APPROVED</view>
+    <view class="tab-item {{activeTab === 'rejected' ? 'active' : ''}}" data-tab="rejected" bindtap="switchTab">REJECTED</view>
+  </view>
+
+  <view class="reviews-list" wx:if="{{filteredReviews.length > 0}}">
     <view
-      wx:for="{{reviews}}"
+      wx:for="{{filteredReviews}}"
       wx:key="id"
       class="review-item"
       bindtap="goToDJDetail"
@@ -22,6 +30,12 @@
         </view>
       </view>
 
+      <!-- 管理员：状态标签 -->
+      <view class="review-status-row" wx:if="{{isAdmin}}">
+        <text class="status-badge status-{{item.status}}">{{item.status === 'approved' ? 'APPROVED' : item.status === 'rejected' ? 'REJECTED' : 'PENDING'}}</text>
+        <text class="report-badge" wx:if="{{item.report_count > 0}}">{{item.report_count}} REPORT{{item.report_count > 1 ? 'S' : ''}}</text>
+      </view>
+
       <view class="dj-info">
         <text class="label">{{texts.djName}}</text>
         <text class="dj-name">{{item.dj_name}}</text>
@@ -29,6 +43,12 @@
 
       <view class="review-content" wx:if="{{item.comment}}">
         <text>{{item.comment}}</text>
+      </view>
+
+      <!-- 管理员操作按钮 -->
+      <view class="action-buttons" wx:if="{{isAdmin}}" catchtap="">
+        <view class="btn-approve" wx:if="{{item.status !== 'approved'}}" data-id="{{item.id}}" catchtap="handleApproveReview">APPROVE</view>
+        <view class="btn-reject" wx:if="{{item.status !== 'rejected'}}" data-id="{{item.id}}" catchtap="handleRejectReview">REJECT</view>
       </view>
     </view>
   </view>
@@ -39,13 +59,13 @@
   </view>
 
   <!-- 空状态 -->
-  <view class="empty-state" wx:elif="{{!loading && reviews.length === 0}}">
+  <view class="empty-state" wx:elif="{{!loading && filteredReviews.length === 0}}">
     <text class="empty-icon">—</text>
     <text class="empty-text">{{texts.noReviews}}</text>
   </view>
 
   <!-- 底部加载状态 -->
-  <view class="load-more" wx:if="{{reviews.length > 0}}">
+  <view class="load-more" wx:if="{{filteredReviews.length > 0}}">
     <text wx:if="{{loading}}" class="loading-text">{{texts.loading}}</text>
     <text wx:elif="{{!hasMore}}" class="no-more-text">{{texts.noMore}}</text>
   </view>

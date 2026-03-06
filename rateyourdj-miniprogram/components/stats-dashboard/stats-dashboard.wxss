@@ -5,7 +5,7 @@
 
 .stats-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: flex-start;
   gap: 16rpx;
 }
@@ -19,7 +19,7 @@
 }
 
 .stat-value {
-  font-size: 64rpx;
+  font-size: 48rpx;
   font-weight: 900;
   color: #000;
   line-height: 1;

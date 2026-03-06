@@ -1,4 +1,13 @@
 <view class="container">
+  <!-- 版本更新 -->
+  <view class="version-section">
+    <view class="version-header">
+      <text class="version-label">VERSION</text>
+      <text class="version-number">{{version}}</text>
+    </view>
+    <text class="version-changelog">{{userChangelog}}</text>
+  </view>
+
   <!-- 输入区域 -->
   <view class="input-section" wx:if="{{isLoggedIn}}">
     <textarea
@@ -11,7 +20,7 @@
     />
     <view class="input-footer">
       <text class="char-count">{{inputContent.length}}</text>
-      <view class="submit-btn {{submitting || !inputContent.trim() ? 'disabled' : ''}}" bindtap="handleSubmit">
+      <view class="submit-btn {{submitting || !inputContent ? 'disabled' : ''}}" bindtap="handleSubmit">
         SUBMIT
       </view>
     </view>
@@ -46,6 +55,14 @@
         <view class="delete-btn" wx:if="{{currentUserId === item.user_id}}" data-id="{{item.id}}" bindtap="handleDelete">
           DEL
         </view>
+      </view>
+
+      <!-- 管理员操作 -->
+      <view class="action-buttons" wx:if="{{isAdmin}}">
+        <view class="btn-approve" wx:if="{{item.status === 'rejected'}}" data-id="{{item.id}}" bindtap="handleApprove">APPROVE</view>
+        <view class="btn-status" wx:if="{{item.status === 'open'}}" data-id="{{item.id}}" bindtap="handleSetPlanned">PLANNED</view>
+        <view class="btn-status" wx:if="{{item.status === 'open' || item.status === 'planned'}}" data-id="{{item.id}}" bindtap="handleSetDone">DONE</view>
+        <view class="btn-reject" wx:if="{{item.status !== 'rejected'}}" data-id="{{item.id}}" bindtap="handleReject">REJECT</view>
       </view>
     </view>
   </view>

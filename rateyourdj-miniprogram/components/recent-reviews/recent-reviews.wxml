@@ -1,7 +1,10 @@
 <view class="recent-reviews-section">
   <view class="section-header">
     <text class="section-title">{{texts.title}}</text>
-    <text class="view-all" bindtap="onViewAll">{{texts.viewAll}}</text>
+    <view class="header-right">
+      <text class="count-24h" wx:if="{{reviewCount24h > 0}}">{{texts.last24h}} · {{reviewCount24h}}{{texts.reviewUnit}}</text>
+      <text class="view-all" bindtap="onViewAll">{{texts.viewAll}}</text>
+    </view>
   </view>
 
   <scroll-view scroll-x="{{true}}" class="reviews-scroll" wx:if="{{reviews && reviews.length > 0}}">
@@ -10,6 +13,7 @@
         <view class="card-content">
           <text class="dj-name">{{item.dj_name}}</text>
           <view class="rating-row">
+            <text class="rating-number">{{item.overall_rating}}</text>
             <view class="stars">
               <text wx:for="{{item.stars}}" wx:key="index" wx:for-item="star">★</text>
             </view>

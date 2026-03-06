@@ -5,6 +5,34 @@
   min-height: 100vh;
 }
 
+/* Tab 栏 */
+.tab-bar {
+  display: flex;
+  margin-bottom: 32rpx;
+  border: 3rpx solid #000;
+}
+
+.tab-item {
+  flex: 1;
+  padding: 28rpx 0;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  background: #FFF;
+  color: #000;
+}
+
+.tab-item.active {
+  background: #000;
+  color: #FFF;
+}
+
+.tab-item:first-child {
+  border-right: 3rpx solid #000;
+}
+
 .reviews-list {
   display: flex;
   flex-direction: column;
@@ -92,6 +120,85 @@
   font-size: 24rpx;
   line-height: 1.6;
   color: #333;
+}
+
+/* 状态标签行 */
+.review-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.status-badge {
+  padding: 4rpx 12rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+  letter-spacing: 0.5rpx;
+  text-transform: uppercase;
+  border: 2rpx solid #000;
+}
+
+.status-badge.status-approved {
+  background: #000;
+  color: #FFF;
+}
+
+.status-badge.status-rejected {
+  background: #FFF;
+  color: #666;
+  border-color: #CCC;
+}
+
+.status-badge.status-pending {
+  background: #FFF;
+  color: #000;
+}
+
+.report-badge {
+  padding: 4rpx 12rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+  letter-spacing: 0.5rpx;
+  text-transform: uppercase;
+  border: 2rpx solid #000;
+  background: #000;
+  color: #FFF;
+}
+
+/* 管理员操作 */
+.action-buttons {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #E0E0E0;
+}
+
+.btn-approve {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.btn-reject {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #FFF;
+  color: #000;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
 }
 
 /* 加载状态 */

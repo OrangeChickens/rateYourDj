@@ -17,6 +17,7 @@
     wx:if="{{recentReviews && recentReviews.length > 0}}"
     reviews="{{recentReviews}}"
     texts="{{recentReviewsTexts}}"
+    reviewCount24h="{{reviewCount24h}}"
     bind:viewall="handleViewAllReviews" />
 
   <!-- 搜索框 -->

@@ -22,6 +22,7 @@ Page({
     // 仪表盘数据
     dashboardStats: null,
     recentReviews: [],
+    reviewCount24h: 0,
     statsTexts: {},
     recentReviewsTexts: {}
   },
@@ -96,7 +97,9 @@ Page({
         title: i18n.t('home.recentReviews.title'),
         ratedDJ: i18n.t('home.recentReviews.ratedDJ'),
         noReviews: i18n.t('home.recentReviews.noReviews'),
-        viewAll: i18n.t('home.recentReviews.viewAll')
+        viewAll: i18n.t('home.recentReviews.viewAll'),
+        last24h: i18n.t('home.recentReviews.last24h'),
+        reviewUnit: i18n.t('home.recentReviews.reviewUnit')
       }
     });
   },
@@ -179,7 +182,8 @@ Page({
         console.log('📊 使用缓存的仪表盘数据');
         this.setData({
           dashboardStats: cached.stats,
-          recentReviews: this.formatRecentReviews(cached.recentReviews)
+          recentReviews: this.formatRecentReviews(cached.recentReviews),
+          reviewCount24h: cached.stats.reviewCount24h || 0
         });
         return;
       }
@@ -195,7 +199,8 @@ Page({
 
         this.setData({
           dashboardStats: res.data.stats,
-          recentReviews: this.formatRecentReviews(res.data.recentReviews)
+          recentReviews: this.formatRecentReviews(res.data.recentReviews),
+          reviewCount24h: res.data.stats.reviewCount24h || 0
         });
         console.log('✅ 仪表盘数据加载成功', res.data);
       }

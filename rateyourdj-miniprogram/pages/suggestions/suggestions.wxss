@@ -188,6 +188,91 @@
   border: 2rpx solid #CCC;
 }
 
+/* 管理员操作 */
+.action-buttons {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #E0E0E0;
+}
+
+.btn-approve {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #000;
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.btn-status {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #FFF;
+  color: #000;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.btn-reject {
+  flex: 1;
+  padding: 28rpx 0;
+  background-color: #FFF;
+  color: #000;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+  border: 2rpx solid #000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 版本更新 */
+.version-section {
+  padding: 32rpx;
+  border: 2rpx solid #E0E0E0;
+  margin-bottom: 32rpx;
+}
+
+.version-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.version-label {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #FFF;
+  background: #000;
+  padding: 4rpx 12rpx;
+  letter-spacing: 1rpx;
+}
+
+.version-number {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 0.5rpx;
+}
+
+.version-changelog {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #666;
+  line-height: 1.8;
+}
+
 /* 空状态 */
 .empty-state {
   padding: 128rpx 0;
