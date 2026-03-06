@@ -20,8 +20,8 @@ Page({
     userChangelog: versionConfig.userChangelog,
     activeTab: 'all',
     tabs: [
-      { key: 'all', label: 'ALL' },
-      { key: 'done', label: 'DONE' }
+      { key: 'all', label: '全部' },
+      { key: 'done', label: '已完成' }
     ]
   },
 

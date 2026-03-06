@@ -46,11 +46,11 @@ class Suggestion {
 
     let statusFilter;
     if (status) {
-      statusFilter = 'AND s.status = ?';
+      statusFilter = 'AND status = ?';
     } else if (isAdmin) {
       statusFilter = '';
     } else {
-      statusFilter = "AND (s.status IS NULL OR s.status != 'rejected')";
+      statusFilter = "AND (status IS NULL OR status != 'rejected')";
     }
 
     const params = [];
