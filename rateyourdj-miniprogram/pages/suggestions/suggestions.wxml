@@ -32,6 +32,16 @@
     <view class="login-btn" bindtap="handleLogin">LOGIN</view>
   </view>
 
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view wx:for="{{tabs}}" wx:key="key"
+          class="tab-item {{activeTab === item.key ? 'active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="switchTab">
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+
   <!-- 建议列表 -->
   <view class="suggestion-list">
     <view class="suggestion-card" wx:for="{{suggestions}}" wx:key="id">

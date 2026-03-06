@@ -17,7 +17,12 @@ Page({
     currentUserId: null,
     isAdmin: false,
     version: versionConfig.version,
-    userChangelog: versionConfig.userChangelog
+    userChangelog: versionConfig.userChangelog,
+    activeTab: 'all',
+    tabs: [
+      { key: 'all', label: 'ALL' },
+      { key: 'done', label: 'DONE' }
+    ]
   },
 
   onLoad() {
@@ -51,7 +56,8 @@ Page({
     }
 
     try {
-      const res = await suggestionAPI.getList(this.data.currentPage, 20);
+      const status = this.data.activeTab === 'done' ? 'done' : null;
+      const res = await suggestionAPI.getList(this.data.currentPage, 20, status);
       if (res.success) {
         const list = res.data.map(item => ({
           ...item,
@@ -258,6 +264,19 @@ Page({
     } catch (error) {
       showToast('操作失败');
     }
+  },
+
+  // 切换Tab
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (tab === this.data.activeTab) return;
+    this.setData({
+      activeTab: tab,
+      currentPage: 1,
+      suggestions: [],
+      hasMore: true
+    });
+    this.loadSuggestions();
   },
 
   // 登录

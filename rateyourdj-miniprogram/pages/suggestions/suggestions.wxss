@@ -79,6 +79,35 @@
   letter-spacing: 1rpx;
 }
 
+/* Tab 切换 */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32rpx;
+  border: 2rpx solid #000;
+}
+
+.tab-item {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #666;
+  letter-spacing: 1rpx;
+  text-transform: uppercase;
+  border-right: 2rpx solid #000;
+}
+
+.tab-item:last-child {
+  border-right: none;
+}
+
+.tab-item.active {
+  background: #000;
+  color: #FFF;
+}
+
 /* 建议列表 */
 .suggestion-list {
   display: flex;

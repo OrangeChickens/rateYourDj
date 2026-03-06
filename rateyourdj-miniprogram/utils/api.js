@@ -352,11 +352,13 @@ export const suggestionAPI = {
   },
 
   // 获取建议列表
-  getList(page = 1, limit = 20) {
+  getList(page = 1, limit = 20, status = null) {
+    const data = { page, limit };
+    if (status) data.status = status;
     return app.request({
       url: '/suggestion/list',
       method: 'GET',
-      data: { page, limit }
+      data
     });
   },
 
