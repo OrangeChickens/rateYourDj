@@ -50,7 +50,7 @@ class Suggestion {
     } else if (isAdmin) {
       statusFilter = '';
     } else {
-      statusFilter = "AND (status IS NULL OR status != 'rejected')";
+      statusFilter = "AND (status IS NULL OR status NOT IN ('rejected', 'done'))";
     }
 
     const params = [];
