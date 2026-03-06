@@ -43,11 +43,17 @@ class Stats {
       'SELECT COUNT(*) as userCount FROM users'
     );
 
+    // 过去24小时评价数
+    const [[{ reviewCount24h }]] = await pool.query(
+      "SELECT COUNT(*) as reviewCount24h FROM reviews WHERE status = 'approved' AND created_at >= NOW() - INTERVAL 24 HOUR"
+    );
+
     return {
       djCount,
       reviewCount,
       interactionCount,
-      userCount
+      userCount,
+      reviewCount24h
     };
   }
 
