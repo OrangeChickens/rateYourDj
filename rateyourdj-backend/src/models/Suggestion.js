@@ -48,7 +48,7 @@ class Suggestion {
     if (status) {
       statusFilter = 'AND status = ?';
     } else if (isAdmin) {
-      statusFilter = '';
+      statusFilter = "AND (status IS NULL OR status != 'done')";
     } else {
       statusFilter = "AND (status IS NULL OR status NOT IN ('rejected', 'done'))";
     }
