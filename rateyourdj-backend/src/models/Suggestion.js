@@ -34,7 +34,7 @@ class Suggestion {
 
   // 获取建议列表（按 upvote_count 降序）
   // isAdmin=true 时显示所有建议，否则隐藏 rejected
-  static async getList(page = 1, limit = 20, userId = null, isAdmin = false) {
+  static async getList(page = 1, limit = 20, userId = null, isAdmin = false, status = null) {
     const offset = (page - 1) * limit;
 
     const userVoteJoin = userId
@@ -44,11 +44,19 @@ class Suggestion {
       ? ', sv.vote_type as user_vote'
       : ', NULL as user_vote';
 
-    const statusFilter = isAdmin ? '' : "AND (status IS NULL OR status != 'rejected')";
+    let statusFilter;
+    if (status) {
+      statusFilter = 'AND s.status = ?';
+    } else if (isAdmin) {
+      statusFilter = '';
+    } else {
+      statusFilter = "AND (s.status IS NULL OR s.status != 'rejected')";
+    }
 
-    const params = userId
-      ? [userId, parseInt(limit), parseInt(offset)]
-      : [parseInt(limit), parseInt(offset)];
+    const params = [];
+    if (userId) params.push(userId);
+    if (status) params.push(status);
+    params.push(parseInt(limit), parseInt(offset));
 
     const [rows] = await pool.query(
       `SELECT s.*, u.nickname, u.avatar_url ${userVoteSelect}
@@ -61,8 +69,10 @@ class Suggestion {
       params
     );
 
+    const countParams = status ? [status] : [];
     const [countResult] = await pool.query(
-      `SELECT COUNT(*) as total FROM suggestions WHERE 1=1 ${statusFilter}`
+      `SELECT COUNT(*) as total FROM suggestions WHERE 1=1 ${statusFilter}`,
+      countParams
     );
 
     return {

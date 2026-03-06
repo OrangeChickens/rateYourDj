@@ -52,7 +52,8 @@ async function getSuggestions(req, res, next) {
       isAdmin = user && user.role === 'admin';
     }
 
-    const result = await Suggestion.getList(page, limit, userId, isAdmin);
+    const status = req.query.status || null;
+    const result = await Suggestion.getList(page, limit, userId, isAdmin, status);
 
     res.json({
       success: true,
