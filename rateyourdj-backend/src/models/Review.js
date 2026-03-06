@@ -347,7 +347,13 @@ class Review {
       statusCondition = 'r.report_count > 0';
       statusParams = [];
     } else if (filter === 'pending' && isAdmin) {
-      statusCondition = '1=1';
+      statusCondition = "r.status = 'pending'";
+      statusParams = [];
+    } else if (filter === 'approved' && isAdmin) {
+      statusCondition = "r.status = 'approved'";
+      statusParams = [];
+    } else if (filter === 'rejected' && isAdmin) {
+      statusCondition = "r.status = 'rejected'";
       statusParams = [];
     } else if (isAdmin) {
       statusCondition = '1=1';
