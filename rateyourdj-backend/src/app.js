@@ -17,6 +17,7 @@ const uploadRoutes = require('./routes/upload');
 const taskRoutes = require('./routes/task');
 const inviteRoutes = require('./routes/invite');
 const suggestionRoutes = require('./routes/suggestion');
+const djEditRequestRoutes = require('./routes/djEditRequest');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/invite', inviteRoutes);
 app.use('/api/suggestion', suggestionRoutes);
+app.use('/api/dj-edit-request', djEditRequestRoutes);
 
 // 404 处理
 app.use(notFoundHandler);

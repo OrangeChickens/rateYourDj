@@ -130,7 +130,7 @@ async function getLabels(req, res, next) {
 // 创建DJ（仅管理员）
 async function createDJ(req, res, next) {
   try {
-    const { name, city, label, music_style, photo_url } = req.body;
+    const { name, city, label, music_style, photo_url, bio } = req.body;
 
     console.log('🎵 创建DJ请求:');
     console.log('  - 名称:', name);
@@ -155,7 +155,8 @@ async function createDJ(req, res, next) {
       city,
       label: label || null,
       music_style: music_style || null,
-      photo_url: photo_url || null
+      photo_url: photo_url || null,
+      bio: bio || null
     });
 
     console.log('✅ DJ创建成功:', dj.id);
@@ -176,7 +177,7 @@ async function createDJ(req, res, next) {
 async function updateDJ(req, res, next) {
   try {
     const { id } = req.params;
-    const { name, city, label, music_style, photo_url } = req.body;
+    const { name, city, label, music_style, photo_url, bio } = req.body;
 
     console.log('🎵 更新DJ请求:');
     console.log('  - ID:', id);
@@ -212,7 +213,8 @@ async function updateDJ(req, res, next) {
       city,
       label: label || null,
       music_style: music_style || null,
-      photo_url: photo_url || null
+      photo_url: photo_url || null,
+      bio: bio || null
     });
 
     console.log('✅ DJ更新成功:', dj.id);
@@ -232,7 +234,7 @@ async function updateDJ(req, res, next) {
 // 用户提交DJ（待审核）
 async function submitDJ(req, res, next) {
   try {
-    const { name, city, label, music_style, photo_url } = req.body;
+    const { name, city, label, music_style, photo_url, bio } = req.body;
 
     if (!name || !city) {
       return res.status(400).json({
@@ -247,6 +249,7 @@ async function submitDJ(req, res, next) {
       label: label || null,
       music_style: music_style || null,
       photo_url: photo_url || null,
+      bio: bio || null,
       submitted_by: req.user.userId
     });
 

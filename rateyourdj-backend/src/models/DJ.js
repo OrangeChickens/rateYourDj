@@ -178,13 +178,13 @@ class DJ {
 
   // 用户提交DJ（待审核）
   static async submit(djData) {
-    const { name, city, label, photo_url, music_style, submitted_by } = djData;
+    const { name, city, label, photo_url, music_style, bio, submitted_by } = djData;
     const httpsPhotoUrl = convertToHttps(photo_url);
 
     const [result] = await pool.query(
-      `INSERT INTO djs (name, city, label, photo_url, music_style, status, submitted_by)
-       VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
-      [name, city, label, httpsPhotoUrl, music_style, submitted_by]
+      `INSERT INTO djs (name, city, label, photo_url, music_style, bio, status, submitted_by)
+       VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`,
+      [name, city, label, httpsPhotoUrl, music_style, bio || null, submitted_by]
     );
     return this.findById(result.insertId);
   }
@@ -261,21 +261,21 @@ class DJ {
 
   // 创建DJ（管理功能）
   static async create(djData) {
-    const { name, city, label, photo_url, music_style } = djData;
+    const { name, city, label, photo_url, music_style, bio } = djData;
     // 转换 photo_url 为 HTTPS
     const httpsPhotoUrl = convertToHttps(photo_url);
 
     const [result] = await pool.query(
-      `INSERT INTO djs (name, city, label, photo_url, music_style)
-       VALUES (?, ?, ?, ?, ?)`,
-      [name, city, label, httpsPhotoUrl, music_style]
+      `INSERT INTO djs (name, city, label, photo_url, music_style, bio)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [name, city, label, httpsPhotoUrl, music_style, bio || null]
     );
     return this.findById(result.insertId);
   }
 
   // 更新DJ（管理功能）
   static async update(id, djData) {
-    const { name, city, label, photo_url, music_style } = djData;
+    const { name, city, label, photo_url, music_style, bio } = djData;
     // 转换 photo_url 为 HTTPS
     const httpsPhotoUrl = convertToHttps(photo_url);
 
@@ -285,9 +285,10 @@ class DJ {
        city = ?,
        label = ?,
        photo_url = ?,
-       music_style = ?
+       music_style = ?,
+       bio = ?
        WHERE id = ?`,
-      [name, city, label || null, httpsPhotoUrl || null, music_style || null, id]
+      [name, city, label || null, httpsPhotoUrl || null, music_style || null, bio || null, id]
     );
     return this.findById(id);
   }
