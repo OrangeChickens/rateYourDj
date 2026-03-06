@@ -2,10 +2,10 @@ const { pool } = require('../config/database');
 
 class Suggestion {
   // 创建建议
-  static async create(userId, content) {
+  static async create(userId, content, status = 'open') {
     const [result] = await pool.query(
-      'INSERT INTO suggestions (user_id, content) VALUES (?, ?)',
-      [userId, content]
+      'INSERT INTO suggestions (user_id, content, status) VALUES (?, ?, ?)',
+      [userId, content, status]
     );
     return this.findById(result.insertId, userId);
   }

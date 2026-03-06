@@ -1,5 +1,6 @@
 const Suggestion = require('../models/Suggestion');
 const User = require('../models/User');
+const { checkContent } = require('../services/contentCheckService');
 
 // 创建建议
 async function createSuggestion(req, res, next) {
@@ -13,11 +14,23 @@ async function createSuggestion(req, res, next) {
       });
     }
 
-    const suggestion = await Suggestion.create(req.user.userId, content.trim());
+    // 内容检测
+    const contentResult = checkContent(content.trim());
+    const status = contentResult.safe ? 'open' : 'rejected';
+
+    if (!contentResult.safe) {
+      console.log(`⚠️ [Content Check] Suggestion flagged:`, {
+        userId: req.user.userId,
+        category: contentResult.category,
+        matched: contentResult.matched
+      });
+    }
+
+    const suggestion = await Suggestion.create(req.user.userId, content.trim(), status);
 
     res.status(201).json({
       success: true,
-      message: '建议提交成功',
+      message: contentResult.safe ? '建议提交成功' : '建议已提交，待审核后展示',
       data: suggestion
     });
   } catch (error) {

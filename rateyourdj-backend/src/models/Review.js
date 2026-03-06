@@ -36,7 +36,8 @@ class Review {
       personality_rating,
       would_choose_again,
       comment,
-      tags
+      tags,
+      status = 'approved'
     } = reviewData;
 
     const connection = await pool.getConnection();
@@ -48,8 +49,8 @@ class Review {
       const [result] = await connection.query(
         `INSERT INTO reviews
          (dj_id, user_id, is_anonymous, overall_rating, set_rating,
-          performance_rating, personality_rating, would_choose_again, comment)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          performance_rating, personality_rating, would_choose_again, comment, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           dj_id,
           user_id,
@@ -59,7 +60,8 @@ class Review {
           performance_rating,
           personality_rating,
           would_choose_again,
-          comment
+          comment,
+          status
         ]
       );
 

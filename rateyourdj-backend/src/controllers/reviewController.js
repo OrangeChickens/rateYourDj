@@ -2,6 +2,7 @@ const Review = require('../models/Review');
 const DJ = require('../models/DJ');
 const { updateDJRatings } = require('../services/ratingService');
 const TaskService = require('../services/taskService');
+const { checkContent } = require('../services/contentCheckService');
 
 // 创建评论
 async function createReview(req, res, next) {
@@ -59,6 +60,19 @@ async function createReview(req, res, next) {
       });
     }
 
+    // 内容检测
+    const contentResult = checkContent(comment);
+    const reviewStatus = contentResult.safe ? 'approved' : 'pending';
+
+    if (!contentResult.safe) {
+      console.log(`⚠️ [Content Check] Review flagged:`, {
+        userId: req.user.userId,
+        djId: dj_id,
+        category: contentResult.category,
+        matched: contentResult.matched
+      });
+    }
+
     // 创建评论
     const review = await Review.create({
       dj_id,
@@ -70,11 +84,14 @@ async function createReview(req, res, next) {
       personality_rating,
       would_choose_again: would_choose_again || false,
       comment: comment || null,
-      tags: tags || []
+      tags: tags || [],
+      status: reviewStatus
     });
 
-    // 更新DJ评分
-    await updateDJRatings(dj_id);
+    // 只有approved的评价才计入评分
+    if (reviewStatus === 'approved') {
+      await updateDJRatings(dj_id);
+    }
 
     // 更新任务进度（异步，不阻塞响应）
     console.log(`📝 [Review Debug] 准备更新任务进度:`, { userId: req.user.userId, reviewId: review.id, commentLength: comment?.length });
@@ -84,8 +101,8 @@ async function createReview(req, res, next) {
 
     res.status(201).json({
       success: true,
-      message: '评论创建成功',
-      data: review
+      message: reviewStatus === 'approved' ? '评论创建成功' : '评论已提交，待审核后展示',
+      data: { ...review, status: reviewStatus }
     });
   } catch (error) {
     next(error);
