@@ -57,6 +57,15 @@ async function wechatLogin(req, res, next) {
       user = await User.update(user.id, updateData);
     }
 
+    // 检查是否被封禁
+    if (user.access_level === 'banned') {
+      return res.status(403).json({
+        success: false,
+        message: '你的账号已被封禁',
+        banned: true
+      });
+    }
+
     // 邀请码激活逻辑 - 详细日志
     console.log(`\n========== 邀请码激活检查 ==========`);
     console.log(`inviteCode: ${inviteCode || '(无)'}`);
