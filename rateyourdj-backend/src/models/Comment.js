@@ -87,7 +87,7 @@ class Comment {
        FROM review_comments c
        LEFT JOIN users u ON c.user_id = u.id
        ${userId ? 'LEFT JOIN comment_votes cv ON c.id = cv.comment_id AND cv.user_id = ?' : ''}
-       WHERE c.review_id = ? AND c.parent_comment_id IS NULL
+       WHERE c.review_id = ? AND c.parent_comment_id IS NULL AND (c.status IS NULL OR c.status != 'rejected')
        ORDER BY c.${sortField} ${sortOrder}
        LIMIT ? OFFSET ?`,
       userId ? [userId, reviewId, limit, offset] : [reviewId, limit, offset]
@@ -110,7 +110,7 @@ class Comment {
        FROM review_comments c
        LEFT JOIN users u ON c.user_id = u.id
        ${userId ? 'LEFT JOIN comment_votes cv ON c.id = cv.comment_id AND cv.user_id = ?' : ''}
-       WHERE c.review_id = ? AND c.parent_comment_id IS NOT NULL
+       WHERE c.review_id = ? AND c.parent_comment_id IS NOT NULL AND (c.status IS NULL OR c.status != 'rejected')
        ORDER BY c.created_at ASC`,
       userId ? [userId, reviewId] : [reviewId]
     );
@@ -132,7 +132,7 @@ class Comment {
 
     // 获取总数（只计算顶级评论）
     const [[{ total }]] = await pool.query(
-      'SELECT COUNT(*) as total FROM review_comments WHERE review_id = ? AND parent_comment_id IS NULL',
+      "SELECT COUNT(*) as total FROM review_comments WHERE review_id = ? AND parent_comment_id IS NULL AND (status IS NULL OR status != 'rejected')",
       [reviewId]
     );
 
@@ -290,7 +290,7 @@ class Comment {
    */
   static async getCommentCount(reviewId) {
     const [[{ count }]] = await pool.query(
-      'SELECT COUNT(*) as count FROM review_comments WHERE review_id = ?',
+      "SELECT COUNT(*) as count FROM review_comments WHERE review_id = ? AND (status IS NULL OR status != 'rejected')",
       [reviewId]
     );
 
