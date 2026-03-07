@@ -3,10 +3,11 @@
  * Single source of truth for version tracking.
  */
 module.exports = {
-  version: '0.2.4-beta',
+  version: '0.2.5-beta',
   buildDate: '2026-03-07',
-  userChangelog: 'DJ Bio + 资料修改申请，DJ名称支持大小写',
+  userChangelog: '· DJ Bio + 资料修改申请，DJ名称大小写\n· 禁止人身攻击、辱骂，关注音乐、场景等在场真实体验\n· or You will be banned',
   changelog: [
+    '0.2.5-beta - 建议页新增已完成tab，已完成建议从默认列表隐藏',
     '0.2.4-beta - DJ Bio字段，用户申请修改DJ资料，admin审核，DJ名称保留原始大小写',
     '0.2.3-beta - 合并评价审核页面(PENDING/REPORTED/APPROVED/REJECTED)',
     '0.2.2-beta - 待审核评价页面，ID类型修复，评价placeholder更新',
