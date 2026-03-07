@@ -24,6 +24,17 @@ async function authenticate(req, res, next) {
       openid: decoded.openid
     };
 
+    // 检查是否被封禁
+    const User = require('../models/User');
+    const user = await User.findById(decoded.userId);
+    if (user && user.access_level === 'banned') {
+      return res.status(403).json({
+        success: false,
+        message: '你的账号已被封禁',
+        banned: true
+      });
+    }
+
     next();
   } catch (error) {
     return res.status(401).json({
@@ -77,6 +88,14 @@ async function requireAdmin(req, res, next) {
     // 查询用户角色
     const User = require('../models/User');
     const user = await User.findById(decoded.userId);
+
+    if (user && user.access_level === 'banned') {
+      return res.status(403).json({
+        success: false,
+        message: '你的账号已被封禁',
+        banned: true
+      });
+    }
 
     if (!user || user.role !== 'admin') {
       return res.status(403).json({
