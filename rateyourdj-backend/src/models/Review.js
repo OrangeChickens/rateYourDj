@@ -94,6 +94,15 @@ class Review {
     }
   }
 
+  // 检查用户在N天内是否已评价过该DJ
+  static async findRecentByUserAndDJ(userId, djId, days = 7) {
+    const [rows] = await pool.query(
+      `SELECT id FROM reviews WHERE user_id = ? AND dj_id = ? AND status != 'rejected' AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY) LIMIT 1`,
+      [userId, djId, days]
+    );
+    return rows.length > 0 ? rows[0] : null;
+  }
+
   // 通过ID获取评论
   static async findById(id) {
     const [rows] = await pool.query(

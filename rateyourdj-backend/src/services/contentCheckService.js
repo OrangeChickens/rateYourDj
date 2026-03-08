@@ -59,4 +59,60 @@ function checkContent(text) {
   };
 }
 
-module.exports = { checkContent, normalize };
+/**
+ * Review quality check (silent — low quality → pending, not rejected).
+ * Rules:
+ *  - Chinese: min 10 chars, min 7 unique chars
+ *  - English: min 20 chars, min 7 unique words
+ *  - Emoji/symbol ratio max 50%
+ * Returns { quality: 'ok' | 'low', reason: string }
+ */
+function checkQuality(text) {
+  if (!text || text.trim().length === 0) {
+    return { quality: 'low', reason: 'empty' };
+  }
+
+  const trimmed = text.trim();
+
+  // Count emoji/symbol ratio (using non-whitespace chars as denominator)
+  const emojiRegex = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu;
+  const symbolRegex = /[^\w\s\u4e00-\u9fff\u3400-\u4dbf\uF900-\uFAFF]/g;
+  const emojiCount = (trimmed.match(emojiRegex) || []).length;
+  const rawSymbolCount = (trimmed.match(symbolRegex) || []).length;
+  const symbolCount = Math.max(0, rawSymbolCount - emojiCount); // avoid double-counting emoji
+  const allChars = [...trimmed];
+  const totalChars = allChars.filter(c => /\S/.test(c)).length; // exclude whitespace
+
+  if (totalChars > 0 && (emojiCount + symbolCount) / totalChars > 0.5) {
+    return { quality: 'low', reason: 'too_many_emoji' };
+  }
+
+  // Detect language: if >30% Chinese characters → Chinese, else English
+  const chineseChars = trimmed.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) || [];
+  const isChinese = chineseChars.length / totalChars > 0.3;
+
+  if (isChinese) {
+    // Chinese rules: min 10 chars, min 7 unique chars
+    if (totalChars < 10) {
+      return { quality: 'low', reason: 'too_short_zh' };
+    }
+    const uniqueChars = new Set(allChars.filter(c => /[\u4e00-\u9fff\u3400-\u4dbf\w]/.test(c)));
+    if (uniqueChars.size < 7) {
+      return { quality: 'low', reason: 'not_enough_unique_zh' };
+    }
+  } else {
+    // English rules: min 20 chars, min 7 unique words
+    if (totalChars < 20) {
+      return { quality: 'low', reason: 'too_short_en' };
+    }
+    const words = trimmed.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+    const uniqueWords = new Set(words);
+    if (uniqueWords.size < 7) {
+      return { quality: 'low', reason: 'not_enough_unique_en' };
+    }
+  }
+
+  return { quality: 'ok', reason: null };
+}
+
+module.exports = { checkContent, normalize, checkQuality };

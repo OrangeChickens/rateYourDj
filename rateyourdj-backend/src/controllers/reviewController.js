@@ -2,7 +2,7 @@ const Review = require('../models/Review');
 const DJ = require('../models/DJ');
 const { updateDJRatings } = require('../services/ratingService');
 const TaskService = require('../services/taskService');
-const { checkContent } = require('../services/contentCheckService');
+const { checkContent, checkQuality } = require('../services/contentCheckService');
 
 // 创建评论
 async function createReview(req, res, next) {
@@ -60,16 +60,37 @@ async function createReview(req, res, next) {
       });
     }
 
-    // 内容检测
-    const contentResult = checkContent(comment);
-    const reviewStatus = contentResult.safe ? 'approved' : 'pending';
+    // 7天内重复评价检测
+    const recentReview = await Review.findRecentByUserAndDJ(req.user.userId, dj_id, 7);
+    if (recentReview) {
+      return res.status(400).json({
+        success: false,
+        message: '你已在7天内评价过该DJ，请稍后再试'
+      });
+    }
 
+    // 内容检测（关键词 + 质量）
+    const contentResult = checkContent(comment);
+    const qualityResult = checkQuality(comment);
+
+    let reviewStatus;
     if (!contentResult.safe) {
-      console.log(`⚠️ [Content Check] Review flagged:`, {
+      reviewStatus = 'pending';
+    } else if (qualityResult.quality === 'low') {
+      reviewStatus = 'pending';
+    } else {
+      reviewStatus = 'approved';
+    }
+
+    if (reviewStatus === 'pending') {
+      console.log(`⚠️ [Content Check] Review flagged as pending:`, {
         userId: req.user.userId,
         djId: dj_id,
-        category: contentResult.category,
-        matched: contentResult.matched
+        keywordSafe: contentResult.safe,
+        keywordCategory: contentResult.category,
+        keywordMatched: contentResult.matched,
+        quality: qualityResult.quality,
+        qualityReason: qualityResult.reason
       });
     }
 
