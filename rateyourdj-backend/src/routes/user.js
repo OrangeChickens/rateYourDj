@@ -7,7 +7,8 @@ const {
   toggleFavorite,
   getUserReviews,
   getSearchHistory,
-  getWaitlistStatus
+  getWaitlistStatus,
+  deleteAccount
 } = require('../controllers/userController');
 
 // 获取用户资料（需要登录）
@@ -27,5 +28,8 @@ router.get('/search-history', authenticate, getSearchHistory);
 
 // 获取 Waitlist 状态（需要登录）
 router.get('/waitlist-status', authenticate, getWaitlistStatus);
+
+// 注销账号（需要登录）
+router.delete('/account', authenticate, deleteAccount);
 
 module.exports = router;

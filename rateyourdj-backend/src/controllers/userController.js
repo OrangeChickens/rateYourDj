@@ -194,11 +194,33 @@ async function getWaitlistStatus(req, res, next) {
   }
 }
 
+// 注销账号（软删除）
+async function deleteAccount(req, res, next) {
+  try {
+    const userId = req.user.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: '用户不存在' });
+    }
+
+    await User.softDelete(userId);
+
+    res.json({
+      success: true,
+      message: '账号已注销'
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getUserProfile,
   getFavorites,
   toggleFavorite,
   getUserReviews,
   getSearchHistory,
-  getWaitlistStatus
+  getWaitlistStatus,
+  deleteAccount
 };

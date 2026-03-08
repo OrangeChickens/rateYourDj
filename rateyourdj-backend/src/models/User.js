@@ -19,22 +19,31 @@ function processUser(user) {
 }
 
 class User {
-  // 通过 openid 查找用户
+  // 通过 openid 查找用户（排除已注销）
   static async findByOpenid(openid) {
     const [rows] = await pool.query(
-      'SELECT * FROM users WHERE wx_openid = ?',
+      'SELECT * FROM users WHERE wx_openid = ? AND deleted_at IS NULL',
       [openid]
     );
     return processUser(rows[0]);
   }
 
-  // 通过 ID 查找用户
+  // 通过 ID 查找用户（排除已注销）
   static async findById(id) {
     const [rows] = await pool.query(
-      'SELECT * FROM users WHERE id = ?',
+      'SELECT * FROM users WHERE id = ? AND deleted_at IS NULL',
       [id]
     );
     return processUser(rows[0]);
+  }
+
+  // 软删除用户（注销账号）
+  static async softDelete(id) {
+    await pool.query(
+      'UPDATE users SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL',
+      [id]
+    );
+    return true;
   }
 
   // 创建新用户
