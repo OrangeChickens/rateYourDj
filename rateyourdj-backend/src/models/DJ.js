@@ -1,4 +1,5 @@
 const { pool } = require('../config/database');
+const { getNameInitial } = require('../utils/pinyin');
 
 // 辅助函数：将 HTTP URL 转换为 HTTPS（微信小程序要求）
 function convertToHttps(url) {
@@ -63,16 +64,10 @@ class DJ {
       }
     }
 
-    // 首字母筛选
+    // 首字母筛选（使用 name_initial 列，支持中文拼音）
     if (letter) {
-      if (letter === '#') {
-        // 数字开头
-        query += ' AND (name REGEXP \'^[0-9]\' OR SUBSTRING(name, 1, 1) BETWEEN \'0\' AND \'9\')';
-      } else {
-        // 字母开头（不区分大小写）
-        query += ' AND UPPER(SUBSTRING(name, 1, 1)) = ?';
-        params.push(letter.toUpperCase());
-      }
+      query += ' AND name_initial = ?';
+      params.push(letter === '#' ? '#' : letter.toUpperCase());
     }
 
     // 排序
@@ -117,12 +112,8 @@ class DJ {
       }
     }
     if (letter) {
-      if (letter === '#') {
-        countQuery += ' AND (name REGEXP \'^[0-9]\' OR SUBSTRING(name, 1, 1) BETWEEN \'0\' AND \'9\')';
-      } else {
-        countQuery += ' AND UPPER(SUBSTRING(name, 1, 1)) = ?';
-        countParams.push(letter.toUpperCase());
-      }
+      countQuery += ' AND name_initial = ?';
+      countParams.push(letter === '#' ? '#' : letter.toUpperCase());
     }
 
     const [countResult] = await pool.query(countQuery, countParams);
@@ -254,11 +245,12 @@ class DJ {
   static async submit(djData) {
     const { name, city, label, photo_url, music_style, bio, submitted_by } = djData;
     const httpsPhotoUrl = convertToHttps(photo_url);
+    const nameInitial = getNameInitial(name);
 
     const [result] = await pool.query(
-      `INSERT INTO djs (name, city, label, photo_url, music_style, bio, status, submitted_by)
-       VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`,
-      [name, city, label, httpsPhotoUrl, music_style, bio || null, submitted_by]
+      `INSERT INTO djs (name, name_initial, city, label, photo_url, music_style, bio, status, submitted_by)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
+      [name, nameInitial, city, label, httpsPhotoUrl, music_style, bio || null, submitted_by]
     );
     return this.findById(result.insertId);
   }
@@ -336,13 +328,13 @@ class DJ {
   // 创建DJ（管理功能）
   static async create(djData) {
     const { name, city, label, photo_url, music_style, bio } = djData;
-    // 转换 photo_url 为 HTTPS
     const httpsPhotoUrl = convertToHttps(photo_url);
+    const nameInitial = getNameInitial(name);
 
     const [result] = await pool.query(
-      `INSERT INTO djs (name, city, label, photo_url, music_style, bio)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, city, label, httpsPhotoUrl, music_style, bio || null]
+      `INSERT INTO djs (name, name_initial, city, label, photo_url, music_style, bio)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [name, nameInitial, city, label, httpsPhotoUrl, music_style, bio || null]
     );
     return this.findById(result.insertId);
   }
@@ -350,19 +342,20 @@ class DJ {
   // 更新DJ（管理功能）
   static async update(id, djData) {
     const { name, city, label, photo_url, music_style, bio } = djData;
-    // 转换 photo_url 为 HTTPS
     const httpsPhotoUrl = convertToHttps(photo_url);
+    const nameInitial = getNameInitial(name);
 
     await pool.query(
       `UPDATE djs SET
        name = ?,
+       name_initial = ?,
        city = ?,
        label = ?,
        photo_url = ?,
        music_style = ?,
        bio = ?
        WHERE id = ?`,
-      [name, city, label || null, httpsPhotoUrl || null, music_style || null, bio || null, id]
+      [name, nameInitial, city, label || null, httpsPhotoUrl || null, music_style || null, bio || null, id]
     );
     return this.findById(id);
   }
