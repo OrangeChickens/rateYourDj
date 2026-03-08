@@ -7,6 +7,7 @@ async function getDJList(req, res, next) {
       city: req.query.city,
       style: req.query.style,
       genre_group: req.query.genre_group,
+      sub_group: req.query.sub_group,
       letter: req.query.letter,
       sort: req.query.sort || 'overall_rating',
       order: req.query.order || 'DESC',
