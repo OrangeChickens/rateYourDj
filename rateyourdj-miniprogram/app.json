@@ -14,7 +14,8 @@
     "pages/all-reviews/all-reviews",
     "pages/agreement/agreement",
     "pages/suggestions/suggestions",
-    "pages/dj-edit-pending/dj-edit-pending"
+    "pages/dj-edit-pending/dj-edit-pending",
+    "pages/label-detail/label-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

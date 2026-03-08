@@ -281,6 +281,62 @@ Page({
     });
   },
 
+  // 点击头像弹出操作菜单
+  onAvatarTap() {
+    wx.showActionSheet({
+      itemList: ['退出登录', '注销账号'],
+      itemColor: '#000',
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.handleLogout();
+        } else if (res.tapIndex === 1) {
+          this.handleDeleteAccount();
+        }
+      }
+    });
+  },
+
+  // 注销账号
+  async handleDeleteAccount() {
+    const confirmed = await showConfirm(
+      '注销账号',
+      '注销后账号数据将无法恢复，确定要注销吗？'
+    );
+
+    if (!confirmed) return;
+
+    // 二次确认
+    const confirmed2 = await showConfirm(
+      '再次确认',
+      '此操作不可撤销，确定注销账号？'
+    );
+
+    if (!confirmed2) return;
+
+    try {
+      showLoading('处理中...');
+      const res = await userAPI.deleteAccount();
+      hideLoading();
+
+      if (res.success) {
+        app.logout();
+        this.setData({
+          isLoggedIn: false,
+          userInfo: null,
+          reviewCount: 0,
+          favoriteCount: 0
+        });
+        showToast('账号已注销');
+      } else {
+        showToast(res.message || '注销失败');
+      }
+    } catch (error) {
+      hideLoading();
+      console.error('注销账号失败:', error);
+      showToast('注销失败');
+    }
+  },
+
   // 退出登录
   async handleLogout() {
     const confirmed = await showConfirm(

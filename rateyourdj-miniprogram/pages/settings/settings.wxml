@@ -3,7 +3,7 @@
   <!-- 用户信息区域 -->
   <view class="user-section">
     <view wx:if="{{isLoggedIn}}" class="user-info">
-      <view class="avatar-wrapper skeleton">
+      <view class="avatar-wrapper skeleton" bindtap="onAvatarTap">
         <image
           src="{{userInfo.avatar_url || '/images/default-avatar.png'}}"
           class="avatar"
@@ -100,8 +100,4 @@
     </view>
   </view>
 
-  <!-- 退出登录 -->
-  <view wx:if="{{isLoggedIn}}" class="logout-section">
-    <button class="logout-btn" bindtap="handleLogout">{{texts.logout}}</button>
-  </view>
 </view>

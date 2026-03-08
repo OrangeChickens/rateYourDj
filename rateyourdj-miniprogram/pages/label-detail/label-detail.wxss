@@ -1,0 +1,33 @@
+/* 厂牌详情页 - 复用首页 DJ 卡片样式 */
+@import '../index/index.wxss';
+
+/* 厂牌头部 */
+.label-header {
+  padding: 64rpx 32rpx 48rpx;
+  border-bottom: 3rpx solid #000000;
+}
+
+.label-name {
+  display: block;
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 16rpx;
+}
+
+.label-count {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 覆盖首页 section 的上边距 */
+.section {
+  padding: 32rpx;
+  margin-bottom: 0;
+}

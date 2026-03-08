@@ -1,0 +1,77 @@
+<!-- 厂牌详情页 -->
+<view class="container">
+  <!-- 厂牌头部 -->
+  <view class="label-header">
+    <text class="label-name">{{label}}</text>
+    <text class="label-count">{{total}} DJS</text>
+  </view>
+
+  <!-- DJ列表 -->
+  <view class="section">
+    <view class="dj-list" wx:if="{{djList.length > 0}}">
+      <view
+        class="dj-card"
+        wx:for="{{djList}}"
+        wx:key="id"
+        bindtap="goToDJDetail"
+        data-id="{{item.id}}"
+      >
+        <view class="dj-card-header">
+          <view class="image-wrapper skeleton">
+            <image
+              class="dj-avatar"
+              src="{{item.photo_url || '/images/default-avatar.png'}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+            />
+          </view>
+          <view class="dj-info">
+            <text class="dj-name">{{item.name}}</text>
+            <view class="dj-meta">
+              <text class="dj-city">{{item.city}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="dj-card-body">
+          <view class="rating-section">
+            <view class="overall-rating">
+              <text class="rating-number rating-{{item.overall_rating >= 4 ? 'high' : item.overall_rating >= 3 ? 'medium' : 'low'}}">{{item.overall_rating}}</text>
+              <view class="rating-stars">
+                <text class="star star-filled" wx:for="{{item.fullStars}}" wx:key="index">★</text>
+                <text class="star star-empty" wx:for="{{item.emptyStars}}" wx:key="index">★</text>
+              </view>
+            </view>
+            <view class="rating-info">
+              <text class="review-count">{{item.review_count}}条评论</text>
+              <text class="would-choose" wx:if="{{item.would_choose_again_percent !== null}}">
+                <text class="would-choose-percent">{{item.would_choose_again_percent}}%</text>
+                <text class="would-choose-label">会再次捧场</text>
+              </text>
+            </view>
+          </view>
+
+          <view class="tags" wx:if="{{item.music_style}}">
+            <text class="tag" wx:for="{{item.styleList}}" wx:key="index">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载中 -->
+    <view class="loading" wx:if="{{loading && currentPage === 1}}">
+      <text>LOADING...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:elif="{{!loading && djList.length === 0}}">
+      <text class="empty-icon">—</text>
+      <text class="empty-text">暂无DJ</text>
+    </view>
+
+    <!-- 底部加载状态 -->
+    <view class="load-more" wx:if="{{djList.length > 0}}">
+      <text wx:if="{{loading}}" class="loading-text">LOADING...</text>
+    </view>
+  </view>
+</view>

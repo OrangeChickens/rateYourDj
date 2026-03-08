@@ -84,3 +84,23 @@ Full flow that must happen in order:
 
 - One-time debugging scripts should be deleted after use (commit `5baa295` cleaned up 3)
 - Don't let diagnostic tools accumulate in the repo
+
+---
+
+## Infrastructure / Server
+
+### Docker 网段与 RDS 内网冲突 (2026-03-07)
+
+**Problem**: 后端突然无法连接 RDS，报 `EHOSTUNREACH 192.168.123.42:3306`。PM2 显示服务在线但所有数据库请求失败。
+
+**Root cause**: 服务器上另一个项目的 Docker 容器（`daapiservice`）重启时，Docker 自动创建了 `root_daapi` 网络，分配了 `192.168.112.0/20` 网段（范围 192.168.112.0 - 192.168.127.255），覆盖了 RDS 内网 IP `192.168.123.42`，导致流量被路由到 Docker bridge 而不是 RDS。
+
+**Fix**:
+1. 停掉冲突容器，删除 `root_daapi` 网络
+2. 创建 `/etc/docker/daemon.json` 限制 Docker 只用 `10.x.x.x` 网段：
+   ```json
+   { "default-address-pools": [{"base": "10.0.0.0/8", "size": 24}] }
+   ```
+3. 重启 Docker，重新启动容器
+
+**Lesson**: 同一 VPC 内 ECS 上跑 Docker 时，必须限制 Docker 网段避免与 RDS 内网地址冲突。`daemon.json` 的 `default-address-pools` 是全局兜底方案。

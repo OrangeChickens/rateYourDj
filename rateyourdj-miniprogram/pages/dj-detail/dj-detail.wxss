@@ -84,6 +84,9 @@
   line-height: 1.4;
 }
 
+.dj-meta .label-link {
+}
+
 /* 风格标签区域 */
 .style-tags-section {
   background: #FFF;

@@ -953,6 +953,16 @@ Page({
     }
   },
 
+  // 跳转到厂牌详情
+  goToLabel(e) {
+    const { label } = e.currentTarget.dataset;
+    if (label) {
+      wx.navigateTo({
+        url: `/pages/label-detail/label-detail?label=${encodeURIComponent(label)}`
+      });
+    }
+  },
+
   // 跳转到写评论页
   goToWriteReview() {
     if (!app.globalData.token) {

@@ -35,6 +35,64 @@
     <text class="city-arrow">▼</text>
   </view>
 
+  <!-- 风格筛选 -->
+  <view class="genre-filter" wx:if="{{genreGroups.length > 0}}">
+    <scroll-view scroll-x="{{true}}" class="genre-scroll">
+      <view class="genre-list">
+        <text
+          class="genre-item {{selectedGenre === '' ? 'active' : ''}}"
+          bindtap="selectGenre"
+          data-genre="">
+          ALL
+        </text>
+        <text
+          wx:for="{{genreGroups}}"
+          wx:key="genre_group"
+          class="genre-item {{selectedGenre === item.genre_group ? 'active' : ''}}"
+          bindtap="selectGenre"
+          data-genre="{{item.genre_group}}">
+          {{item.genre_group}}
+        </text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 子类/标签筛选 -->
+  <view class="subgroup-filter" wx:if="{{subGroups.length > 1}}">
+    <scroll-view scroll-x="{{true}}" class="genre-scroll">
+      <!-- 状态1：显示子类列表 -->
+      <view class="genre-list" wx:if="{{!selectedSubGroup}}">
+        <text
+          class="subgroup-item {{selectedSubGroup === '' ? 'active' : ''}}"
+          bindtap="selectSubGroup"
+          data-subgroup="">
+          ALL
+        </text>
+        <text
+          wx:for="{{subGroups}}"
+          wx:key="sub_group"
+          class="subgroup-item"
+          bindtap="selectSubGroup"
+          data-subgroup="{{item.sub_group}}">
+          {{item.sub_group}}
+        </text>
+      </view>
+      <!-- 状态2：已选子类 → 显示 ← + 子类名 + 具体标签 -->
+      <view class="genre-list" wx:else>
+        <text class="subgroup-item back-btn" bindtap="goBackToSubGroups">←</text>
+        <text class="subgroup-item active">{{selectedSubGroup}}</text>
+        <text
+          wx:for="{{subGroupTags}}"
+          wx:key="*this"
+          class="subgroup-item tag-item {{selectedTag === item ? 'active' : ''}}"
+          bindtap="selectTag"
+          data-tag="{{item}}">
+          {{item}}
+        </text>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- A-Z 筛选 -->
   <view class="letter-filter">
     <scroll-view scroll-x="{{true}}" class="letter-scroll">
@@ -85,7 +143,7 @@
             <text class="dj-name">{{item.name}}</text>
             <view class="dj-meta">
               <text class="dj-city">{{item.city}}</text>
-              <text class="dj-label" wx:if="{{item.label}}">{{item.label}}</text>
+              <text class="dj-label" wx:if="{{item.label}}" catchtap="goToLabel" data-label="{{item.label}}">{{item.label}} →</text>
             </view>
           </view>
         </view>

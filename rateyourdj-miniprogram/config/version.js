@@ -3,10 +3,12 @@
  * Single source of truth for version tracking.
  */
 module.exports = {
-  version: '0.2.5-beta',
-  buildDate: '2026-03-07',
-  userChangelog: '· DJ Bio + 资料修改申请，DJ名称大小写\n· 禁止人身攻击、辱骂，关注音乐、场景等在场真实体验\n· or You will be banned',
+  version: '0.3.0-beta',
+  buildDate: '2026-03-08',
+  userChangelog: '· 按风格类型筛选DJ（两级分类）\n· 中文DJ名拼音首字母搜索\n· 点击厂牌名查看该厂牌所有DJ\n· 新增10+风格标签（Funk/Soul/Latin/Bounce等）\n· 注销账号功能',
   changelog: [
+    '0.3.0-beta - 风格筛选两级分类(#6)，中文拼音搜索(#37)，厂牌详情页(#10)，新增风格标签(#18,#31)，注销账号(#12)',
+    '0.2.6-beta - 注销账号，评价质量规则，新增10个风格标签',
     '0.2.5-beta - 建议页新增已完成tab，已完成建议从默认列表隐藏',
     '0.2.4-beta - DJ Bio字段，用户申请修改DJ资料，admin审核，DJ名称保留原始大小写',
     '0.2.3-beta - 合并评价审核页面(PENDING/REPORTED/APPROVED/REJECTED)',

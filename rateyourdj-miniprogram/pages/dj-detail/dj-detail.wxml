@@ -22,7 +22,7 @@
         <view class="dj-name" style="font-size: {{djNameFontSize}}">{{dj.name}}</view>
         <view class="dj-meta">
           <view class="city">{{dj.city}}</view>
-          <view wx:if="{{dj.label}}" class="label">{{dj.label}}</view>
+          <view wx:if="{{dj.label}}" class="label label-link" bindtap="goToLabel" data-label="{{dj.label}}">{{dj.label}} →</view>
         </view>
       </view>
 

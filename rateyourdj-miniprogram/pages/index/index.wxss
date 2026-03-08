@@ -133,6 +133,78 @@
   color: #FFFFFF;
 }
 
+/* 风格筛选 */
+.genre-filter {
+  background-color: #FFFFFF;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid #000000;
+}
+
+
+.genre-scroll {
+  white-space: nowrap;
+}
+
+.genre-list {
+  display: inline-flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 0 32rpx;
+}
+
+.genre-item {
+  display: inline-block;
+  padding: 10rpx 20rpx;
+  background-color: #FFFFFF;
+  border: 2rpx solid #000000;
+  border-radius: 0;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.genre-item.active {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* 子类筛选 */
+.subgroup-filter {
+  background-color: #FFFFFF;
+  padding: 12rpx 0;
+  border-bottom: 2rpx solid #000000;
+}
+
+.subgroup-item {
+  display: inline-block;
+  padding: 10rpx 20rpx;
+  background-color: #FFFFFF;
+  border: 2rpx solid #666;
+  border-radius: 0;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5rpx;
+  white-space: nowrap;
+}
+
+.subgroup-item.active {
+  background-color: #000;
+  color: #FFFFFF;
+  border-color: #000;
+}
+
+.subgroup-item.back-btn {
+  border-color: #000;
+  color: #000;
+  font-weight: 700;
+}
+
 /* 区块 */
 .section {
   padding: 0 32rpx;

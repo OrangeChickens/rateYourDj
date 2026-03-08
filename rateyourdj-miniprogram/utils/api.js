@@ -62,6 +62,14 @@ export const djAPI = {
     });
   },
 
+  // 获取风格大类列表
+  getGenreGroups() {
+    return app.request({
+      url: '/dj/genres/all',
+      method: 'GET'
+    });
+  },
+
   // 获取厂牌列表
   getLabels() {
     return app.request({
@@ -332,6 +340,15 @@ export const userAPI = {
     return app.request({
       url: '/user/search-history',
       method: 'GET',
+      needAuth: true
+    });
+  },
+
+  // 注销账号
+  deleteAccount() {
+    return app.request({
+      url: '/user/account',
+      method: 'DELETE',
       needAuth: true
     });
   }

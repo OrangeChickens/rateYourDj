@@ -9,6 +9,12 @@ Page({
     selectedCity: '全部城市',
     selectedLetter: '', // 选中的字母，空字符串表示全部
     letters: ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    genreGroups: [],       // 风格大类列表
+    selectedGenre: '',     // 选中的风格大类
+    subGroups: [],         // 当前大类的子类
+    selectedSubGroup: '',  // 选中的子类
+    subGroupTags: [],      // 选中子类的具体标签
+    selectedTag: '',       // 选中的具体标签
     loading: true,
     searchPlaceholder: '',
     hotDJsTitle: '',
@@ -34,6 +40,7 @@ Page({
 
     this.updateLanguage();
     this.loadDashboard();
+    this.loadGenreGroups();
     this.loadHotDJs();
   },
 
@@ -54,11 +61,12 @@ Page({
         console.log('重置字母筛选:', this.data.selectedLetter, '-> 空');
         this.setData({
           selectedCity,
-          selectedLetter: '', // 重置字母筛选
+          selectedLetter: '',
+          selectedGenre: '',
+          selectedSubGroup: '',
+          subGroups: [],
           currentPage: 1,
           hasMore: true
-        }, () => {
-          console.log('setData 完成，当前 selectedLetter:', this.data.selectedLetter);
         });
         this.loadHotDJs();
       }
@@ -68,11 +76,12 @@ Page({
         console.log('重置为全部城市');
         this.setData({
           selectedCity: '全部城市',
-          selectedLetter: '', // 重置字母筛选
+          selectedLetter: '',
+          selectedGenre: '',
+          selectedSubGroup: '',
+          subGroups: [],
           currentPage: 1,
           hasMore: true
-        }, () => {
-          console.log('setData 完成，当前 selectedLetter:', this.data.selectedLetter);
         });
         this.loadHotDJs();
       }
@@ -135,6 +144,16 @@ Page({
       // 如果选中了字母，添加字母过滤
       if (this.data.selectedLetter) {
         params.letter = this.data.selectedLetter;
+      }
+
+      // 风格过滤：具体标签 > 子类 > 大类
+      if (this.data.selectedTag) {
+        params.style = this.data.selectedTag;
+      } else if (this.data.selectedGenre) {
+        params.genre_group = this.data.selectedGenre;
+        if (this.data.selectedSubGroup) {
+          params.sub_group = this.data.selectedSubGroup;
+        }
       }
 
       console.log('请求参数:', params);
@@ -257,6 +276,103 @@ Page({
     });
   },
 
+  // 加载风格大类
+  async loadGenreGroups() {
+    try {
+      const res = await djAPI.getGenreGroups();
+      if (res.success) {
+        this.setData({ genreGroups: res.data });
+      }
+    } catch (error) {
+      console.error('加载风格大类失败:', error);
+    }
+  },
+
+  // 选择风格大类筛选
+  selectGenre(e) {
+    const { genre } = e.currentTarget.dataset;
+    const clicked = genre || '';
+    const newGenre = this.data.selectedGenre === clicked ? '' : clicked;
+
+    // 找到该大类的子类
+    let subGroups = [];
+    if (newGenre) {
+      const group = this.data.genreGroups.find(g => g.genre_group === newGenre);
+      if (group && group.sub_groups) {
+        subGroups = group.sub_groups;
+      }
+    }
+
+    this.setData({
+      selectedGenre: newGenre,
+      selectedSubGroup: '',
+      subGroups,
+      subGroupTags: [],
+      selectedTag: '',
+      currentPage: 1,
+      hasMore: true
+    });
+    this.loadHotDJs();
+  },
+
+  // 选择子类筛选 → 进入第三层（显示具体标签）
+  selectSubGroup(e) {
+    const { subgroup } = e.currentTarget.dataset;
+    const clicked = subgroup || '';
+
+    if (!clicked) {
+      // 点了 ALL，清除子类筛选
+      this.setData({
+        selectedSubGroup: '',
+        subGroupTags: [],
+        selectedTag: '',
+        currentPage: 1,
+        hasMore: true
+      });
+      this.loadHotDJs();
+      return;
+    }
+
+    // 找到该子类的标签
+    const sub = this.data.subGroups.find(s => s.sub_group === clicked);
+    const tags = sub && sub.tags ? sub.tags : [];
+
+    this.setData({
+      selectedSubGroup: clicked,
+      subGroupTags: tags,
+      selectedTag: '',
+      currentPage: 1,
+      hasMore: true
+    });
+    this.loadHotDJs();
+  },
+
+  // 返回子类列表
+  goBackToSubGroups() {
+    this.setData({
+      selectedSubGroup: '',
+      subGroupTags: [],
+      selectedTag: '',
+      currentPage: 1,
+      hasMore: true
+    });
+    this.loadHotDJs();
+  },
+
+  // 选择具体标签筛选
+  selectTag(e) {
+    const { tag } = e.currentTarget.dataset;
+    const clicked = tag || '';
+    const newTag = this.data.selectedTag === clicked ? '' : clicked;
+
+    this.setData({
+      selectedTag: newTag,
+      currentPage: 1,
+      hasMore: true
+    });
+    this.loadHotDJs();
+  },
+
   // 选择字母筛选
   selectLetter(e) {
     const { letter } = e.currentTarget.dataset;
@@ -274,6 +390,16 @@ Page({
       hasMore: true
     });
     this.loadHotDJs();
+  },
+
+  // 跳转到厂牌详情
+  goToLabel(e) {
+    const { label } = e.currentTarget.dataset;
+    if (label) {
+      wx.navigateTo({
+        url: `/pages/label-detail/label-detail?label=${encodeURIComponent(label)}`
+      });
+    }
   },
 
   // 跳转到DJ详情
