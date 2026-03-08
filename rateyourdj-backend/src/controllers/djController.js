@@ -6,6 +6,7 @@ async function getDJList(req, res, next) {
     const filters = {
       city: req.query.city,
       style: req.query.style,
+      genre_group: req.query.genre_group,
       letter: req.query.letter,
       sort: req.query.sort || 'overall_rating',
       order: req.query.order || 'DESC',
@@ -108,6 +109,16 @@ async function getCities(req, res, next) {
       success: true,
       data: cities
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 获取风格大类列表
+async function getGenreGroups(req, res, next) {
+  try {
+    const groups = await DJ.getGenreGroups();
+    res.json({ success: true, data: groups });
   } catch (error) {
     next(error);
   }
@@ -337,6 +348,7 @@ module.exports = {
   searchDJs,
   getHotDJs,
   getCities,
+  getGenreGroups,
   getLabels,
   createDJ,
   updateDJ,

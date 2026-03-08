@@ -7,6 +7,7 @@ const {
   searchDJs,
   getHotDJs,
   getCities,
+  getGenreGroups,
   getLabels,
   createDJ,
   updateDJ,
@@ -27,6 +28,9 @@ router.get('/hot/list', getHotDJs);
 
 // 获取所有城市
 router.get('/cities/all', getCities);
+
+// 获取风格大类
+router.get('/genres/all', getGenreGroups);
 
 // 获取所有厂牌
 router.get('/labels/all', getLabels);

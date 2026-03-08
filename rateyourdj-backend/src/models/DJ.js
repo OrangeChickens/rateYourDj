@@ -26,7 +26,7 @@ function processDJArray(djs) {
 class DJ {
   // 获取DJ列表（支持筛选、排序、分页）
   static async getList(filters = {}) {
-    const { city, style, letter, sort = 'weighted_score', order = 'DESC', page = 1, limit = 20 } = filters;
+    const { city, style, genre_group, letter, sort = 'weighted_score', order = 'DESC', page = 1, limit = 20 } = filters;
 
     let query = 'SELECT * FROM djs WHERE status = \'approved\'';
     const params = [];
@@ -37,10 +37,20 @@ class DJ {
       params.push(city);
     }
 
-    // 音乐风格筛选
+    // 音乐风格筛选（具体标签名）
     if (style) {
-      query += ' AND music_style LIKE ?';
-      params.push(`%${style}%`);
+      query += ' AND FIND_IN_SET(?, music_style)';
+      params.push(style);
+    }
+
+    // 按风格大类筛选（genre_group → 查所有属于该组的标签名）
+    if (genre_group && !style) {
+      query += ` AND EXISTS (
+        SELECT 1 FROM preset_tags pt
+        WHERE pt.genre_group = ? AND pt.category = 'style'
+        AND FIND_IN_SET(pt.tag_name, djs.music_style)
+      )`;
+      params.push(genre_group);
     }
 
     // 首字母筛选
@@ -76,8 +86,16 @@ class DJ {
       countParams.push(city);
     }
     if (style) {
-      countQuery += ' AND music_style LIKE ?';
-      countParams.push(`%${style}%`);
+      countQuery += ' AND FIND_IN_SET(?, music_style)';
+      countParams.push(style);
+    }
+    if (genre_group && !style) {
+      countQuery += ` AND EXISTS (
+        SELECT 1 FROM preset_tags pt
+        WHERE pt.genre_group = ? AND pt.category = 'style'
+        AND FIND_IN_SET(pt.tag_name, djs.music_style)
+      )`;
+      countParams.push(genre_group);
     }
     if (letter) {
       if (letter === '#') {
@@ -165,6 +183,19 @@ class DJ {
   }
 
   // 获取所有厂牌及统计
+  // 获取所有风格大类（带DJ数量）
+  static async getGenreGroups() {
+    const [rows] = await pool.query(
+      `SELECT pt.genre_group, COUNT(DISTINCT d.id) as dj_count
+       FROM preset_tags pt
+       JOIN djs d ON d.status = 'approved' AND FIND_IN_SET(pt.tag_name, d.music_style)
+       WHERE pt.category = 'style' AND pt.genre_group IS NOT NULL
+       GROUP BY pt.genre_group
+       ORDER BY dj_count DESC`
+    );
+    return rows;
+  }
+
   static async getLabels() {
     const [rows] = await pool.query(
       `SELECT label, COUNT(*) as dj_count
