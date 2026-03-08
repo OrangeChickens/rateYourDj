@@ -27,7 +27,7 @@ function processDJArray(djs) {
 class DJ {
   // 获取DJ列表（支持筛选、排序、分页）
   static async getList(filters = {}) {
-    const { city, style, genre_group, sub_group, letter, sort = 'weighted_score', order = 'DESC', page = 1, limit = 20 } = filters;
+    const { city, style, genre_group, sub_group, letter, label, sort = 'weighted_score', order = 'DESC', page = 1, limit = 20 } = filters;
 
     let query = 'SELECT * FROM djs WHERE status = \'approved\'';
     const params = [];
@@ -68,6 +68,12 @@ class DJ {
     if (letter) {
       query += ' AND name_initial = ?';
       params.push(letter === '#' ? '#' : letter.toUpperCase());
+    }
+
+    // 厂牌筛选
+    if (label) {
+      query += ' AND label = ?';
+      params.push(label);
     }
 
     // 排序
@@ -114,6 +120,10 @@ class DJ {
     if (letter) {
       countQuery += ' AND name_initial = ?';
       countParams.push(letter === '#' ? '#' : letter.toUpperCase());
+    }
+    if (label) {
+      countQuery += ' AND label = ?';
+      countParams.push(label);
     }
 
     const [countResult] = await pool.query(countQuery, countParams);

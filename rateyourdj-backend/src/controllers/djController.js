@@ -9,6 +9,7 @@ async function getDJList(req, res, next) {
       genre_group: req.query.genre_group,
       sub_group: req.query.sub_group,
       letter: req.query.letter,
+      label: req.query.label,
       sort: req.query.sort || 'overall_rating',
       order: req.query.order || 'DESC',
       page: parseInt(req.query.page) || 1,
