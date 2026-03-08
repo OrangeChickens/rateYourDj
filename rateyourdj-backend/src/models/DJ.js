@@ -222,10 +222,20 @@ class DJ {
        ORDER BY dj_count DESC`
     );
 
-    // Attach sub_groups to each genre group
+    // Get all style tags grouped
+    const [tags] = await pool.query(
+      `SELECT tag_name, genre_group, sub_group FROM preset_tags
+       WHERE category = 'style' AND genre_group IS NOT NULL AND sub_group IS NOT NULL
+       ORDER BY usage_count DESC`
+    );
+
+    // Attach sub_groups and tags to each genre group
     return groups.map(g => ({
       ...g,
-      sub_groups: subs.filter(s => s.genre_group === g.genre_group)
+      sub_groups: subs.filter(s => s.genre_group === g.genre_group).map(s => ({
+        ...s,
+        tags: tags.filter(t => t.genre_group === g.genre_group && t.sub_group === s.sub_group).map(t => t.tag_name)
+      }))
     }));
   }
 
