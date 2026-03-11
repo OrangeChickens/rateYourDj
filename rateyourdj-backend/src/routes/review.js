@@ -14,8 +14,9 @@ const {
   getPendingReviewCount
 } = require('../controllers/reviewController');
 
-// 创建评论（需要登录）
-router.post('/create', authenticate, createReview);
+// 创建评论（需要登录 + 防刷）
+const { reviewNewUserCooldown, reviewUserRateLimit, reviewDuplicateContentCheck, reviewDJSurgeCheck } = require('../middleware/antiSpam');
+router.post('/create', authenticate, reviewNewUserCooldown, reviewUserRateLimit, reviewDuplicateContentCheck, reviewDJSurgeCheck, createReview);
 
 // 获取所有评价列表（可选登录，管理员可看全部状态）
 router.get('/all', optionalAuth, getAllReviews);
