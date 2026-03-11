@@ -3,6 +3,7 @@ const DJ = require('../models/DJ');
 const { updateDJRatings } = require('../services/ratingService');
 const TaskService = require('../services/taskService');
 const { checkContent, checkQuality } = require('../services/contentCheckService');
+const { recordReviewEvent } = require('../middleware/antiSpam');
 
 // 创建评论
 async function createReview(req, res, next) {
@@ -78,6 +79,8 @@ async function createReview(req, res, next) {
       reviewStatus = 'pending';
     } else if (qualityResult.quality === 'low') {
       reviewStatus = 'pending';
+    } else if (req.spamFlags && req.spamFlags.length > 0) {
+      reviewStatus = 'pending';
     } else {
       reviewStatus = 'approved';
     }
@@ -90,7 +93,8 @@ async function createReview(req, res, next) {
         keywordCategory: contentResult.category,
         keywordMatched: contentResult.matched,
         quality: qualityResult.quality,
-        qualityReason: qualityResult.reason
+        qualityReason: qualityResult.reason,
+        spamFlags: req.spamFlags || []
       });
     }
 
@@ -108,6 +112,9 @@ async function createReview(req, res, next) {
       tags: tags || [],
       status: reviewStatus
     });
+
+    // 记录评论事件（防刷计数）
+    recordReviewEvent(req.user.userId, dj_id, comment);
 
     // 只有approved的评价才计入评分
     if (reviewStatus === 'approved') {
