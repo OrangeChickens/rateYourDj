@@ -1,8 +1,17 @@
 // routes/comment.js
 const express = require('express');
 const router = express.Router();
-const { authenticate, optionalAuth } = require('../middleware/auth');
+const { authenticate, optionalAuth, requireAdmin } = require('../middleware/auth');
 const commentController = require('../controllers/commentController');
+
+// 管理员：获取所有评论
+router.get('/all', requireAdmin, commentController.getAllComments);
+
+// 管理员：获取待审核评论数量
+router.get('/pending/count', requireAdmin, commentController.getPendingCommentCount);
+
+// 管理员：更新评论状态
+router.put('/:id/status', requireAdmin, commentController.updateCommentStatus);
 
 // 创建评论（需要登录）
 router.post('/create', authenticate, commentController.createComment);
