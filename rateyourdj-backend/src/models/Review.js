@@ -158,14 +158,14 @@ class Review {
 
     const [rows] = await pool.query(
       `SELECT r.*, u.nickname, u.avatar_url,
-              (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id) as comment_count
+              (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id AND status = 'approved') as comment_count
               ${userVoteSelect}
        FROM reviews r
        LEFT JOIN users u ON r.user_id = u.id
        ${userVoteJoin}
        WHERE r.dj_id = ? AND r.status = 'approved'
        ORDER BY ${isHotSort
-         ? `(r.helpful_count * 2 + (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id) * 3 - r.not_helpful_count) DESC, r.created_at DESC`
+         ? `(r.helpful_count * 2 + (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id AND status = 'approved') * 3 - r.not_helpful_count) DESC, r.created_at DESC`
          : `r.${sortField} ${sortOrder}`}
        LIMIT ? OFFSET ?`,
       params
