@@ -177,4 +177,78 @@ exports.voteComment = async (req, res, next) => {
   }
 };
 
+/**
+ * 获取所有评论（管理员）
+ */
+exports.getAllComments = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20, filter = 'pending' } = req.query;
+
+    const result = await Comment.getAllComments({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      filter
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination
+    });
+  } catch (error) {
+    console.error('获取所有评论失败:', error);
+    next(error);
+  }
+};
+
+/**
+ * 更新评论状态（管理员）
+ */
+exports.updateCommentStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['approved', 'rejected'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: '无效的状态值，仅支持 approved 或 rejected'
+      });
+    }
+
+    await Comment.updateStatus(id, status);
+
+    res.json({
+      success: true,
+      message: '状态更新成功'
+    });
+  } catch (error) {
+    if (error.message === '评论不存在') {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+    console.error('更新评论状态失败:', error);
+    next(error);
+  }
+};
+
+/**
+ * 获取 pending 评论数量（管理员）
+ */
+exports.getPendingCommentCount = async (req, res, next) => {
+  try {
+    const count = await Comment.getPendingCount();
+
+    res.json({
+      success: true,
+      data: { count }
+    });
+  } catch (error) {
+    console.error('获取待审核评论数量失败:', error);
+    next(error);
+  }
+};
+
 module.exports = exports;

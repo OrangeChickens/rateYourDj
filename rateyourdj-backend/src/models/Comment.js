@@ -296,6 +296,77 @@ class Comment {
 
     return count;
   }
+
+  /**
+   * 获取所有评论（管理员用），支持按 status 过滤
+   */
+  static async getAllComments({ page = 1, limit = 20, filter = 'pending' } = {}) {
+    const offset = (page - 1) * limit;
+
+    let whereClause = '';
+    const params = [];
+
+    if (['pending', 'approved', 'rejected'].includes(filter)) {
+      whereClause = 'WHERE c.status = ?';
+      params.push(filter);
+    }
+
+    const [comments] = await pool.query(
+      `SELECT c.*, u.nickname, u.avatar_url,
+              r.comment as review_comment, r.overall_rating, r.dj_id,
+              d.name as dj_name
+       FROM review_comments c
+       LEFT JOIN users u ON c.user_id = u.id
+       LEFT JOIN reviews r ON c.review_id = r.id
+       LEFT JOIN djs d ON r.dj_id = d.id
+       ${whereClause}
+       ORDER BY c.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
+    );
+
+    const [[{ total }]] = await pool.query(
+      `SELECT COUNT(*) as total FROM review_comments c ${whereClause}`,
+      params
+    );
+
+    return {
+      data: comments,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+
+  /**
+   * 更新评论状态（管理员用）
+   */
+  static async updateStatus(commentId, status) {
+    const [result] = await pool.query(
+      'UPDATE review_comments SET status = ? WHERE id = ?',
+      [status, commentId]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('评论不存在');
+    }
+
+    return true;
+  }
+
+  /**
+   * 获取 pending 评论数量
+   */
+  static async getPendingCount() {
+    const [[{ count }]] = await pool.query(
+      "SELECT COUNT(*) as count FROM review_comments WHERE status = 'pending'"
+    );
+
+    return count;
+  }
 }
 
 module.exports = Comment;
