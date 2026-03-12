@@ -1,5 +1,6 @@
 // controllers/commentController.js
 const Comment = require('../models/Comment');
+const { msgSecCheck } = require('../services/wechatService');
 
 /**
  * 创建评论
@@ -51,12 +52,25 @@ exports.createComment = async (req, res, next) => {
       }
     }
 
+    // 微信内容安全检测
+    const wxCheckResult = await msgSecCheck(content.trim(), req.user.openid);
+    const commentStatus = wxCheckResult.safe ? 'approved' : 'pending';
+
+    if (commentStatus === 'pending') {
+      console.log(`⚠️ [Content Check] Comment flagged as pending:`, {
+        userId,
+        reviewId,
+        wxLabel: wxCheckResult.label
+      });
+    }
+
     // 创建评论
-    const comment = await Comment.create(reviewId, userId, content.trim(), parentCommentId);
+    const comment = await Comment.create(reviewId, userId, content.trim(), parentCommentId, commentStatus);
 
     res.json({
       success: true,
-      data: comment
+      data: comment,
+      message: commentStatus === 'approved' ? undefined : '评论已提交，待审核后展示'
     });
   } catch (error) {
     console.error('创建评论失败:', error);

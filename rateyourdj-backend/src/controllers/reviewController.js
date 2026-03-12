@@ -4,6 +4,7 @@ const { updateDJRatings } = require('../services/ratingService');
 const TaskService = require('../services/taskService');
 const { checkContent, checkQuality } = require('../services/contentCheckService');
 const { recordReviewEvent } = require('../middleware/antiSpam');
+const { msgSecCheck } = require('../services/wechatService');
 
 // 创建评论
 async function createReview(req, res, next) {
@@ -74,10 +75,15 @@ async function createReview(req, res, next) {
     const contentResult = checkContent(comment);
     const qualityResult = checkQuality(comment);
 
+    // 微信内容安全检测
+    const wxCheckResult = await msgSecCheck(comment, req.user.openid);
+
     let reviewStatus;
     if (!contentResult.safe) {
       reviewStatus = 'pending';
     } else if (qualityResult.quality === 'low') {
+      reviewStatus = 'pending';
+    } else if (!wxCheckResult.safe) {
       reviewStatus = 'pending';
     } else if (req.spamFlags && req.spamFlags.length > 0) {
       reviewStatus = 'pending';
@@ -94,7 +100,9 @@ async function createReview(req, res, next) {
         keywordMatched: contentResult.matched,
         quality: qualityResult.quality,
         qualityReason: qualityResult.reason,
-        spamFlags: req.spamFlags || []
+        spamFlags: req.spamFlags || [],
+        wxSafe: wxCheckResult.safe,
+        wxLabel: wxCheckResult.label
       });
     }
 
