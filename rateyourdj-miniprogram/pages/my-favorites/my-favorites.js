@@ -117,6 +117,7 @@ Page({
 
       if (res.success) {
         showToast(i18n.t('favorites.removeSuccess'));
+        app.globalData.homeFeedRevision = (app.globalData.homeFeedRevision || 0) + 1;
         // 从列表中移除
         const favorites = this.data.favorites.filter(item => item.id !== id);
         this.setData({ favorites });

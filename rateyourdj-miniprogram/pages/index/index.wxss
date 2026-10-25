@@ -463,4 +463,11 @@
   letter-spacing: 1rpx;
 }
 
-.events-entry { margin:32rpx 0; padding:32rpx; border:2rpx solid #000; background:#000; color:#FFF; font-size:32rpx; font-weight:700; } .events-entry-note { display:block; margin-top:16rpx; font-size:24rpx; color:#CCC; }
+.events-entry { margin:32rpx 0; padding:32rpx; border:2rpx solid #E0E0E0; background:#FFF; color:#000; font-size:32rpx; font-weight:700; } .events-entry-note { display:block; margin-top:16rpx; font-size:24rpx; color:#666; }
+
+.home-feed-tabs { display:flex; background:#FFF; border-bottom:2rpx solid #000; margin:32rpx 0; position:sticky; top:0; z-index:20; }
+.home-feed-tab { flex:1; min-width:0; text-align:center; padding:24rpx 0; font-size:26rpx; font-weight:700; color:#666; border-bottom:6rpx solid transparent; }
+.home-feed-tab.selected { color:#000; border-bottom-color:#000; }
+.home-review-feed { padding:0 16rpx; }.feed-description { display:block; margin-bottom:32rpx; font-size:22rpx; line-height:1.8; color:#666; }.feed-state { display:block; padding:32rpx 16rpx; text-align:center; font-size:26rpx; line-height:1.8; color:#666; }
+.feed-state button:not([size='mini']) { display:block; box-sizing:border-box; width:100%; margin:16rpx 0; padding:24rpx; border:2rpx solid #000; border-radius:0; background:#FFF; color:#000; font-size:26rpx; font-weight:700; }.feed-state button::after { border:0; }
+.review-share-canvas {position:fixed;left:-1000px;top:0;width:500px;height:400px;pointer-events:none;}

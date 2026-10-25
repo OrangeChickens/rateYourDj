@@ -85,6 +85,9 @@ exports.createComment = async (req, res, next) => {
 exports.getReviewComments = async (req, res, next) => {
   try {
     const { reviewId } = req.params;
+    const { pool } = require('../config/database');
+    const [[publicReview]] = await pool.query("SELECT r.id FROM reviews r JOIN djs d ON d.id=r.dj_id WHERE r.id=? AND r.status='approved' AND d.status='approved' AND d.merged_into_id IS NULL", [reviewId]);
+    if (!publicReview) return res.status(404).json({success:false,message:'评价不存在或不可查看'});
     const { page = 1, limit = 20, sort = 'created_at', order = 'DESC' } = req.query;
     const userId = req.user?.userId || null; // 获取当前用户ID（可能未登录）
 

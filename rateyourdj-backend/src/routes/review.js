@@ -19,6 +19,21 @@ const {
 const { reviewNewUserCooldown, reviewUserRateLimit, reviewDuplicateContentCheck, reviewDJSurgeCheck } = require('../middleware/antiSpam');
 router.post('/create', authenticate, reviewNewUserCooldown, reviewUserRateLimit, reviewDuplicateContentCheck, reviewDJSurgeCheck, createReview);
 
+// Homepage feeds always use the public moderation boundary, including for administrators.
+router.get('/feed/:mode', optionalAuth, async (req,res,next) => {
+  try {
+    let userId=null;
+    if(req.user) {
+      const user=await require('../models/User').findById(req.user.userId);
+      if(!user) throw Object.assign(new Error('请重新登录'),{statusCode:401});
+      if(user.access_level==='banned') throw Object.assign(new Error('账号已被封禁'),{statusCode:403});
+      userId=user.id;
+    }
+    const feed=await require('../services/reviewFeed').list(req.params.mode,userId,req.query);
+    res.set('Cache-Control','private, no-store').json({success:true,...feed});
+  } catch(error) {next(error);}
+});
+
 // 获取所有评价列表（可选登录，管理员可看全部状态）
 router.get('/all', optionalAuth, getAllReviews);
 
