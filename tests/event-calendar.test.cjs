@@ -32,3 +32,7 @@ test('活动地图分页保留已加载活动并明确总量，坐标缺失项�
  let n=0;const p=page({events:async()=>({data:[{id:++n,starts_at:'2030-01-01 00:30',latitude:n===1?31:null,longitude:n===1?121:null}],pagination:{total:2,totalPages:2}})});
  await p.load();await p.load(true);assert.equal(p.data.rows.length,2);assert.equal(p.data.markers.length,1);assert.equal(p.data.unmapped,1);assert.equal(p.data.total,2);assert.equal(p.data.hasMore,false);
 });
+
+test('从明确行政区地址自动填写城市，不从缺失城市的街道名猜测',()=>{
+ for(const [address,city] of [['上海市黄浦区中山路','上海市'],['广东省深圳市南山区科技路','深圳市'],['中国 浙江省杭州市滨江区城市大道','杭州市'],['新疆维吾尔自治区伊犁哈萨克自治州伊宁市','伊犁哈萨克自治州'],['朝阳区三里屯路',''],['中山路1号','']]) assert.equal(location.cityFromAddress(address),city);
+});

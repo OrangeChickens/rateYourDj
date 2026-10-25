@@ -16,11 +16,10 @@ Page({
     channelVideos: [],
     supportsChannelVideo: false,
     setsPage: 1, setsMore: false, setsLoading: false, setsError: '',
-    events: [], eventsPage: 1, eventsMore: false, eventsLoading: false, eventsError: '', eventPeriod: 'upcoming',
+    events: [], eventsMore: false, eventsLoading: false, eventsError: '',
     loading: true,
     reviewsLoading: false,
     isFavorited: false,
-    showShareActions: false,
     isAdmin: false, // 是否是管理员
     isLoggedIn: false, // 是否已登录
     bioExpanded: false, // bio是否展开
@@ -135,9 +134,6 @@ Page({
         shareDJ: i18n.t('djDetail.shareDJ'),
         manageDJ: i18n.t('djDetail.manageDJ'),
         contributeDJ: i18n.t('djDetail.contributeDJ'),
-        shareFriends: i18n.t('djDetail.shareFriends'),
-        shareCode: i18n.t('djDetail.shareCode'),
-        cancel: i18n.t('common.cancel'),
         videos: i18n.t('djDetail.videos'),
         videoUnavailable: i18n.t('djDetail.videoUnavailable'),
         videoUnsupported: i18n.t('djDetail.videoUnsupported'),
@@ -227,36 +223,32 @@ Page({
     } catch (error) { if (request === this._setsRequest) this.setData({ setsError: error.message || '视频加载失败' }); }
     finally { if (request === this._setsRequest) this.setData({ setsLoading: false }); }
   },
-  async loadEvents(append = false) {
-    if (append && (this.data.eventsLoading || !this.data.eventsMore)) return;
+  async loadEvents() {
     const request = this._eventsRequest = (this._eventsRequest || 0) + 1;
-    const page = append ? this.data.eventsPage + 1 : 1;
-    this.setData({ eventsLoading: true, eventsError: '', ...(append ? {} : { events: [], eventsMore: false }) });
+    this.setData({ eventsLoading: true, eventsError: '', events: [], eventsMore: false });
     try {
-      const res = await contentAPI.list(this.data.djId, 'events', { page, period: this.data.eventPeriod });
+      const [upcoming, past] = await Promise.all([
+        contentAPI.list(this.data.djId, 'events', { page: 1, limit: 3, period: 'upcoming' }),
+        contentAPI.list(this.data.djId, 'events', { page: 1, limit: 3, period: 'past' })
+      ]);
       if (request !== this._eventsRequest) return;
-      this.setData({ events: append ? [...this.data.events, ...res.data] : res.data, eventsPage: page, eventsMore: page < res.pagination.totalPages });
+      const seen = new Set();
+      const events = [...upcoming.data.map(item => ({...item, periodLabel: '即将开始'})), ...past.data.map(item => ({...item, periodLabel: '往期'}))]
+        .filter(item => { if (seen.has(item.id)) return false; seen.add(item.id); return true; }).slice(0, 3);
+      this.setData({ events, eventsMore: Number(upcoming.pagination.total || upcoming.data.length) + Number(past.pagination.total || past.data.length) > 3 });
     } catch (error) { if (request === this._eventsRequest) this.setData({ eventsError: error.message || '演出加载失败' }); }
     finally { if (request === this._eventsRequest) this.setData({ eventsLoading: false }); }
   },
   retrySets() { this.loadSets(); },
   retryEvents() { this.loadEvents(); },
   moreSets() { this.loadSets(true); },
-  moreEvents() { this.loadEvents(true); },
-  changeEventPeriod(e) {
-    const period = e.currentTarget.dataset.period;
-    if (!['upcoming', 'past'].includes(period) || period === this.data.eventPeriod) return;
-    this.setData({ eventPeriod: period }); this.loadEvents();
-  },
+  viewAllEvents() { wx.navigateTo({url:`/pages/dj-events/dj-events?djId=${this.data.djId}`}); },
   goToContent(e) {
     if (!app.globalData.token) { showToast('请先登录'); return; }
     const { type, id } = e.currentTarget.dataset;
     if (type === 'sets' && !this.data.isAdmin) { showToast('仅管理员可添加SET'); return; }
     wx.navigateTo({ url: `/pages/dj-content/dj-content?djId=${this.data.djId}&type=${type}${id ? `&id=${id}` : ''}` });
   },
-  openShareActions() { if (this.data.dj) this.setData({ showShareActions: true }); },
-  closeShareActions() { this.setData({ showShareActions: false }); },
-  stopShareTap() {},
   openManageActions() {
     if (!this.data.isAdmin || !app.globalData.token) return;
     const actions = [
@@ -277,7 +269,6 @@ Page({
     ];
     wx.showActionSheet({ itemList: actions.map(item => item.label), success: result => { if (actions[result.tapIndex]) actions[result.tapIndex].run(); } });
   },
-  goToShareCode() { this.closeShareActions(); wx.navigateTo({ url: `/pages/dj-share-code/dj-share-code?djId=${this.data.djId}&name=${encodeURIComponent(this.data.dj.name)}` }); },
   viewEvent(e) { wx.navigateTo({url:'/pages/event-detail/event-detail?id='+e.currentTarget.dataset.id}); },
   copyEventSource(e) { if (e.currentTarget.dataset.url) wx.setClipboardData({ data: e.currentTarget.dataset.url }); },
   onUnload() { this._reviewsRequestId = (this._reviewsRequestId || 0) + 1; this._setsRequest = (this._setsRequest || 0) + 1; this._eventsRequest = (this._eventsRequest || 0) + 1; },
@@ -402,6 +393,7 @@ Page({
 
         // 设置全局刷新标记，通知收藏页面需要更新
         app.globalData.needRefreshFavorites = true;
+        app.globalData.homeFeedRevision = (app.globalData.homeFeedRevision || 0) + 1;
 
         showToast(res.message);
       } else {
@@ -596,7 +588,6 @@ Page({
 
   // 分享给朋友（页面级分享配置）
   onShareAppMessage(options) {
-    this.closeShareActions();
     console.log('📤 触发分享到好友/群聊');
     // 设置标记，在页面onShow时记录任务
     this.pendingShareTask = true;
@@ -1154,7 +1145,7 @@ Page({
     const token = app.globalData.token;
     this.setData({
       isLoggedIn: !!token,
-      isAdmin: !!(userInfo && userInfo.role === 'admin')
+      isAdmin: !!(token && userInfo && userInfo.role === 'admin')
     });
   },
 

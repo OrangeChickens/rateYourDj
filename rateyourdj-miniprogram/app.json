@@ -20,9 +20,9 @@
     "pages/label-detail/label-detail",
     "pages/dj-content/dj-content",
     "pages/dj-content-review/dj-content-review",
-    "pages/dj-share-code/dj-share-code",
     "pages/events/events",
-    "pages/event-detail/event-detail"
+    "pages/event-detail/event-detail",
+    "pages/dj-events/dj-events"
   ],
   "window": {
     "backgroundTextStyle": "light",

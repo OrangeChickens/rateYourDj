@@ -31,6 +31,8 @@
         <view class="favorite-btn" bindtap="toggleFavorite">
           <text class="icon">{{isFavorited ? '★' : '☆'}}</text>
         </view>
+        <button class="dj-share-button" open-type="share">{{texts.shareDJ}}</button>
+        <button wx:if="{{isAdmin}}" class="dj-share-button dj-manage-button" bindtap="openManageActions">{{texts.manageDJ}}</button>
       </view>
     </view>
 
@@ -48,10 +50,8 @@
       <text wx:if="{{dj.bio.length > 80}}" class="bio-toggle" bindtap="toggleBio">{{bioExpanded ? '收起' : '展开'}}</text>
     </view>
 
-    <view class="detail-toolbar">
-      <button class="toolbar-button" bindtap="openShareActions">{{texts.shareDJ}}</button>
-      <button wx:if="{{isAdmin}}" class="toolbar-button toolbar-manage" bindtap="openManageActions">{{texts.manageDJ}}</button>
-      <button wx:elif="{{isLoggedIn}}" class="toolbar-button" bindtap="openContributeActions">{{texts.contributeDJ}}</button>
+    <view wx:if="{{isLoggedIn && !isAdmin}}" class="detail-toolbar">
+      <button class="toolbar-button" bindtap="openContributeActions">{{texts.contributeDJ}}</button>
     </view>
 
     <!-- 评分统计 -->
@@ -116,19 +116,14 @@
       </view>
       <button wx:if="{{setsMore && !setsError}}" class="content-link" bindtap="moreSets" disabled="{{setsLoading}}">更多 SET</button>
     </view>
-    <view class="channel-videos-section">
-      <view class="content-heading"><text class="channel-videos-title">演出</text></view>
-      <view class="content-links"><button class="content-link {{eventPeriod === 'upcoming' ? 'content-active' : ''}}" data-period="upcoming" bindtap="changeEventPeriod">近期</button><button class="content-link {{eventPeriod === 'past' ? 'content-active' : ''}}" data-period="past" bindtap="changeEventPeriod">往期</button></view>
+    <view class="channel-videos-section events-preview">
+      <view class="content-heading"><text class="channel-videos-title">最近演出</text><text wx:if="{{eventsMore && !eventsError}}" class="events-view-all" bindtap="viewAllEvents">查看全部 →</text></view>
       <view wx:if="{{eventsLoading}}" class="content-muted">加载中…</view>
       <view wx:if="{{eventsError}}" class="channel-video-state"><text>{{eventsError}}</text><button class="content-link" bindtap="retryEvents">重试</button></view>
       <text wx:elif="{{!eventsLoading && events.length === 0}}" class="content-muted">暂无演出信息</text>
-      <view wx:for="{{events}}" wx:key="id" class="event-card">
-        <view class="content-heading"><text class="content-title">{{item.title}}</text></view>
-        <button class="content-link" data-id="{{item.id}}" bindtap="viewEvent">查看活动与阵容</button>
-        <text class="event-meta">{{item.starts_at}}（北京时间）</text><text class="event-meta">{{item.city}} · {{item.venue}}</text>
-        <button wx:if="{{item.source_url}}" class="content-link" data-url="{{item.source_url}}" bindtap="copyEventSource">复制来源链接</button>
+      <view wx:for="{{events}}" wx:key="id" class="event-card" data-id="{{item.id}}" bindtap="viewEvent">
+        <text class="event-meta">{{item.starts_at}} · {{item.periodLabel}}</text><text class="content-title">{{item.title}}</text><text class="event-meta">{{item.city}} · {{item.venue}} →</text>
       </view>
-      <button wx:if="{{eventsMore && !eventsError}}" class="content-link" bindtap="moreEvents" disabled="{{eventsLoading}}">更多演出</button>
     </view>
 
     <!-- 评论区域 -->
@@ -277,14 +272,6 @@
     <!-- 底部写评论按钮 -->
     <view class="write-review-btn" bindtap="goToWriteReview">
       <text>{{texts.writeReview}}</text>
-    </view>
-  </view>
-  <view wx:if="{{showShareActions}}" class="share-sheet-mask" bindtap="closeShareActions" catchtouchmove="stopShareTap">
-    <view class="share-sheet" catchtap="stopShareTap">
-      <text class="share-sheet-title">{{dj.name}}</text>
-      <button class="share-sheet-button share-sheet-primary" open-type="share">{{texts.shareFriends}}</button>
-      <button class="share-sheet-button" bindtap="goToShareCode">{{texts.shareCode}}</button>
-      <button class="share-sheet-cancel" bindtap="closeShareActions">{{texts.cancel}}</button>
     </view>
   </view>
   <canvas canvas-id="review-share-canvas" class="review-share-canvas" />

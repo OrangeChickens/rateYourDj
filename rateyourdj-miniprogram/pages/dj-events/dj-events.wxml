@@ -1,0 +1,10 @@
+<view class="page">
+  <text class="eyebrow">EVENTS</text><text class="heading">{{djName || 'DJ'}} 的演出</text>
+  <view class="period-tabs"><button class="{{period === 'upcoming' ? 'active' : ''}}" data-period="upcoming" bindtap="changePeriod">近期</button><button class="{{period === 'past' ? 'active' : ''}}" data-period="past" bindtap="changePeriod">往期</button></view>
+  <text class="muted">北京时间 · {{period === 'upcoming' ? '按开场时间由近到远' : '按开场时间由新到旧'}}</text>
+  <text wx:if="{{loading}}" class="muted">加载中…</text>
+  <view wx:if="{{error}}"><text>{{error}}</text><button wx:if="{{djId}}" bindtap="retry">重试</button></view>
+  <text wx:elif="{{!loading && rows.length === 0}}" class="empty">暂无演出信息</text>
+  <view wx:for="{{rows}}" wx:key="id" class="event" data-id="{{item.id}}" bindtap="viewEvent"><text class="event-time">{{item.starts_at}}</text><text class="event-title">{{item.title}}</text><text class="muted">{{item.city}} · {{item.venue}} →</text></view>
+  <button wx:if="{{hasMore && !error}}" bindtap="more" disabled="{{loading}}">加载更多</button>
+</view>
