@@ -124,6 +124,7 @@
       <text wx:elif="{{!eventsLoading && events.length === 0}}" class="content-muted">暂无演出信息</text>
       <view wx:for="{{events}}" wx:key="id" class="event-card">
         <view class="content-heading"><text class="content-title">{{item.title}}</text></view>
+        <button class="content-link" data-id="{{item.id}}" bindtap="viewEvent">查看活动与阵容</button>
         <text class="event-meta">{{item.starts_at}}（北京时间）</text><text class="event-meta">{{item.city}} · {{item.venue}}</text>
         <button wx:if="{{item.source_url}}" class="content-link" data-url="{{item.source_url}}" bindtap="copyEventSource">复制来源链接</button>
       </view>

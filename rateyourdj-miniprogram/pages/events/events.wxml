@@ -1,0 +1,21 @@
+<view class="page">
+  <text class="eyebrow">WHAT'S ON</text><text class="heading">演出日历</text>
+  <view class="controls"><picker range="{{cities}}" value="{{cityIndex}}" bindchange="changeCity"><view class="control">{{cities[cityIndex]}} ▾</view></picker><picker mode="date" value="{{from}}" bindchange="pickDate"><view class="control">选择日期</view></picker></view>
+  <view wx:if="{{citiesError}}"><text class="muted">{{citiesError}}</text><button bindtap="loadCities">重试城市列表</button></view>
+  <view class="controls"><button bindtap="chooseToday">今天</button><button bindtap="chooseWeekend">本周末</button></view>
+  <scroll-view scroll-x class="day-scroll"><view class="days"><view wx:for="{{days}}" wx:key="value" class="day {{from === item.value && from === to ? 'active' : ''}}" data-date="{{item.value}}" bindtap="selectDay"><text>周{{item.weekday}}</text><text>{{item.label}}</text></view></view></scroll-view>
+  <view class="controls mode"><button class="{{mode === 'list' ? 'active' : ''}}" data-mode="list" bindtap="changeMode">列表</button><button class="{{mode === 'map' ? 'active' : ''}}" data-mode="map" bindtap="changeMode">地图</button></view>
+  <text class="muted">{{rangeLabel}} · 北京时间 · 共 {{total}} 场</text>
+  <text wx:if="{{loading}}" class="muted">加载中…</text><view wx:if="{{error}}"><text>{{error}}</text><button bindtap="retry">重试</button></view>
+  <text wx:elif="{{!loading && rows.length === 0}}" class="empty">这一天还没有公开演出，试试其他日期或城市。</text>
+  <block wx:if="{{mode === 'map' && rows.length > 0}}">
+    <map wx:if="{{markers.length > 0}}" class="event-map" latitude="{{mapLatitude}}" longitude="{{mapLongitude}}" markers="{{markers}}" include-points="{{includePoints}}" bindmarkertap="markerTap" bindcallouttap="markerTap" show-location="{{false}}" enable-poi="{{false}}" />
+    <text wx:else class="empty">当前活动尚未补充地图位置，可在下方列表查看。</text>
+    <text class="muted">已加载 {{rows.length}} / {{total}} 场；其中 {{unmapped}} 场未补充位置。点击场地标记查看演出。</text>
+  </block>
+  <view wx:for="{{rows}}" wx:key="id" class="event" data-id="{{item.id}}" bindtap="viewEvent">
+    <text class="event-time">{{item.dateLabel}} · {{item.timeLabel}}</text><text class="event-title">{{item.title}}</text><text class="lineup">{{item.lineupLabel}}</text><text class="muted">{{item.city}} · {{item.venue}}</text>
+  </view>
+  <button wx:if="{{hasMore && !error}}" bindtap="more" disabled="{{loading}}">继续加载活动</button>
+  <view wx:if="{{venueTitle}}" class="venue-panel"><view class="controls"><text class="event-title">{{venueTitle}}</text><button bindtap="closeVenue">关闭</button></view><view wx:for="{{venueRows}}" wx:key="id" class="event" data-id="{{item.id}}" bindtap="viewEvent"><text>{{item.dateLabel}} {{item.timeLabel}}</text><text class="event-title">{{item.title}}</text></view></view>
+</view>

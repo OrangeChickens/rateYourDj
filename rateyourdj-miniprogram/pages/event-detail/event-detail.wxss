@@ -1,0 +1,2 @@
+@import "../events/events.wxss";
+.section-title {font-size:32rpx;margin-top:48rpx;} .page > button {margin-top:16rpx;}

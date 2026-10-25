@@ -14,8 +14,17 @@
     </block>
     <block wx:elif="{{type === 'events'}}">
       <text class="label">日期与时间（北京时间）</text><view class="row"><picker mode="date" value="{{date}}" data-field="date" bindchange="onInput"><view class="picker">{{date}}</view></picker><picker mode="time" value="{{time}}" data-field="time" bindchange="onInput"><view class="picker">{{time}}</view></picker></view>
-      <text class="label">城市</text><input value="{{city}}" data-field="city" bindinput="onInput" maxlength="50" />
+      <text class="label">演出场地</text><button bindtap="chooseVenue" loading="{{choosingLocation}}" disabled="{{choosingLocation}}">在地图搜索场地</button>
+      <text wx:if="{{locationNotice}}" class="muted">{{locationNotice}}</text>
+      <text class="label">城市</text><picker mode="region" bindchange="selectCity"><view class="picker">{{city || '选择省市区'}}</view></picker>
+      <text class="muted">也可手动输入城市；地图选点后请确认城市。</text><input value="{{city}}" data-field="city" bindinput="onInput" maxlength="50" />
       <text class="label">场地</text><input value="{{venue}}" data-field="venue" bindinput="onInput" maxlength="150" />
+      <text class="label">详细地址（可选）</text><input value="{{address}}" data-field="address" bindinput="onInput" maxlength="300" />
+      <text class="muted">{{latitude !== null && latitude !== undefined ? '场地已选点，可显示在活动地图' : '未选地图位置，活动仍会显示在日历列表'}}</text>
+      <text class="label">DJ 阵容</text><view wx:for="{{lineup}}" wx:key="id" class="lineup-row"><text>{{item.name}}</text><button wx:if="{{item.id !== djId}}" data-id="{{item.id}}" bindtap="removeLineup">移除</button></view>
+      <input value="{{lineupSearch}}" data-field="lineupSearch" bindinput="onInput" placeholder="搜索并添加同场DJ" maxlength="100" /><button bindtap="searchLineup" loading="{{lineupSearching}}">搜索 DJ</button>
+      <button wx:for="{{lineupCandidates}}" wx:key="id" data-id="{{item.id}}" bindtap="addLineup">添加 {{item.name}}</button>
+      <text class="muted">同一场活动只需录入一次，会显示在所有阵容DJ的主页。</text>
       <text class="label">信息来源链接（可选）</text><input value="{{source_url}}" data-field="source_url" bindinput="onInput" maxlength="500" placeholder="https://" />
     </block>
     <block wx:else>

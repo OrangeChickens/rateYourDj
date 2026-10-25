@@ -1,0 +1,6 @@
+<view class="page"><text wx:if="{{loading}}" class="muted">加载中…</text><view wx:if="{{error}}"><text>{{error}}</text><button wx:if="{{id}}" bindtap="load">重试</button></view><block wx:elif="{{event}}">
+<text class="eyebrow">EVENT</text><text class="heading">{{event.title}}</text><text class="event-title">{{event.starts_at}}（北京时间）</text><text class="lineup">{{event.city}} · {{event.venue}}</text><text wx:if="{{event.address}}" class="muted">{{event.address}}</text>
+<map wx:if="{{point}}" class="event-map" latitude="{{point.latitude}}" longitude="{{point.longitude}}" markers="{{markers}}" scale="15" show-location="{{false}}" /><button wx:if="{{point}}" bindtap="navigate">查看路线</button>
+<text class="heading section-title">DJ 阵容</text><button wx:for="{{event.djs}}" wx:key="id" data-id="{{item.id}}" bindtap="viewDJ">{{item.name}}</button>
+<view class="controls"><button open-type="share">分享活动</button><button wx:if="{{event.source_url}}" bindtap="copySource">复制来源链接</button></view>
+</block></view>

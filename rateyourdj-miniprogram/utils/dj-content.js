@@ -1,5 +1,8 @@
 const request = (url, method = 'GET', data = {}, needAuth = true) => getApp().request({ url: `/dj-content${url}`, method, data, needAuth });
 module.exports = {
+  events: params => request('/events', 'GET', params, false),
+  eventCities: () => request('/events/cities', 'GET', {}, false),
+  event: id => request(`/events/${id}`, 'GET', {}, false),
   list: (djId, type, params = {}) => request(`/${djId}/${type}`, 'GET', params, false),
   create: (djId, type, data) => request(`/${djId}/${type}`, 'POST', data),
   mine: (djId, type, page = 1) => request(`/mine/${type}`, 'GET', { djId, page }),

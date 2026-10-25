@@ -2,7 +2,7 @@ const {test}=require('node:test');const assert=require('node:assert/strict');con
 function page(name,api={},wx={}){
  let p;const app={globalData:{token:'fixture',userInfo:{role:'admin'}}};
  const source=fs.readFileSync(path.join(__dirname,`../rateyourdj-miniprogram/pages/${name}/${name}.js`),'utf8').replace(/^import .*;\n/gm,'');
- vm.runInNewContext(source,{Page:value=>p=value,require:()=>api,getApp:()=>app,wx:{showToast(){},navigateBack(){},showModal(){},...wx},Date,Number,Promise,decodeURIComponent});
+ vm.runInNewContext(source,{Page:value=>p=value,require:name=>name==='../../utils/dj-content'?api:require('../rateyourdj-miniprogram/utils/'+name.split('/').pop()),getApp:()=>app,wx:{showToast(){},navigateBack(){},showModal(){},...wx},Date,Number,Promise,decodeURIComponent});
  p.data=JSON.parse(JSON.stringify(p.data));p.setData=function(data){Object.assign(this.data,data);};return{p,app};
 }
 test('投稿防重复提交，演出投稿收到待审提示和归属自己的记录',async()=>{
@@ -43,4 +43,18 @@ test('普通用户直接进入SET表单或伪造提交都被前端阻止',async(
  let navigated=0,calls=0;const{p,app}=page('dj-content',{create:async()=>{calls++;}},{navigateBack:()=>navigated++});
  app.globalData.userInfo.role='user';p.onLoad({djId:'9',type:'sets'});assert.equal(navigated,1);
  Object.assign(p.data,{type:'sets',djId:9,loading:false,isAdmin:false,title:'Set',feed_token:'token/Video'});await p.submit();assert.equal(calls,0);
+});
+
+test('微信原生场地选点保留坐标，要求确认城市；修改场地清除旧坐标',()=>{
+ let options;const {p}=page('dj-content',{}, {chooseLocation:o=>options=o});
+ p.chooseVenue();assert.equal(p.data.choosingLocation,true);
+ options.success({name:'Club',address:'上海市黄浦区测试路1号',latitude:31.2,longitude:121.4});options.complete();
+ assert.equal(p.data.city,'');assert.equal(p.data.venue,'Club');assert.equal(p.data.latitude,31.2);assert.equal(p.data.choosingLocation,false);
+ p.selectCity({detail:{value:['上海市','上海市','黄浦区']}});assert.equal(p.data.city,'上海市');
+ p.onInput({currentTarget:{dataset:{field:'venue'}},detail:{value:'Another club'}});assert.equal(p.data.latitude,null);assert.equal(p.data.longitude,null);
+});
+test('取消选点不丢失现有场地；权限失败仍可手动输入',()=>{
+ let options;const{p}=page('dj-content',{}, {chooseLocation:o=>options=o});
+ p.data.venue='Old';p.chooseVenue();options.fail({errMsg:'chooseLocation:fail cancel'});options.complete();assert.equal(p.data.venue,'Old');assert.equal(p.data.locationNotice,'');
+ p.chooseVenue();options.fail({errMsg:'chooseLocation:fail auth deny'});options.complete();assert.match(p.data.locationNotice,/手动/);assert.equal(p.data.choosingLocation,false);
 });

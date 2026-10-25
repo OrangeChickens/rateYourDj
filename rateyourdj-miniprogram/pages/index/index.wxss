@@ -462,3 +462,5 @@
   text-transform: uppercase;
   letter-spacing: 1rpx;
 }
+
+.events-entry { margin:32rpx 0; padding:32rpx; border:2rpx solid #000; background:#000; color:#FFF; font-size:32rpx; font-weight:700; } .events-entry-note { display:block; margin-top:16rpx; font-size:24rpx; color:#CCC; }
