@@ -33,7 +33,8 @@ async function getDJDetail(req, res, next) {
   try {
     const { id } = req.params;
 
-    const dj = await DJ.findById(id);
+    const resolvedId = await require('../services/djMerge').resolveDJ(require('../utils/djContent').id(id));
+    const dj = await DJ.findById(resolvedId);
 
     if (!dj) {
       return res.status(404).json({

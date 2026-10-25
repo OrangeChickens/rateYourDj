@@ -83,48 +83,21 @@ async function getFavorites(req, res, next) {
 
 // 收藏/取消收藏DJ
 async function toggleFavorite(req, res, next) {
+  let connection;
   try {
-    const { djId } = req.params;
-
-    // 检查是否已收藏
-    const [existing] = await pool.query(
-      'SELECT * FROM favorites WHERE user_id = ? AND dj_id = ?',
-      [req.user.userId, djId]
-    );
-
-    if (existing.length > 0) {
-      // 取消收藏
-      await pool.query(
-        'DELETE FROM favorites WHERE user_id = ? AND dj_id = ?',
-        [req.user.userId, djId]
-      );
-
-      res.json({
-        success: true,
-        message: '已取消收藏',
-        data: { is_favorite: false }
-      });
-    } else {
-      // 添加收藏
-      await pool.query(
-        'INSERT INTO favorites (user_id, dj_id) VALUES (?, ?)',
-        [req.user.userId, djId]
-      );
-
-      // 更新任务进度（异步，不阻塞响应）
-      TaskService.updateFavoriteTasks(req.user.userId).catch(err => {
-        console.error('更新任务进度失败:', err);
-      });
-
-      res.json({
-        success: true,
-        message: '收藏成功',
-        data: { is_favorite: true }
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
+    const djId = require('../utils/djContent').id(req.params.djId);
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    await require('../models/DJContent').approvedDJ(connection, djId, true);
+    const [existing] = await connection.query('SELECT id FROM favorites WHERE user_id = ? AND dj_id = ?', [req.user.userId, djId]);
+    const isFavorite = existing.length === 0;
+    if (isFavorite) await connection.query('INSERT INTO favorites (user_id, dj_id) VALUES (?, ?)', [req.user.userId, djId]);
+    else await connection.query('DELETE FROM favorites WHERE user_id = ? AND dj_id = ?', [req.user.userId, djId]);
+    await connection.commit();
+    if (isFavorite) TaskService.updateFavoriteTasks(req.user.userId).catch(err => console.error('更新任务进度失败:', err.message));
+    res.json({ success: true, message: isFavorite ? '收藏成功' : '已取消收藏', data: { is_favorite: isFavorite } });
+  } catch (error) { if (connection) await connection.rollback(); next(error); }
+  finally { if (connection) connection.release(); }
 }
 
 // 获取用户的评论历史

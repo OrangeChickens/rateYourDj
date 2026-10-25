@@ -48,6 +48,9 @@ class Review {
     try {
       await connection.beginTransaction();
 
+      const [[dj]] = await connection.query('SELECT status, merged_into_id FROM djs WHERE id = ? FOR UPDATE', [dj_id]);
+      if (!dj || dj.status !== 'approved' || dj.merged_into_id) throw Object.assign(new Error('DJ资料已变化，请刷新后重新评价'), { statusCode: 409 });
+
       // 插入评论
       const [result] = await connection.query(
         `INSERT INTO reviews

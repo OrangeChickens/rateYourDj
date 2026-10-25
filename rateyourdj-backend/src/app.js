@@ -49,6 +49,7 @@ app.get('/health', (req, res) => {
 // API 路由
 app.use('/api/auth', authRoutes);
 app.use('/api/dj', djRoutes);
+app.use('/api/dj-content', require('./routes/djContent'));
 app.use('/api/review', reviewRoutes);
 app.use('/api/comment', commentRoutes);
 app.use('/api/stats', statsRoutes);
