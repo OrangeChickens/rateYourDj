@@ -193,3 +193,5 @@ npm run dev
 ISC
 
 演出日历与原生地图：见 [DJ 内容管理说明](docs/dj-content-tools.md)。
+
+首页推荐／关注评价流与筛选布局见 [首页评价流说明](docs/home-review-feed.md)。
