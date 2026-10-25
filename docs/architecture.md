@@ -188,6 +188,11 @@ i18n.t('djDetail.sortNewest')  // → "最新评论"
 
 The list below describes the original core tables; migrations extend this schema.
 Migration 016 adds `djs.merged_into_id`, `dj_sets`, `dj_events`, and `dj_duplicate_reports`.
+Migration 017 adds nullable venue address/GCJ-02 coordinates and the `(event_id, dj_id)`
+relation `dj_event_djs`, backfills each existing event's primary DJ, and adds a calendar index.
+One event keeps its ID and moderation status across its lineup; approved events appear on
+every associated DJ profile. `Events` provides the public date/city calendar and event detail
+queries, while `djMerge` transfers and deduplicates lineup associations during DJ merges.
 `DJContent` handles content, `djMerge` preserves review IDs and resolves profile aliases, and
 `djShareCode` generates and caches environment-specific WeChat codes. See the
 [content operations and merge guarantees](dj-content-tools.md) and [API reference](../rateyourdj-backend/API.md#dj-内容-api).
