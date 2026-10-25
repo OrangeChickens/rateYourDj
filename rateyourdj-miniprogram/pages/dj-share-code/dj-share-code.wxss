@@ -1,0 +1,3 @@
+@import "../dj-content/dj-content.wxss";
+.page { text-align: center; }
+.code { display: block; width: 100%; margin: 48rpx auto; }

@@ -105,6 +105,39 @@
       </view>
     </view>
 
+    <view class="content-links">
+      <button class="content-link" bindtap="goToShareCode">DJ 分享码</button>
+      <button wx:if="{{isLoggedIn}}" class="content-link" data-type="duplicates" bindtap="goToContent">标记重复资料</button>
+    </view>
+    <view class="channel-videos-section">
+      <view class="content-heading"><text class="channel-videos-title">{{texts.videos}}</text><button wx:if="{{isLoggedIn}}" class="content-link" data-type="sets" bindtap="goToContent">{{isAdmin ? '添加 SET' : '投稿 SET'}}</button></view>
+      <view wx:if="{{setsLoading}}" class="content-muted">加载中…</view>
+      <view wx:if="{{setsError}}" class="channel-video-state"><text>{{setsError}}</text><button class="content-link" bindtap="retrySets">重试</button></view>
+      <view wx:elif="{{!setsLoading && channelVideos.length === 0}}" class="content-muted">暂无 SET 视频</view>
+      <view wx:if="{{channelVideos.length > 0 && !supportsChannelVideo}}" class="channel-video-state">{{texts.videoUnsupported}}</view>
+      <view wx:for="{{channelVideos}}" wx:key="id" class="channel-video-card">
+        <view class="content-heading"><text class="content-title">{{item.title}}</text><button wx:if="{{isAdmin}}" class="content-link" data-type="sets" data-id="{{item.id}}" bindtap="goToContent">编辑</button></view>
+        <block wx:if="{{supportsChannelVideo}}">
+          <view wx:if="{{item.error}}" class="channel-video-state"><text>{{texts.videoUnavailable}}</text><button class="channel-video-retry" data-index="{{index}}" bindtap="retryChannelVideo">{{texts.retryVideo}}</button></view>
+          <channel-video wx:else class="channel-video-player" feed-token="{{item.feedToken}}" autoplay="{{false}}" muted="{{false}}" object-fit="contain" data-index="{{index}}" bind:error="onChannelVideoError" />
+        </block>
+      </view>
+      <button wx:if="{{setsMore && !setsError}}" class="content-link" bindtap="moreSets" disabled="{{setsLoading}}">更多 SET</button>
+    </view>
+    <view class="channel-videos-section">
+      <view class="content-heading"><text class="channel-videos-title">演出</text><button wx:if="{{isLoggedIn}}" class="content-link" data-type="events" bindtap="goToContent">{{isAdmin ? '添加演出' : '投稿演出'}}</button></view>
+      <view class="content-links"><button class="content-link {{eventPeriod === 'upcoming' ? 'content-active' : ''}}" data-period="upcoming" bindtap="changeEventPeriod">近期</button><button class="content-link {{eventPeriod === 'past' ? 'content-active' : ''}}" data-period="past" bindtap="changeEventPeriod">往期</button></view>
+      <view wx:if="{{eventsLoading}}" class="content-muted">加载中…</view>
+      <view wx:if="{{eventsError}}" class="channel-video-state"><text>{{eventsError}}</text><button class="content-link" bindtap="retryEvents">重试</button></view>
+      <text wx:elif="{{!eventsLoading && events.length === 0}}" class="content-muted">暂无演出信息</text>
+      <view wx:for="{{events}}" wx:key="id" class="event-card">
+        <view class="content-heading"><text class="content-title">{{item.title}}</text><button wx:if="{{isAdmin}}" class="content-link" data-type="events" data-id="{{item.id}}" bindtap="goToContent">编辑</button></view>
+        <text class="event-meta">{{item.starts_at}}（北京时间）</text><text class="event-meta">{{item.city}} · {{item.venue}}</text>
+        <button wx:if="{{item.source_url}}" class="content-link" data-url="{{item.source_url}}" bindtap="copyEventSource">复制来源链接</button>
+      </view>
+      <button wx:if="{{eventsMore && !eventsError}}" class="content-link" bindtap="moreEvents" disabled="{{eventsLoading}}">更多演出</button>
+    </view>
+
     <!-- 评论区域 -->
     <view class="reviews-section">
       <view class="section-header">

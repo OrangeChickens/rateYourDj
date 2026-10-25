@@ -1,20 +1,21 @@
-.container { padding: 32rpx; background: #FFF; min-height: 100vh; box-sizing: border-box; color: #000; }
-.dj-header { display: flex; align-items: center; gap: 32rpx; padding: 32rpx 0; border-bottom: 4rpx solid #000; }
-.dj-photo { width: 160rpx; height: 160rpx; flex-shrink: 0; border: 2rpx solid #000; }
-.dj-info { min-width: 0; display: flex; flex-direction: column; gap: 16rpx; }
-.eyebrow, .city, .date { font-size: 24rpx; font-weight: 600; color: #666; }
-.dj-name { font-size: 48rpx; font-weight: 700; overflow-wrap: break-word; }
-.review-card { padding: 48rpx 0; }
-.review-header { display: flex; justify-content: space-between; gap: 32rpx; align-items: flex-start; }
-.author { display: flex; flex-direction: column; gap: 16rpx; font-size: 28rpx; font-weight: 700; min-width: 0; overflow-wrap: break-word; }
-.rating { font-size: 40rpx; font-weight: 700; flex-shrink: 0; }
-.stars { margin-top: 32rpx; font-size: 32rpx; }
-.dimensions { display: flex; flex-wrap: wrap; gap: 16rpx 32rpx; font-size: 24rpx; font-weight: 600; margin: 32rpx 0; }
-.tags { display: flex; flex-wrap: wrap; gap: 16rpx; margin-bottom: 32rpx; }
-.tag { padding: 16rpx; border: 2rpx solid #000; font-size: 24rpx; font-weight: 600; }
-.content { display: block; font-size: 30rpx; line-height: 1.8; white-space: pre-wrap; overflow-wrap: break-word; }
-.action { display: block; margin: 32rpx 0; padding: 16rpx 32rpx; background: #000; color: #FFF; border: 2rpx solid #000; border-radius: 0; font-size: 28rpx; font-weight: 700; text-align: center; }
-.action::after { border: none; }
-.view-dj { text-align: center; padding: 32rpx 0; font-size: 28rpx; font-weight: 700; }
-.state { padding: 64rpx 0; font-size: 28rpx; font-weight: 600; }
+/* Keep the shared review identical to the DJ page's review card. */
+@import "../dj-detail/dj-detail.wxss";
+
+.container { box-sizing: border-box; padding-bottom: 64rpx; }
+.dj-info { padding-right: 0; height: auto; min-height: 200rpx; gap: 32rpx; }
+.dj-name { font-size: 48rpx; }
+.reviews-section { margin-top: 0; padding: 0 48rpx; }
+.review-header .user-info { min-width: 0; }
+.review-header .nickname { overflow-wrap: break-word; }
+.review-header .rating { flex-shrink: 0; white-space: nowrap; }
+.rating-row { line-height: 1.8; }
+.review-content .comment { white-space: pre-wrap; overflow-wrap: break-word; }
+.detail-actions { display: flex; align-items: stretch; gap: 16rpx; padding-top: 32rpx; border-top: 2rpx solid #E0E0E0; }
+.detail-button { box-sizing: border-box; width: 100%; margin: 0; padding: 24rpx 32rpx; border: 2rpx solid #000; border-radius: 0; background: #FFF; color: #000; font-size: 26rpx; font-weight: 700; line-height: 1.5; text-align: center; }
+.detail-button::after { border: none; }
+.detail-actions .detail-button { display: flex; align-items: center; justify-content: center; width: auto; min-width: 0; padding: 24rpx 16rpx; }
+.share-button { flex: 1; background: #000; color: #FFF; }
+.view-dj-button { flex: 2; }
+.state { padding: 96rpx 48rpx; text-align: center; font-size: 26rpx; font-weight: 600; }
+.state .detail-button { margin-top: 32rpx; }
 .review-share-canvas { position: fixed; left: -1000px; top: 0; width: 500px; height: 400px; pointer-events: none; }

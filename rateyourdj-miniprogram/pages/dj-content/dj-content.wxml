@@ -1,0 +1,34 @@
+<view class="page">
+  <text class="heading">{{djName}}</text>
+  <text wx:if="{{loading}}" class="muted">加载中…</text>
+  <view wx:elif="{{error}}"><text>{{error}}</text><button bindtap="load">重试</button></view>
+  <block wx:else>
+    <block wx:if="{{type !== 'duplicates'}}">
+      <text class="label">{{type === 'sets' ? '视频标题' : '演出名称'}}</text><input value="{{title}}" data-field="title" bindinput="onInput" maxlength="100" placeholder="填写标题" />
+    </block>
+    <block wx:if="{{type === 'sets'}}">
+      <text class="label">{{isAdmin ? '视频号引用内容' : '视频号引用内容 / 线索'}}</text><textarea value="{{feed_token}}" data-field="feed_token" bindinput="onInput" maxlength="1000" placeholder="{{isAdmin ? '粘贴 token/ 开头的视频引用内容' : '粘贴视频引用内容，或视频来源与说明'}}" />
+      <text class="muted">请从视频号的“在小程序中引用”复制内容，普通分享链接不能直接播放。开启获取权限的操作者才能取得引用内容。没有获取权限的用户可先提交视频来源和说明，由管理员补齐引用内容后展示。</text>
+      <text wx:if="{{entryId && previewToken}}" class="label">当前已保存的视频</text>
+      <channel-video wx:if="{{entryId && previewToken}}" class="player" feed-token="{{previewToken}}" autoplay="{{false}}" object-fit="contain" />
+    </block>
+    <block wx:elif="{{type === 'events'}}">
+      <text class="label">日期与时间（北京时间）</text><view class="row"><picker mode="date" value="{{date}}" data-field="date" bindchange="onInput"><view class="picker">{{date}}</view></picker><picker mode="time" value="{{time}}" data-field="time" bindchange="onInput"><view class="picker">{{time}}</view></picker></view>
+      <text class="label">城市</text><input value="{{city}}" data-field="city" bindinput="onInput" maxlength="50" />
+      <text class="label">场地</text><input value="{{venue}}" data-field="venue" bindinput="onInput" maxlength="150" />
+      <text class="label">信息来源链接（可选）</text><input value="{{source_url}}" data-field="source_url" bindinput="onInput" maxlength="500" placeholder="https://" />
+    </block>
+    <block wx:else>
+      <text class="muted">当前主页为待合并来源，请选择应保留的另一份资料。管理员会核对后处理。</text>
+      <text class="label">查找应保留的DJ主页</text><input value="{{search}}" data-field="search" bindinput="onInput" maxlength="100" placeholder="搜索DJ名称" /><button bindtap="searchTarget" loading="{{searching}}">搜索</button>
+      <view wx:for="{{candidates}}" wx:key="id" class="card {{target_dj_id === item.id ? 'selected' : ''}}" data-id="{{item.id}}" bindtap="selectTarget"><text>{{target_dj_id === item.id ? '✓ ' : ''}}{{item.name}}</text><text class="muted">{{item.city}} · {{item.review_count}} 条评价 · ID {{item.id}}</text></view>
+      <text wx:if="{{targetName}}" class="label">保留主页：{{targetName}}</text>
+      <text class="label">重复依据</text><textarea value="{{reason}}" data-field="reason" bindinput="onInput" maxlength="500" placeholder="说明为什么是同一位DJ，可附资料来源" />
+    </block>
+    <button class="primary" bindtap="submit" loading="{{saving}}" disabled="{{saving}}">{{entryId ? '保存修改' : (isAdmin && type !== 'duplicates' ? '保存并展示' : '提交审核')}}</button>
+    <button wx:if="{{entryId && expected_status === 'approved'}}" bindtap="withdraw" disabled="{{saving}}">下架内容</button>
+    <view wx:if="{{!entryId}}" class="history"><text class="heading">我的提交</text><text wx:if="{{myLoading}}" class="muted">加载中…</text><view wx:if="{{myError}}"><text>{{myError}}</text><button bindtap="retryMine">重试</button></view><text wx:elif="{{!myLoading && myItems.length === 0}}" class="muted">暂无提交记录</text>
+      <view wx:for="{{myItems}}" wx:key="id" class="card"><text>{{item.title || item.target_name}}</text><text class="muted">{{item.status === 'pending' ? '待审核' : (item.status === 'approved' ? '已通过' : '未通过 / 已下架')}}</text><text wx:if="{{item.moderation_reason}}" class="muted">{{item.moderation_reason}}</text></view><button wx:if="{{myMore && !myError}}" bindtap="moreMine" disabled="{{myLoading}}">更多记录</button>
+    </view>
+  </block>
+</view>

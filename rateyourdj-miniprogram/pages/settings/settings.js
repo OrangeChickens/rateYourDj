@@ -253,6 +253,8 @@ Page({
   },
 
   // 跳转到DJ资料修改申请页面
+  goToDJContent() { wx.navigateTo({ url: '/pages/dj-content-review/dj-content-review' }); },
+
   goToEditRequests() {
     wx.navigateTo({
       url: '/pages/dj-edit-pending/dj-edit-pending'

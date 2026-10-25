@@ -73,6 +73,11 @@ export default {
   },
 
   djDetail: {
+    videos: 'LIVE / SET VIDEOS',
+    videoUnavailable: 'Video could not be played. Retry; if it still fails, the video may be unavailable.',
+    videoUnsupported: 'This player is not supported by your WeChat version. Please update WeChat.',
+    retryVideo: 'RETRY',
+
     allRatings: 'All ratings',
     ratingFilter: 'Overall rating',
     noMatchingReviews: 'No reviews match this rating',

@@ -2,36 +2,44 @@
   <view wx:if="{{loading}}" class="state">{{texts.loading}}</view>
   <view wx:elif="{{error}}" class="state">
     <text>{{error}}</text>
-    <view wx:if="{{reviewId}}" class="action" bindtap="loadReview">{{texts.retry}}</view>
+    <button wx:if="{{reviewId}}" class="detail-button" bindtap="loadReview">{{texts.retry}}</button>
   </view>
-  <view wx:elif="{{review}}" class="review-detail">
+  <view wx:elif="{{review}}">
     <view class="dj-header" bindtap="viewDJ">
-      <image class="dj-photo" src="{{review.dj_photo_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <view class="dj-photo"><image class="photo" src="{{review.dj_photo_url || '/images/default-avatar.png'}}" mode="aspectFill" /></view>
       <view class="dj-info">
-        <text class="eyebrow">{{texts.title}}</text>
         <text class="dj-name">{{review.dj_name}}</text>
-        <text class="city">{{review.dj_city}}</text>
+        <view wx:if="{{review.dj_city}}" class="dj-meta"><text class="city">{{review.dj_city}}</text></view>
       </view>
     </view>
-    <view class="review-card">
-      <view class="review-header">
-        <view class="author">
-          <text>{{review.is_anonymous ? texts.anonymousUser : review.nickname}}</text>
-          <text class="date">{{review.formattedDate}}</text>
+    <view class="reviews-section">
+      <view class="review-card">
+        <view class="review-header">
+          <view class="avatar-wrapper">
+            <image class="avatar" src="{{review.is_anonymous ? '/images/anonymous-avatar.png' : (review.avatar_url || '/images/default-avatar.png')}}" mode="aspectFill" />
+          </view>
+          <view class="user-info">
+            <text class="nickname">{{review.is_anonymous ? texts.anonymousUser : review.nickname}}</text>
+            <text class="date">{{review.formattedDate}}</text>
+          </view>
+          <view class="rating"><text wx:for="{{review.stars.full}}" wx:key="index" class="star">★</text><text wx:for="{{review.stars.empty}}" wx:key="index" class="star empty">☆</text></view>
         </view>
-        <view class="rating">{{review.overall_rating}} / 5</view>
+        <view class="review-content">
+          <view class="rating-row">
+            <text class="item">{{texts.set}}: {{review.set_rating}}</text>
+            <text class="item">{{texts.performance}}: {{review.performance_rating}}</text>
+            <text class="item">{{texts.personality}}: {{review.personality_rating}}</text>
+            <text wx:if="{{review.would_choose_again !== null && review.would_choose_again !== undefined}}" class="{{review.would_choose_again ? 'would-choose-yes' : 'would-choose-no'}}">{{review.would_choose_again ? '✓' : '✗'}} {{texts.wouldChooseAgain}}</text>
+          </view>
+          <view wx:if="{{review.tags.length}}" class="tags"><text wx:for="{{review.tags}}" wx:key="index" class="tag">{{item}}</text></view>
+          <text wx:if="{{review.comment}}" class="comment" selectable="{{true}}">{{review.comment}}</text>
+        </view>
       </view>
-      <view class="stars"><text wx:for="{{review.stars.full}}" wx:key="index">★</text><text wx:for="{{review.stars.empty}}" wx:key="index">☆</text></view>
-      <view class="dimensions">
-        <text>{{texts.set}} {{review.set_rating}}</text>
-        <text>{{texts.performance}} {{review.performance_rating}}</text>
-        <text>{{texts.personality}} {{review.personality_rating}}</text>
+      <view class="detail-actions">
+        <button class="detail-button share-button" open-type="share">{{texts.share}}</button>
+        <button class="detail-button view-dj-button" bindtap="viewDJ">{{texts.viewDJ}} →</button>
       </view>
-      <view wx:if="{{review.tags.length}}" class="tags"><text wx:for="{{review.tags}}" wx:key="index" class="tag">{{item}}</text></view>
-      <text class="content" selectable="{{true}}">{{review.comment}}</text>
     </view>
-    <button class="action" open-type="share">{{texts.share}}</button>
-    <view class="view-dj" bindtap="viewDJ">{{texts.viewDJ}} →</view>
   </view>
   <canvas canvas-id="review-share-canvas" class="review-share-canvas" />
 </view>

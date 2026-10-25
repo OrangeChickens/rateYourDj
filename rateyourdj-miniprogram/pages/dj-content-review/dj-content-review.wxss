@@ -1,0 +1,5 @@
+@import "../dj-content/dj-content.wxss";
+.row button { flex: 1; padding: 16rpx; font-size: 24rpx; }
+.heading { margin-top: 32rpx; }
+.card { margin-top: 32rpx; }
+.card .label { margin-top: 0; }

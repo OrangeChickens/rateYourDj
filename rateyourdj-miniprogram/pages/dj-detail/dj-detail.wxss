@@ -732,3 +732,24 @@
 }
 
 .review-share-canvas { position: fixed; left: -1000px; top: 0; width: 500px; height: 400px; pointer-events: none; }
+
+/* Native Channels videos */
+.channel-videos-section { padding: 48rpx; border-top: 2rpx solid #000; }
+.channel-videos-title { display: block; margin-bottom: 32rpx; font-size: 32rpx; font-weight: 700; letter-spacing: 1rpx; }
+.channel-video-card + .channel-video-card { margin-top: 32rpx; }
+.channel-video-player { display: block; width: 100%; height: 368rpx; background: #000; }
+.channel-video-state { padding: 32rpx; border: 2rpx solid #000; font-size: 24rpx; line-height: 1.8; color: #666; }
+.channel-video-retry { margin: 32rpx 0 0; padding: 16rpx; border: 2rpx solid #000; border-radius: 0; background: #FFF; color: #000; font-size: 24rpx; font-weight: 700; line-height: 1.5; }
+.channel-video-retry::after { border: none; }
+
+.content-heading { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; margin-bottom: 32rpx; }
+.content-heading .channel-videos-title { margin-bottom: 0; }
+.content-links { display: flex; gap: 32rpx; padding: 16rpx 48rpx; flex-wrap: wrap; }
+.channel-videos-section .content-links { padding: 0 0 32rpx; }
+.content-link { margin: 0; padding: 16rpx 0; background: transparent; border: none; border-radius: 0; color: #666; font-size: 24rpx; font-weight: 700; line-height: 1.5; flex-shrink: 0; }
+.content-link::after { border: none; }
+.content-active { color: #000; border-bottom: 2rpx solid #000; }
+.content-title { font-size: 26rpx; font-weight: 700; overflow-wrap: break-word; }
+.content-muted, .event-meta { display: block; font-size: 24rpx; line-height: 1.8; color: #666; }
+.event-card { padding: 32rpx 0; border-bottom: 2rpx solid #E0E0E0; }
+.event-card .content-heading { margin-bottom: 16rpx; }
