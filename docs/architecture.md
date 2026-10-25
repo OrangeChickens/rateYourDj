@@ -184,7 +184,13 @@ i18n.t('djDetail.sortNewest')  // → "最新评论"
 
 ## Database Schema Key Points
 
-### 8 Tables Overview
+### Core Tables Overview
+
+The list below describes the original core tables; migrations extend this schema.
+Migration 016 adds `djs.merged_into_id`, `dj_sets`, `dj_events`, and `dj_duplicate_reports`.
+`DJContent` handles content, `djMerge` preserves review IDs and resolves profile aliases, and
+`djShareCode` generates and caches environment-specific WeChat codes. See the
+[content operations and merge guarantees](dj-content-tools.md) and [API reference](../rateyourdj-backend/API.md#dj-内容-api).
 
 1. **users** - WeChat authentication
    - `wx_openid` (unique) - Primary identifier for login

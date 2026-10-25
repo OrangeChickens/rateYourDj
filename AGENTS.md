@@ -4,6 +4,8 @@
 用户批准范围后实施；commit/push/merge 和生产部署沿用聊天中的明确授权，不重复索要同一许可。
 不得混入原始工作目录中的其他未提交修改。
 
+DJ SET、演出、重复资料与分享码操作见 [docs/dj-content-tools.md](docs/dj-content-tools.md)。
+
 ## Deploy Configuration
 
 - Platform: 阿里云 ECS，SSH + PM2；后端 API 与微信小程序。
