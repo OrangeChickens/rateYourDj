@@ -178,7 +178,7 @@ Authorization: Bearer <your_jwt_token>
 | 方法与路径 | 权限 | 用途 |
 |---|---|---|
 | `GET /dj-content/:djId/:type` | 公开 | 已通过内容；演出支持 `period=upcoming` 或 `period=past`（默认 upcoming） |
-| `POST /dj-content/:djId/:type` | 登录 | 新建；普通用户待审，管理员 SET/演出直接展示，重复申报始终待审 |
+| `POST /dj-content/:djId/:type` | 登录 | 新建；SET仅管理员可提交；普通用户演出待审，管理员演出直接展示，重复申报始终待审 |
 | `GET /dj-content/mine/:type?djId=ID` | 登录 | 当前用户在指定 DJ 的提交和反馈 |
 | `GET /dj-content/admin/:type?status=pending` | 管理员 | 按 pending/approved/rejected 查询；默认 pending |
 | `GET /dj-content/entry/:type/:id` | 管理员 | 读取编辑内容 |
@@ -190,7 +190,7 @@ Authorization: Bearer <your_jwt_token>
 列表接受 `page`（默认 1、最大 10000）和 `limit`（默认 20、最大 50），返回 `data` 与 `pagination { page, total, totalPages }`。
 创建成功为 201，返回 `data { id, status }`。编辑及状态修改必须提供 `expected_status`，状态已变化返回 409。
 
-- SET 请求：`title`（最多 100 字）、`feed_token`（粘贴内容最多 1000 字）；普通用户可提交来源线索，发布前必须补齐合法 token。
+- SET 请求：`title`（最多 100 字）、`feed_token`（粘贴内容最多 1000 字）；仅管理员可添加，必须提供合法 token；普通用户请求返回403。
 - 演出请求：`title`（100 字）、`starts_at`（北京时间 `YYYY-MM-DD HH:mm`）、`city`（50 字）、`venue`（150 字）、可选 `source_url`（HTTPS，500 字）。
 - 重复申报：`target_dj_id`（应保留的 DJ）和 `reason`（最多 500 字）；合并保留评价 ID 和旧 DJ 链接。
 - 状态修改：`status=approved` 或 `rejected`；拒绝/下架必须提供非空 `reason`（最多 500 字）。

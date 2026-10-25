@@ -13,7 +13,8 @@ exports.list = handler(async (req, res) => {
 exports.create = handler(async (req, res) => {
   const type = v.kind(req.params.type), djId = v.id(req.params.djId);
   const user = await User.findById(req.user.userId); if (!user) throw v.fail('用户不存在', 401);
-  const data = type === 'sets' ? v.setData(req.body, user.role === 'admin') : type === 'events' ? v.eventData(req.body) : { target_dj_id: v.id(req.body.target_dj_id), reason: v.text(req.body.reason, '重复依据', 500) };
+  if (type === 'sets' && user.role !== 'admin') throw v.fail('仅管理员可添加SET', 403);
+  const data = type === 'sets' ? v.setData(req.body) : type === 'events' ? v.eventData(req.body) : { target_dj_id: v.id(req.body.target_dj_id), reason: v.text(req.body.reason, '重复依据', 500) };
   const result = await Content.create(type, djId, req.user.userId, data, user.role === 'admin');
   res.status(201).json({ success: true, data: result });
 });
