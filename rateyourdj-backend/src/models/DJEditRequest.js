@@ -5,9 +5,10 @@ class DJEditRequest {
   static async create(djId, userId, proposedData) {
     const [result] = await pool.query(
       `INSERT INTO dj_edit_requests (dj_id, user_id, proposed_data)
-       VALUES (?, ?, ?)`,
-      [djId, userId, JSON.stringify(proposedData)]
+       SELECT id, ?, ? FROM djs WHERE id = ? AND status = 'approved' AND merged_into_id IS NULL`,
+      [userId, JSON.stringify(proposedData), djId]
     );
+    if (!result.affectedRows) throw Object.assign(new Error('DJ资料已变化，请刷新后重试'), { statusCode: 409 });
     return result.insertId;
   }
 
@@ -82,7 +83,7 @@ class DJEditRequest {
 
       // 获取申请详情
       const [requests] = await connection.query(
-        'SELECT * FROM dj_edit_requests WHERE id = ? AND status = ?',
+        'SELECT * FROM dj_edit_requests WHERE id = ? AND status = ? FOR UPDATE',
         [id, 'pending']
       );
 
@@ -91,6 +92,8 @@ class DJEditRequest {
       }
 
       const request = requests[0];
+      const [[dj]] = await connection.query('SELECT status, merged_into_id FROM djs WHERE id = ? FOR UPDATE', [request.dj_id]);
+      if (!dj || dj.status !== 'approved' || dj.merged_into_id) throw Object.assign(new Error('DJ资料已变化，请刷新后重试'), { statusCode: 409 });
       const proposed = typeof request.proposed_data === 'string'
         ? JSON.parse(request.proposed_data)
         : request.proposed_data;

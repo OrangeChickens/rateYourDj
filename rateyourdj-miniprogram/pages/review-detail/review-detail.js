@@ -13,7 +13,7 @@ Page({
       loadFailed: i18n.t('reviewDetail.loadFailed'), viewDJ: i18n.t('reviewDetail.viewDJ'),
       set: i18n.t('djDetail.setRating'), performance: i18n.t('djDetail.performance'),
       personality: i18n.t('djDetail.personality'), anonymousUser: i18n.t('review.anonymousUser'),
-      share: i18n.t('review.share')
+      share: i18n.t('review.share'), wouldChooseAgain: i18n.t('djDetail.wouldChooseAgain')
     } });
     wx.setNavigationBarTitle({ title: this.data.texts.title });
     if (!/^[1-9]\d*$/.test(options.id || '') || !Number.isSafeInteger(Number(options.id))) {

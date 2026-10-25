@@ -17,7 +17,10 @@
     "pages/agreement/agreement",
     "pages/suggestions/suggestions",
     "pages/dj-edit-pending/dj-edit-pending",
-    "pages/label-detail/label-detail"
+    "pages/label-detail/label-detail",
+    "pages/dj-content/dj-content",
+    "pages/dj-content-review/dj-content-review",
+    "pages/dj-share-code/dj-share-code"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -56,7 +59,7 @@
   "lazyCodeLoading": "requiredComponents",
   "permission": {
     "scope.writePhotosAlbum": {
-      "desc": "需要使用您的相册，用于上传DJ照片"
+      "desc": "用于保存DJ分享码"
     },
     "scope.camera": {
       "desc": "需要使用您的相机，用于拍摄DJ照片"

@@ -57,7 +57,7 @@ async function createReview(req, res, next) {
 
     // 验证DJ是否存在
     const dj = await DJ.findById(dj_id);
-    if (!dj) {
+    if (!dj || dj.status !== 'approved' || dj.merged_into_id) {
       return res.status(404).json({
         success: false,
         message: 'DJ不存在'

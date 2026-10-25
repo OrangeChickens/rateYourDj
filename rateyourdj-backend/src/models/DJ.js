@@ -293,10 +293,11 @@ class DJ {
 
   // 更新DJ状态（审核通过/拒绝）
   static async updateStatus(id, status) {
-    await pool.query(
-      'UPDATE djs SET status = ? WHERE id = ?',
+    const [result] = await pool.query(
+      'UPDATE djs SET status = ? WHERE id = ? AND merged_into_id IS NULL',
       [status, id]
     );
+    if (!result.affectedRows) throw Object.assign(new Error('DJ资料不存在或已合并'), { statusCode: 409 });
     return this.findById(id);
   }
 

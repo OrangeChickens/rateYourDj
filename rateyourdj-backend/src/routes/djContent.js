@@ -1,0 +1,13 @@
+const router = require('express').Router();
+const { authenticate, requireAdmin } = require('../middleware/auth');
+const c = require('../controllers/djContentController');
+router.get('/admin/:type', requireAdmin, c.adminList);
+router.get('/mine/:type', authenticate, c.mine);
+router.post('/duplicates/:id/merge', requireAdmin, c.merge);
+router.get('/entry/:type/:id', requireAdmin, c.detail);
+router.put('/entry/:type/:id', requireAdmin, c.update);
+router.put('/entry/:type/:id/status', requireAdmin, c.moderate);
+router.get('/:djId/share-code', c.code);
+router.get('/:djId/:type', c.list);
+router.post('/:djId/:type', authenticate, c.create);
+module.exports = router;

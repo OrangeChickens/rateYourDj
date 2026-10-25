@@ -180,6 +180,7 @@ npm run dev
 - `README.md` - 项目总览（本文件）
 - `rateyourdj-backend/README.md` - 后端说明
 - `rateyourdj-backend/API.md` - API接口文档
+- [DJ 内容管理](docs/dj-content-tools.md) - SET 投稿/审核、演出、重复资料合并与 DJ 分享码
 - `rateyourdj-backend/SETUP.md` - 安装配置指南
 - `rateyourdj-backend/database.sql` - 数据库结构
 

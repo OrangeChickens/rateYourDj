@@ -73,6 +73,11 @@ export default {
   },
 
   djDetail: {
+    videos: '现场 / SET 视频',
+    videoUnavailable: '视频暂时无法播放，请重试；若仍不可播放，可能是视频已不可用。',
+    videoUnsupported: '当前微信版本暂不支持此播放器，请更新微信后观看。',
+    retryVideo: '重新加载',
+
     allRatings: '全部星数',
     ratingFilter: '综合星数',
     noMatchingReviews: '暂无符合该星数的评价',

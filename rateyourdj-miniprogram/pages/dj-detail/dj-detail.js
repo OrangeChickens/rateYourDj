@@ -4,6 +4,8 @@ import { showLoading, hideLoading, showToast, showConfirm, generateStars, format
 import i18n from '../../utils/i18n';
 
 const { createReviewShare } = require('../../utils/review-share');
+const contentAPI = require('../../utils/dj-content');
+const { getDJId } = require('../../utils/dj-scene');
 const app = getApp();
 
 Page({
@@ -11,6 +13,10 @@ Page({
     djId: null,
     dj: null,
     reviews: [],
+    channelVideos: [],
+    supportsChannelVideo: false,
+    setsPage: 1, setsMore: false, setsLoading: false, setsError: '',
+    events: [], eventsPage: 1, eventsMore: false, eventsLoading: false, eventsError: '', eventPeriod: 'upcoming',
     loading: true,
     reviewsLoading: false,
     isFavorited: false,
@@ -56,7 +62,7 @@ Page({
       return;
     }
 
-    const djId = parseInt(options.id);
+    const djId = getDJId(options);
     if (!djId) {
       showToast('DJ ID 无效');
       wx.navigateBack();
@@ -124,6 +130,10 @@ Page({
       sortOptions,
       ratingOptions: [i18n.t('djDetail.allRatings'), '5 ★', '4 ★', '3 ★', '2 ★', '1 ★'],
       texts: {
+        videos: i18n.t('djDetail.videos'),
+        videoUnavailable: i18n.t('djDetail.videoUnavailable'),
+        videoUnsupported: i18n.t('djDetail.videoUnsupported'),
+        retryVideo: i18n.t('djDetail.retryVideo'),
         ratingFilter: i18n.t('djDetail.ratingFilter'),
         noMatchingReviews: i18n.t('djDetail.noMatchingReviews'),
         reviews: i18n.t('djDetail.reviews'),
@@ -160,6 +170,10 @@ Page({
 
       if (res.success) {
         const dj = res.data;
+        if (Number(dj.id) !== Number(this.data.djId)) {
+          wx.redirectTo({ url: `/pages/dj-detail/dj-detail?id=${dj.id}` });
+          return;
+        }
         // 处理音乐风格
         dj.styleList = dj.music_style ? dj.music_style.split(',') : [];
         // 生成星星
@@ -174,8 +188,11 @@ Page({
         this.setData({
           dj,
           loading: false,
-          djNameFontSize: fontSize
+          djNameFontSize: fontSize,
+
+          supportsChannelVideo: typeof wx.canIUse === 'function' && wx.canIUse('channel-video')
         });
+        await Promise.all([this.loadSets(), this.loadEvents()]);
       } else {
         showToast(res.message);
         setTimeout(() => wx.navigateBack(), 1500);
@@ -187,6 +204,61 @@ Page({
     } finally {
       hideLoading();
     }
+  },
+
+  async loadSets(append = false) {
+    if (append && (this.data.setsLoading || !this.data.setsMore)) return;
+    const request = this._setsRequest = (this._setsRequest || 0) + 1;
+    const page = append ? this.data.setsPage + 1 : 1;
+    this.setData({ setsLoading: true, setsError: '', ...(append ? {} : { channelVideos: [], setsMore: false }) });
+    try {
+      const res = await contentAPI.list(this.data.djId, 'sets', { page });
+      if (request !== this._setsRequest) return;
+      const videos = res.data.map(item => ({ ...item, feedToken: item.feed_token, error: false }));
+      this.setData({ channelVideos: append ? [...this.data.channelVideos, ...videos] : videos, setsPage: page, setsMore: page < res.pagination.totalPages });
+    } catch (error) { if (request === this._setsRequest) this.setData({ setsError: error.message || '视频加载失败' }); }
+    finally { if (request === this._setsRequest) this.setData({ setsLoading: false }); }
+  },
+  async loadEvents(append = false) {
+    if (append && (this.data.eventsLoading || !this.data.eventsMore)) return;
+    const request = this._eventsRequest = (this._eventsRequest || 0) + 1;
+    const page = append ? this.data.eventsPage + 1 : 1;
+    this.setData({ eventsLoading: true, eventsError: '', ...(append ? {} : { events: [], eventsMore: false }) });
+    try {
+      const res = await contentAPI.list(this.data.djId, 'events', { page, period: this.data.eventPeriod });
+      if (request !== this._eventsRequest) return;
+      this.setData({ events: append ? [...this.data.events, ...res.data] : res.data, eventsPage: page, eventsMore: page < res.pagination.totalPages });
+    } catch (error) { if (request === this._eventsRequest) this.setData({ eventsError: error.message || '演出加载失败' }); }
+    finally { if (request === this._eventsRequest) this.setData({ eventsLoading: false }); }
+  },
+  retrySets() { this.loadSets(); },
+  retryEvents() { this.loadEvents(); },
+  moreSets() { this.loadSets(true); },
+  moreEvents() { this.loadEvents(true); },
+  changeEventPeriod(e) {
+    const period = e.currentTarget.dataset.period;
+    if (!['upcoming', 'past'].includes(period) || period === this.data.eventPeriod) return;
+    this.setData({ eventPeriod: period }); this.loadEvents();
+  },
+  goToContent(e) {
+    if (!app.globalData.token) { showToast('请先登录'); return; }
+    const { type, id } = e.currentTarget.dataset;
+    wx.navigateTo({ url: `/pages/dj-content/dj-content?djId=${this.data.djId}&type=${type}${id ? `&id=${id}` : ''}` });
+  },
+  goToShareCode() { wx.navigateTo({ url: `/pages/dj-share-code/dj-share-code?djId=${this.data.djId}&name=${encodeURIComponent(this.data.dj.name)}` }); },
+  copyEventSource(e) { if (e.currentTarget.dataset.url) wx.setClipboardData({ data: e.currentTarget.dataset.url }); },
+  onUnload() { this._reviewsRequestId = (this._reviewsRequestId || 0) + 1; this._setsRequest = (this._setsRequest || 0) + 1; this._eventsRequest = (this._eventsRequest || 0) + 1; },
+
+  onChannelVideoError(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    if (!Number.isInteger(index) || index < 0 || index >= this.data.channelVideos.length) return;
+    this.setData({ channelVideos: this.data.channelVideos.map((video, i) => i === index ? { ...video, error: true } : video) });
+  },
+
+  retryChannelVideo(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    if (!Number.isInteger(index) || index < 0 || index >= this.data.channelVideos.length) return;
+    this.setData({ channelVideos: this.data.channelVideos.map((video, i) => i === index ? { ...video, error: false } : video) });
   },
 
   // 加载评论列表

@@ -1,0 +1,13 @@
+.page { padding: 48rpx; color: #000; background: #FFF; min-height: 100vh; box-sizing: border-box; }
+.heading { display: block; font-size: 36rpx; font-weight: 700; margin-bottom: 32rpx; overflow-wrap: break-word; }
+.label { display: block; font-size: 26rpx; font-weight: 700; margin: 32rpx 0 16rpx; }
+input, textarea, .picker { box-sizing: border-box; width: 100%; padding: 24rpx; border: 2rpx solid #000; border-radius: 0; font-size: 26rpx; background: #FFF; }
+input { height: 88rpx; } textarea { height: 192rpx; }
+.row { display: flex; gap: 16rpx; } .row picker { flex: 1; }
+.muted { display: block; font-size: 24rpx; color: #666; line-height: 1.8; margin-top: 16rpx; overflow-wrap: break-word; }
+button { margin: 32rpx 0 0; padding: 24rpx; border: 2rpx solid #000; border-radius: 0; background: #FFF; color: #000; font-size: 26rpx; font-weight: 700; line-height: 1.5; }
+button::after { border: none; } button[disabled] { color: #666; background: #E0E0E0; }
+.primary, .selected { background: #000; color: #FFF; } .selected .muted { color: #CCC; }
+.card { padding: 32rpx; border: 2rpx solid #000; margin-top: 16rpx; font-size: 26rpx; }
+.history { margin-top: 64rpx; padding-top: 32rpx; border-top: 2rpx solid #000; }
+.player { display: block; width: 100%; height: 368rpx; margin-top: 32rpx; }

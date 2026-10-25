@@ -1,0 +1,17 @@
+<view class="page">
+  <view class="row"><button data-type="sets" bindtap="changeType" disabled="{{busy}}">SET</button><button data-type="events" bindtap="changeType" disabled="{{busy}}">演出</button><button data-type="duplicates" bindtap="changeType" disabled="{{busy}}">重复资料</button></view>
+  <text class="heading">{{type === 'sets' ? 'SET 管理' : (type === 'events' ? '演出管理' : '重复资料处理')}}</text>
+  <picker range="{{statuses}}" value="{{statusIndex}}" bindchange="changeStatus" disabled="{{busy}}"><view class="picker">{{statuses[statusIndex]}} ▼</view></picker>
+  <text wx:if="{{loading}}" class="muted">加载中…</text><view wx:if="{{error}}"><text>{{error}}</text><button bindtap="retry">重试</button></view><text wx:elif="{{!loading && rows.length === 0}}" class="muted">暂无记录</text>
+  <view wx:for="{{rows}}" wx:key="id" class="card">
+    <text class="label">{{item.dj_name}} · ID {{item.dj_id}}</text><text>{{item.title || item.reason}}</text>
+    <text wx:if="{{type === 'events'}}" class="muted">{{item.starts_at}}（北京时间） · {{item.city}} · {{item.venue}}</text>
+    <text wx:if="{{type === 'duplicates'}}" class="muted">来源 {{item.source_review_count}} 条评价 · 目标 {{item.target_review_count}} 条评价</text><text wx:if="{{type === 'duplicates'}}" class="label">保留：{{item.target_name}} · ID {{item.target_dj_id}}</text>
+    <text wx:if="{{item.moderation_reason}}" class="muted">{{item.moderation_reason}}</text>
+    <view class="row"><button data-id="{{item.dj_id}}" bindtap="viewDJ">查看DJ</button><button wx:if="{{type === 'duplicates'}}" data-id="{{item.target_dj_id}}" bindtap="viewDJ">查看目标</button><button wx:else data-id="{{item.id}}" bindtap="edit">编辑</button></view>
+    <text wx:if="{{type === 'sets' && !item.feed_token}}" class="muted">待补齐引用：{{item.reference_text}}</text><button wx:if="{{type === 'sets' && item.feed_token}}" data-id="{{item.id}}" bindtap="preview">预览视频</button>
+    <block wx:if="{{type === 'sets' && previewId === item.id}}"><channel-video class="player" wx:if="{{!videoError}}" feed-token="{{item.feed_token}}" autoplay="{{false}}" bind:error="onVideoError" /><text wx:else class="muted">{{videoError}}</text></block>
+    <view class="row"><button wx:if="{{item.status === 'pending' || (type !== 'duplicates' && item.status === 'rejected')}}" class="primary" data-id="{{item.id}}" data-status="approved" bindtap="action" disabled="{{busy}}">{{type === 'duplicates' ? '确认合并' : '通过'}}</button><button wx:if="{{item.status !== 'rejected' && (type !== 'duplicates' || item.status === 'pending')}}" data-id="{{item.id}}" data-status="rejected" bindtap="action" disabled="{{busy}}">{{item.status === 'approved' ? '下架' : '拒绝'}}</button></view>
+  </view>
+  <button wx:if="{{hasMore && !error}}" bindtap="more" disabled="{{loading || busy}}">更多</button>
+</view>
