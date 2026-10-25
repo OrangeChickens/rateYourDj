@@ -73,6 +73,19 @@ export default {
   },
 
   djDetail: {
+    shareDJ: '分享',
+    manageDJ: '管理',
+    contributeDJ: '投稿',
+    shareFriends: '分享给朋友',
+    shareCode: 'DJ 分享码',
+    addSet: '添加 SET',
+    addEvent: '添加演出',
+    editProfile: '编辑 DJ 资料',
+    manageContent: '内容管理与审核',
+    reportDuplicate: '标记重复资料',
+    submitEvent: '投稿演出',
+    suggestProfile: '申请修改资料',
+
     videos: '现场 / SET 视频',
     videoUnavailable: '视频暂时无法播放，请重试；若仍不可播放，可能是视频已不可用。',
     videoUnsupported: '当前微信版本暂不支持此播放器，请更新微信后观看。',

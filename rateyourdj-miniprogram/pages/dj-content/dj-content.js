@@ -7,6 +7,7 @@ Page({
     if (!getApp().globalData.token) { wx.showToast({ title: '请先登录', icon: 'none' }); wx.navigateBack(); return; }
     const type = options.type, djId = Number(options.djId), entryId = options.id ? Number(options.id) : null;
     if (!labels[type] || !Number.isSafeInteger(djId) || djId <= 0 || (options.id && (!Number.isSafeInteger(entryId) || entryId <= 0))) { wx.navigateBack(); return; }
+    if (type === 'sets' && getApp().globalData.userInfo?.role !== 'admin') { wx.showToast({ title: '仅管理员可添加SET', icon: 'none' }); wx.navigateBack(); return; }
     this.setData({ type, djId, entryId, isAdmin: getApp().globalData.userInfo?.role === 'admin', date: new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10) });
     wx.setNavigationBarTitle({ title: `${entryId ? '编辑' : '提交'}${labels[type]}` });
     this.load();
@@ -39,6 +40,7 @@ Page({
   selectTarget(e) { const item = this.data.candidates.find(dj => Number(dj.id) === Number(e.currentTarget.dataset.id)); if (item) this.setData({ target_dj_id: Number(item.id), targetName: item.name }); },
   async submit() {
     if (this.data.saving || this.data.loading || this.data.error) return;
+    if (this.data.type === 'sets' && !this.data.isAdmin) { wx.showToast({ title: '仅管理员可添加SET', icon: 'none' }); return; }
     const d = this.data;
     const payload = d.type === 'sets' ? { title: d.title, feed_token: d.feed_token } : d.type === 'events' ? { title: d.title, starts_at: `${d.date} ${d.time}`, city: d.city, venue: d.venue, source_url: d.source_url } : { target_dj_id: d.target_dj_id, reason: d.reason };
     this.setData({ saving: true });

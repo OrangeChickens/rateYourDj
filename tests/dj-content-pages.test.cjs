@@ -5,16 +5,16 @@ function page(name,api={},wx={}){
  vm.runInNewContext(source,{Page:value=>p=value,require:()=>api,getApp:()=>app,wx:{showToast(){},navigateBack(){},showModal(){},...wx},Date,Number,Promise,decodeURIComponent});
  p.data=JSON.parse(JSON.stringify(p.data));p.setData=function(data){Object.assign(this.data,data);};return{p,app};
 }
-test('投稿防重复提交，普通用户收到待审提示和归属自己的记录',async()=>{
+test('投稿防重复提交，演出投稿收到待审提示和归属自己的记录',async()=>{
  let resolve,calls=0,payload;const modals=[];
  const{p}=page('dj-content',{create:(id,type,data)=>{calls++;payload=data;return new Promise(r=>resolve=r);},mine:async()=>({data:[{id:1,status:'pending'}],pagination:{totalPages:1}})},{showModal:o=>modals.push(o)});
- Object.assign(p.data,{djId:9,loading:false,title:'Set',feed_token:'token/Video'});
- const first=p.submit();await p.submit();assert.equal(calls,1);assert.equal(payload.feed_token,'token/Video');
+ Object.assign(p.data,{type:'events',djId:9,loading:false,title:'Show',date:'2030-01-01',time:'20:00',city:'上海',venue:'Club'});
+ const first=p.submit();await p.submit();assert.equal(calls,1);assert.equal(payload.starts_at,'2030-01-01 20:00');
  resolve({data:{status:'pending'}});await first;assert.equal(p.data.saving,false);assert.equal(p.data.myItems[0].status,'pending');assert.equal(modals[0].title,'已提交审核');
 });
 test('管理员编辑附带旧状态；未填写下架原因不会发出下架请求',async()=>{
  let update,moderations=0;const{p}=page('dj-content',{update:async(type,id,data)=>{update={type,id,data};return{success:true};},moderate:async()=>{moderations++;}},{showModal:o=>o.success({confirm:true,content:' '})});
- Object.assign(p.data,{entryId:7,djId:9,loading:false,title:'Edited',feed_token:'token/Video',expected_status:'approved'});
+ Object.assign(p.data,{isAdmin:true,entryId:7,djId:9,loading:false,title:'Edited',feed_token:'token/Video',expected_status:'approved'});
  await p.submit();assert.equal(update.id,7);assert.equal(update.data.expected_status,'approved');
  await p.withdraw();assert.equal(moderations,0);assert.equal(p.data.saving,false);
 });
@@ -37,4 +37,10 @@ test('分享码按小程序版本选环境，下载失败可重试，保存失�
  p.onLoad({djId:'9',name:'DJ'});await new Promise(setImmediate);assert.equal(p.data.env,'trial');assert.ok(p.data.error);assert.equal(p.data.image,'');
  status=200;await p.loadCode();assert.equal(p.data.image,'/tmp/fixture-code');await p.save();assert.equal(p.data.image,'/tmp/fixture-code');assert.equal(p.data.saving,false);
  assert.ok(envs.every(env=>env==='trial'));
+});
+
+test('普通用户直接进入SET表单或伪造提交都被前端阻止',async()=>{
+ let navigated=0,calls=0;const{p,app}=page('dj-content',{create:async()=>{calls++;}},{navigateBack:()=>navigated++});
+ app.globalData.userInfo.role='user';p.onLoad({djId:'9',type:'sets'});assert.equal(navigated,1);
+ Object.assign(p.data,{type:'sets',djId:9,loading:false,isAdmin:false,title:'Set',feed_token:'token/Video'});await p.submit();assert.equal(calls,0);
 });

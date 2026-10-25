@@ -20,6 +20,7 @@ Page({
     loading: true,
     reviewsLoading: false,
     isFavorited: false,
+    showShareActions: false,
     isAdmin: false, // 是否是管理员
     isLoggedIn: false, // 是否已登录
     bioExpanded: false, // bio是否展开
@@ -84,6 +85,7 @@ Page({
   },
 
   onShow() {
+    this.checkAdminStatus();
     // 检查是否有待处理的分享任务
     if (this.pendingShareTask) {
       console.log('🔄 检测到待处理的分享任务，开始记录...');
@@ -130,6 +132,12 @@ Page({
       sortOptions,
       ratingOptions: [i18n.t('djDetail.allRatings'), '5 ★', '4 ★', '3 ★', '2 ★', '1 ★'],
       texts: {
+        shareDJ: i18n.t('djDetail.shareDJ'),
+        manageDJ: i18n.t('djDetail.manageDJ'),
+        contributeDJ: i18n.t('djDetail.contributeDJ'),
+        shareFriends: i18n.t('djDetail.shareFriends'),
+        shareCode: i18n.t('djDetail.shareCode'),
+        cancel: i18n.t('common.cancel'),
         videos: i18n.t('djDetail.videos'),
         videoUnavailable: i18n.t('djDetail.videoUnavailable'),
         videoUnsupported: i18n.t('djDetail.videoUnsupported'),
@@ -243,9 +251,33 @@ Page({
   goToContent(e) {
     if (!app.globalData.token) { showToast('请先登录'); return; }
     const { type, id } = e.currentTarget.dataset;
+    if (type === 'sets' && !this.data.isAdmin) { showToast('仅管理员可添加SET'); return; }
     wx.navigateTo({ url: `/pages/dj-content/dj-content?djId=${this.data.djId}&type=${type}${id ? `&id=${id}` : ''}` });
   },
-  goToShareCode() { wx.navigateTo({ url: `/pages/dj-share-code/dj-share-code?djId=${this.data.djId}&name=${encodeURIComponent(this.data.dj.name)}` }); },
+  openShareActions() { if (this.data.dj) this.setData({ showShareActions: true }); },
+  closeShareActions() { this.setData({ showShareActions: false }); },
+  stopShareTap() {},
+  openManageActions() {
+    if (!this.data.isAdmin || !app.globalData.token) return;
+    const actions = [
+      { label: i18n.t('djDetail.addSet'), run: () => this.goToContent({ currentTarget: { dataset: { type: 'sets' } } }) },
+      { label: i18n.t('djDetail.addEvent'), run: () => this.goToContent({ currentTarget: { dataset: { type: 'events' } } }) },
+      { label: i18n.t('djDetail.editProfile'), run: () => this.goToEdit() },
+      { label: i18n.t('djDetail.manageContent'), run: () => wx.navigateTo({ url: '/pages/dj-content-review/dj-content-review' }) },
+      { label: i18n.t('djDetail.reportDuplicate'), run: () => this.goToContent({ currentTarget: { dataset: { type: 'duplicates' } } }) }
+    ];
+    wx.showActionSheet({ itemList: actions.map(item => item.label), success: result => { if (actions[result.tapIndex]) actions[result.tapIndex].run(); } });
+  },
+  openContributeActions() {
+    if (!this.data.isLoggedIn || this.data.isAdmin || !app.globalData.token) return;
+    const actions = [
+      { label: i18n.t('djDetail.submitEvent'), run: () => this.goToContent({ currentTarget: { dataset: { type: 'events' } } }) },
+      { label: i18n.t('djDetail.suggestProfile'), run: () => this.goToEditRequest() },
+      { label: i18n.t('djDetail.reportDuplicate'), run: () => this.goToContent({ currentTarget: { dataset: { type: 'duplicates' } } }) }
+    ];
+    wx.showActionSheet({ itemList: actions.map(item => item.label), success: result => { if (actions[result.tapIndex]) actions[result.tapIndex].run(); } });
+  },
+  goToShareCode() { this.closeShareActions(); wx.navigateTo({ url: `/pages/dj-share-code/dj-share-code?djId=${this.data.djId}&name=${encodeURIComponent(this.data.dj.name)}` }); },
   copyEventSource(e) { if (e.currentTarget.dataset.url) wx.setClipboardData({ data: e.currentTarget.dataset.url }); },
   onUnload() { this._reviewsRequestId = (this._reviewsRequestId || 0) + 1; this._setsRequest = (this._setsRequest || 0) + 1; this._eventsRequest = (this._eventsRequest || 0) + 1; },
 
@@ -563,6 +595,7 @@ Page({
 
   // 分享给朋友（页面级分享配置）
   onShareAppMessage(options) {
+    this.closeShareActions();
     console.log('📤 触发分享到好友/群聊');
     // 设置标记，在页面onShow时记录任务
     this.pendingShareTask = true;

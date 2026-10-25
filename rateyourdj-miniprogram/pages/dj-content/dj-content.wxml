@@ -7,8 +7,8 @@
       <text class="label">{{type === 'sets' ? '视频标题' : '演出名称'}}</text><input value="{{title}}" data-field="title" bindinput="onInput" maxlength="100" placeholder="填写标题" />
     </block>
     <block wx:if="{{type === 'sets'}}">
-      <text class="label">{{isAdmin ? '视频号引用内容' : '视频号引用内容 / 线索'}}</text><textarea value="{{feed_token}}" data-field="feed_token" bindinput="onInput" maxlength="1000" placeholder="{{isAdmin ? '粘贴 token/ 开头的视频引用内容' : '粘贴视频引用内容，或视频来源与说明'}}" />
-      <text class="muted">请从视频号的“在小程序中引用”复制内容，普通分享链接不能直接播放。开启获取权限的操作者才能取得引用内容。没有获取权限的用户可先提交视频来源和说明，由管理员补齐引用内容后展示。</text>
+      <text class="label">视频号引用内容</text><textarea value="{{feed_token}}" data-field="feed_token" bindinput="onInput" maxlength="1000" placeholder="粘贴 token/ 开头的视频引用内容" />
+      <text class="muted">请从视频号的“在小程序中引用”复制内容，普通分享链接不能直接播放。开启获取权限的操作者才能取得引用内容。</text>
       <text wx:if="{{entryId && previewToken}}" class="label">当前已保存的视频</text>
       <channel-video wx:if="{{entryId && previewToken}}" class="player" feed-token="{{previewToken}}" autoplay="{{false}}" object-fit="contain" />
     </block>

@@ -6,15 +6,16 @@ const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
 const videos = { 9: [{ id: 1, title: 'LIUYANG 视频', feed_token: 'token/ADRhgWPJw' }] };
 const scene = require('../rateyourdj-miniprogram/utils/dj-scene');
-function page(djId, supported = true, apiOverride = null) {
+function page(djId, supported = true, apiOverride = null, role = 'guest', wxOverride = {}) {
   let definition;
+  const app = {globalData: role === 'guest' ? {} : {token:'fixture',userInfo:{role}}};
   const source = fs.readFileSync(path.join(root, 'rateyourdj-miniprogram/pages/dj-detail/dj-detail.js'), 'utf8').replace(/^import .*;\n/gm, '');
   vm.runInNewContext(source, {
-    Page: p => definition = p, getApp: () => ({ globalData: {} }),
+    Page: p => definition = p, getApp: () => app,
     require: name => name === '../../utils/dj-content' ? apiOverride || { list: async (id, type) => ({ success: true, data: type === 'sets' ? videos[id] || [] : [], pagination: {totalPages: 1} }) } : name === '../../utils/dj-scene' ? scene : {},
-    wx: { canIUse: () => supported },
+    wx: { canIUse: () => supported, ...wxOverride },
     djAPI: { getDetail: async () => ({ success: true, data: { id: djId, name: 'LIUYANG刘炀' } }) },
-    showLoading() {}, hideLoading() {}, generateStars: () => ({ full: [], empty: [] }),
+    showLoading() {}, hideLoading() {}, showToast() {}, generateStars: () => ({ full: [], empty: [] }),
     console, setTimeout, i18n: { t: x => x }
   });
   definition.data = JSON.parse(JSON.stringify(definition.data));
@@ -67,4 +68,23 @@ test('SET首屏失败时不允许跳过第一页追加数据，重试保留现�
   let calls=0;const p=page(9,true,{list:async()=>{calls++;throw new Error('offline');}});
   p.data.setsMore=true;await p.loadSets();await p.loadSets(true);
   assert.equal(calls,1);assert.equal(p.data.setsMore,false);assert.equal(p.data.setsError,'offline');
+});
+
+test('DJ操作菜单按角色收拢：普通用户无添加SET，管理员可添加，访客仅分享',()=>{
+ let sheet,urls=[];const wx={showActionSheet:o=>sheet=o,navigateTo:o=>urls.push(o.url)};
+ const user=page(9,true,null,'user',wx);user.checkAdminStatus();user.openManageActions();assert.equal(sheet,undefined);
+ user.openContributeActions();assert.ok(sheet.itemList.includes('djDetail.submitEvent'));assert.ok(!sheet.itemList.includes('djDetail.addSet'));
+ sheet.success({tapIndex:0});assert.match(urls[0],/type=events/);user.goToContent({currentTarget:{dataset:{type:'sets'}}});assert.equal(urls.length,1);
+ const admin=page(9,true,null,'admin',wx);admin.checkAdminStatus();admin.openManageActions();assert.equal(sheet.itemList[0],'djDetail.addSet');sheet.success({tapIndex:0});assert.match(urls[1],/type=sets/);
+ sheet=undefined;const guest=page(9,true,null,'guest',wx);guest.checkAdminStatus();guest.openManageActions();guest.openContributeActions();assert.equal(sheet,undefined);
+});
+test('分享给朋友与分享码集中在分享面板，打开分享码后面板收起',()=>{
+ let url;const p=page(9,true,null,'guest',{navigateTo:o=>url=o.url});p.data.dj={name:'LIUYANG刘炀'};
+ p.openShareActions();assert.equal(p.data.showShareActions,true);p.goToShareCode();assert.equal(p.data.showShareActions,false);assert.match(url,/dj-share-code/);
+});
+
+test('分享面板的原生分享回调返回DJ主页并收起面板',()=>{
+ const p=page(9);p.data.dj={name:'LIUYANG刘炀'};p.openShareActions();
+ const share=p.onShareAppMessage({from:'button',target:{dataset:{}}});
+ assert.equal(share.path,'/pages/dj-detail/dj-detail?id=9');assert.match(share.title,/LIUYANG/);assert.equal(p.data.showShareActions,false);
 });

@@ -73,6 +73,19 @@ export default {
   },
 
   djDetail: {
+    shareDJ: 'SHARE',
+    manageDJ: 'MANAGE',
+    contributeDJ: 'CONTRIBUTE',
+    shareFriends: 'SHARE WITH FRIENDS',
+    shareCode: 'DJ CODE',
+    addSet: 'ADD SET',
+    addEvent: 'ADD EVENT',
+    editProfile: 'EDIT DJ PROFILE',
+    manageContent: 'MANAGE CONTENT',
+    reportDuplicate: 'REPORT DUPLICATE',
+    submitEvent: 'SUBMIT EVENT',
+    suggestProfile: 'SUGGEST PROFILE EDIT',
+
     videos: 'LIVE / SET VIDEOS',
     videoUnavailable: 'Video could not be played. Retry; if it still fails, the video may be unavailable.',
     videoUnsupported: 'This player is not supported by your WeChat version. Please update WeChat.',
