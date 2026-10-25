@@ -6,6 +6,7 @@
   "enableShareTimeline": true,
   "usingComponents": {
     "stats-dashboard": "/components/stats-dashboard/stats-dashboard",
-    "recent-reviews": "/components/recent-reviews/recent-reviews"
+    "recent-reviews": "/components/recent-reviews/recent-reviews",
+    "feed-review": "/components/feed-review/feed-review"
   }
 }

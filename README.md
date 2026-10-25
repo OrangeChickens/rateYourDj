@@ -180,7 +180,7 @@ npm run dev
 - `README.md` - 项目总览（本文件）
 - `rateyourdj-backend/README.md` - 后端说明
 - `rateyourdj-backend/API.md` - API接口文档
-- [DJ 内容管理](docs/dj-content-tools.md) - 管理员 SET 维护、演出投稿、重复资料合并与 DJ 分享码
+- [DJ 内容管理](docs/dj-content-tools.md) - 管理员 SET 维护、演出投稿、重复资料合并与分享兼容
 - `rateyourdj-backend/SETUP.md` - 安装配置指南
 - `rateyourdj-backend/database.sql` - 数据库结构
 
@@ -193,3 +193,5 @@ npm run dev
 ISC
 
 演出日历与原生地图：见 [DJ 内容管理说明](docs/dj-content-tools.md)。
+
+首页推荐／关注评价流与筛选布局见 [首页评价流说明](docs/home-review-feed.md)。

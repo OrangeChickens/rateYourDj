@@ -141,6 +141,7 @@ export const djAPI = {
  * 评论相关API
  */
 export const reviewAPI = {
+  getFeed(mode, params = {}) { return app.request({url:`/review/feed/${mode}`,method:'GET',data:params,needAuth:mode === 'following' || !!app.globalData.token}); },
   // 创建评论
   create(data) {
     return app.request({
@@ -263,7 +264,7 @@ export const commentAPI = {
       url: `/comment/review/${reviewId}`,
       method: 'GET',
       data: { page, limit },
-      needAuth: true
+      needAuth: false
     });
   },
 

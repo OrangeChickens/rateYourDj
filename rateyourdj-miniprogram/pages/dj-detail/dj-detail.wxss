@@ -188,7 +188,7 @@
 
 /* 操作按钮组 */
 .action-btns {
-  position: absolute !important;
+  position: absolute;
   top: 80rpx;
   right: 48rpx;
   z-index: 10;
@@ -757,11 +757,20 @@
 /* Keep public content separate from contribution and administration. */
 .detail-toolbar { display: flex; justify-content: flex-end; gap: 16rpx; padding: 16rpx 48rpx 32rpx; }
 .toolbar-button { display: flex; align-items: center; justify-content: center; min-width: 144rpx; min-height: 88rpx; margin: 0; padding: 16rpx 24rpx; background: #FFF; color: #000; border: 2rpx solid #000; border-radius: 0; font-size: 24rpx; font-weight: 700; line-height: 1.5; }
-.toolbar-button::after, .share-sheet button::after { border: none; }
+.toolbar-button::after { border: none; }
 .toolbar-manage { background: #000; color: #FFF; }
-.share-sheet-mask { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; }
-.share-sheet { box-sizing: border-box; width: 100%; padding: 32rpx 48rpx; padding-bottom: calc(32rpx + env(safe-area-inset-bottom)); background: #FFF; border-top: 2rpx solid #000; }
-.share-sheet-title { display: block; margin-bottom: 32rpx; font-size: 32rpx; font-weight: 700; overflow-wrap: break-word; }
-.share-sheet-button, .share-sheet-cancel { margin: 16rpx 0 0; padding: 24rpx; border: 2rpx solid #000; border-radius: 0; background: #FFF; color: #000; font-size: 26rpx; font-weight: 700; line-height: 1.5; }
-.share-sheet-primary { background: #000; color: #FFF; }
-.share-sheet-cancel { border: none; color: #666; }
+
+.action-btns { display:flex; flex-direction:column; align-items:center; gap:16rpx; }
+.dj-share-button { display:flex; align-items:center; justify-content:center; width:80rpx; min-height:64rpx; margin:0; padding:16rpx 0; box-sizing:border-box; background:#FFF; border:2rpx solid #000; border-radius:0; color:#000; font-size:22rpx; font-weight:700; line-height:1.5; }
+.dj-share-button::after { border:none; }
+.events-view-all { color:#666; font-size:24rpx; font-weight:700; flex-shrink:0; padding:16rpx 0; }
+.events-preview .event-card:last-child { border-bottom:none; padding-bottom:0; }
+.events-preview .content-title { display:block; line-height:1.6; }
+
+/* Keep action controls in layout flow; native button defaults must not overlap DJ names. */
+.dj-header .dj-info { padding-right:0; height:auto; min-height:200rpx; justify-content:flex-start; gap:32rpx; }
+.dj-header .action-btns { position:static; flex:0 0 80rpx; width:80rpx; }
+.dj-header .action-btns button.dj-share-button:not([size='mini']) { width:80rpx; max-width:80rpx; min-width:0; margin:0; flex:none; box-sizing:border-box; }
+.detail-toolbar button.toolbar-button:not([size='mini']) { width:100%; max-width:100%; min-width:0; margin:0; box-sizing:border-box; }
+
+.dj-header .action-btns button.dj-manage-button:not([size='mini']) { background:#000; color:#FFF; }

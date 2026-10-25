@@ -1,10 +1,12 @@
 // pages/index/index.js
-import { djAPI, statsAPI } from '../../utils/api';
+import { djAPI, statsAPI, reviewAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, generateStars } from '../../utils/util';
 import i18n from '../../utils/i18n';
+const { createReviewShare } = require('../../utils/review-share');
 
 Page({
   data: {
+    activeFeed: 'for-you', feedReviews: [], feedPage: 1, feedMore: false, feedLoading: false, feedError: '', feedAsOf: null, followingCount: 0, feedLoggedIn: false, hotError: '',
     hotDJs: [],
     selectedCity: '全部城市',
     selectedLetter: '', // 选中的字母，空字符串表示全部
@@ -43,10 +45,17 @@ Page({
     this.updateLanguage();
     this.loadDashboard();
     this.loadGenreGroups();
-    this.loadHotDJs();
+    const activeFeed = wx.getStorageSync('homeFeedTab');
+    if (['for-you','following','hot'].includes(activeFeed)) this.setData({activeFeed});
+    if (this.data.activeFeed === 'hot') this.loadHotDJs(); else this.loadFeed();
   },
 
   onShow() {
+    const token = getApp().globalData.token || '';
+    const revision = getApp().globalData.homeFeedRevision || 0;
+    if (this._homeShown && (token !== this._feedToken || revision !== this._feedRevision) && this.data.activeFeed !== 'hot') this.loadFeed();
+    this._homeShown = true; this._feedToken = token; this._feedRevision = revision;
+    this.setData({feedLoggedIn:!!token});
     // 设置 TabBar 选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
@@ -90,6 +99,37 @@ Page({
     }
   },
 
+  changeFeed(e) {
+    const activeFeed=e.currentTarget.dataset.tab;
+    if(!['for-you','following','hot'].includes(activeFeed)||activeFeed===this.data.activeFeed)return;
+    this._feedRequest=(this._feedRequest||0)+1;
+    this.setData({activeFeed,feedReviews:[],feedMore:false,feedLoading:false,feedError:''});
+    wx.setStorageSync('homeFeedTab',activeFeed);
+    if(activeFeed==='hot')this.loadHotDJs();else this.loadFeed();
+  },
+  async loadFeed(append=false) {
+    if(this.data.activeFeed==='hot'||(append&&(this.data.feedLoading||!this.data.feedMore||this.data.feedError)))return;
+    const request=this._feedRequest=(this._feedRequest||0)+1,mode=this.data.activeFeed;
+    const token=getApp().globalData.token;
+    if(mode==='following'&&!token){this.setData({feedLoggedIn:false,feedReviews:[],feedMore:false,feedLoading:false,feedError:''});return;}
+    const page=append?this.data.feedPage+1:1;
+    this.setData({feedLoading:true,feedError:'',feedLoggedIn:!!token,...(append?{}:{feedReviews:[],feedMore:false,feedAsOf:null})});
+    try {
+      const res=await reviewAPI.getFeed(mode,{page,limit:20,...(append&&this.data.feedAsOf?{asOf:this.data.feedAsOf}:{})});
+      if(request!==this._feedRequest)return;
+      const rows=append?[...this.data.feedReviews,...res.data]:res.data;
+      const seen=new Set();
+      this.setData({feedReviews:rows.filter(row=>{if(seen.has(row.id))return false;seen.add(row.id);return true;}),feedPage:page,feedMore:page<res.pagination.totalPages,feedAsOf:res.asOf,followingCount:res.following_count});
+    }catch(error){if(request===this._feedRequest)this.setData({feedError:error.message||'评价加载失败，请重试'});}
+    finally{if(request===this._feedRequest)this.setData({feedLoading:false});}
+  },
+  retryFeed(){this.loadFeed();},retryHot(){this.loadHotDJs();},
+  loginForFeed(){wx.switchTab({url:'/pages/settings/settings'});},
+  exploreDJs(){this.changeFeed({currentTarget:{dataset:{tab:'hot'}}});},
+  prepareFeedShare(e){this._shareReviewId=e.detail.id;},
+  updateFeedReview(e){const update=e.detail;this.setData({feedReviews:this.data.feedReviews.map(row=>Number(row.id)===Number(update.id)?{...row,...update}:row)});},
+  onUnload(){this._feedRequest=(this._feedRequest||0)+1;this._hotRequest=(this._hotRequest||0)+1;},
+
   // 更新语言
   updateLanguage() {
     this.setData({
@@ -117,10 +157,11 @@ Page({
 
   // 加载热门DJ
   async loadHotDJs(append = false) {
+    if (append && (this.data.loading || !this.data.hasMore || this.data.hotError)) return;
+    const request = this._hotRequest = (this._hotRequest || 0) + 1;
+    this.setData({hotError:''});
     try {
-      if (!append) {
-        this.setData({ loading: true });
-      }
+      this.setData({ loading: true });
 
       // 调试信息
       const app = getApp();
@@ -160,6 +201,7 @@ Page({
 
       console.log('请求参数:', params);
       const res = await djAPI.getList(params);
+      if (request !== this._hotRequest) return;
       console.log('API 响应:', res);
 
       if (res.success) {
@@ -183,10 +225,12 @@ Page({
         showToast(res.message);
       }
     } catch (error) {
+      if (request !== this._hotRequest) return;
+      this.setData({hotError:error.message || 'DJ加载失败，请重试'});
       console.error('加载热门DJ失败:', error);
       showToast(i18n.t('error.loadFailed'));
     } finally {
-      this.setData({ loading: false });
+      if (request === this._hotRequest) this.setData({ loading: false });
     }
   },
 
@@ -420,7 +464,7 @@ Page({
 
     await Promise.all([
       this.loadDashboard(),
-      this.loadHotDJs()
+      this.data.activeFeed === 'hot' ? this.loadHotDJs() : this.loadFeed()
     ]);
 
     wx.stopPullDownRefresh();
@@ -428,13 +472,13 @@ Page({
 
   // 触底加载更多
   onReachBottom() {
-    if (this.data.hasMore && !this.data.loading) {
-      this.loadHotDJs(true);
-    }
+    if (this.data.activeFeed === 'hot') { if (this.data.hasMore && !this.data.loading) this.loadHotDJs(true); }
+    else if (this.data.feedMore && !this.data.feedLoading) this.loadFeed(true);
   },
 
   // 分享给好友
-  onShareAppMessage() {
+  onShareAppMessage(options = {}) {
+    if (options.from === 'button') { const id = Number(options.target?.dataset?.reviewId || this._shareReviewId); const review = this.data.feedReviews.find(row=>Number(row.id)===id); if(review) return createReviewShare(review,{name:review.dj_name,photo_url:review.dj_photo_url},this); }
     const shareConfig = {
       title: '查看DJ评分 - 烂u盘',
       path: '/pages/index/index'

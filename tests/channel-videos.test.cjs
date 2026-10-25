@@ -21,6 +21,7 @@ function page(djId, supported = true, apiOverride = null, role = 'guest', wxOver
   definition.data = JSON.parse(JSON.stringify(definition.data));
   definition.data.djId = djId;
   definition.setData = function(data) { Object.assign(this.data, data); };
+  definition._testApp = app;
   return definition;
 }
 test('只在指定DJ展示提供的视频，其他DJ没有视频板块', async () => {
@@ -54,15 +55,24 @@ test('分享码scene解析严格校验并兼容原链接', () => {
   for(const options of [{scene:'d=9&id=2'},{scene:'%qq'},{id:'9evil'},{id:'0'},{id:'9007199254740993'}]) assert.equal(scene.getDJId(options),null);
 });
 
-test('快速切换近期和往期演出时旧响应不覆盖新列表或解除新请求加载状态', async () => {
+test('演出摘要只请求各3条，旧响应不会覆盖新请求或解除新请求加载状态', async () => {
   const pending=[];
   const p=page(9,true,{list:(id,type,params)=>new Promise(resolve=>pending.push({params,resolve}))});
-  const old=p.loadEvents();p.data.eventPeriod='past';const current=p.loadEvents();
-  assert.equal(pending[0].params.period,'upcoming');assert.equal(pending[1].params.period,'past');
-  pending[0].resolve({data:[{id:1}],pagination:{totalPages:1}});await old;
+  const old=p.loadEvents();const current=p.loadEvents();
+  assert.equal(pending[0].params.limit,3);assert.equal(pending[0].params.period,'upcoming');assert.equal(pending[1].params.period,'past');
+  pending[0].resolve({data:[{id:1}],pagination:{total:1}});pending[1].resolve({data:[],pagination:{total:0}});await old;
   assert.equal(p.data.eventsLoading,true);assert.equal(p.data.events.length,0);
-  pending[1].resolve({data:[{id:2}],pagination:{totalPages:1}});await current;
+  pending[2].resolve({data:[{id:2}],pagination:{total:1}});pending[3].resolve({data:[],pagination:{total:0}});await current;
   assert.equal(p.data.events[0].id,2);assert.equal(p.data.eventsLoading,false);
+});
+test('DJ演出摘要最多3场，优先近期并补最近往期，更多进入该DJ独立列表',async()=>{
+ let url;const p=page(9,true,{list:async(id,type,params)=>params.period==='upcoming'?{data:[{id:1},{id:2}],pagination:{total:2}}:{data:[{id:3},{id:4},{id:5}],pagination:{total:7}}},'guest',{navigateTo:o=>url=o.url});
+ await p.loadEvents();assert.deepEqual(Array.from(p.data.events,item=>item.id),[1,2,3]);assert.equal(p.data.eventsMore,true);
+ p.viewAllEvents();assert.equal(url,'/pages/dj-events/dj-events?djId=9');
+});
+test('没有演出时摘要为空且不出现查看全部，加载失败不假装无数据',async()=>{
+ const p=page(9,true,{list:async()=>({data:[],pagination:{total:0}})});await p.loadEvents();assert.equal(p.data.events.length,0);assert.equal(p.data.eventsMore,false);assert.equal(p.data.eventsError,'');
+ const failed=page(9,true,{list:async()=>{throw new Error('offline');}});await failed.loadEvents();assert.equal(failed.data.eventsError,'offline');assert.equal(failed.data.eventsMore,false);
 });
 test('SET首屏失败时不允许跳过第一页追加数据，重试保留现有失败原因',async()=>{
   let calls=0;const p=page(9,true,{list:async()=>{calls++;throw new Error('offline');}});
@@ -78,13 +88,9 @@ test('DJ操作菜单按角色收拢：普通用户无添加SET，管理员可添
  const admin=page(9,true,null,'admin',wx);admin.checkAdminStatus();admin.openManageActions();assert.equal(sheet.itemList[0],'djDetail.addSet');sheet.success({tapIndex:0});assert.match(urls[1],/type=sets/);
  sheet=undefined;const guest=page(9,true,null,'guest',wx);guest.checkAdminStatus();guest.openManageActions();guest.openContributeActions();assert.equal(sheet,undefined);
 });
-test('分享给朋友与分享码集中在分享面板，打开分享码后面板收起',()=>{
- let url;const p=page(9,true,null,'guest',{navigateTo:o=>url=o.url});p.data.dj={name:'LIUYANG刘炀'};
- p.openShareActions();assert.equal(p.data.showShareActions,true);p.goToShareCode();assert.equal(p.data.showShareActions,false);assert.match(url,/dj-share-code/);
-});
-
-test('分享面板的原生分享回调返回DJ主页并收起面板',()=>{
- const p=page(9);p.data.dj={name:'LIUYANG刘炀'};p.openShareActions();
+test('DJ直接分享返回主页，未登录的残留管理员资料不会显示管理按钮',()=>{
+ const p=page(9);p.data.dj={name:'LIUYANG刘炀'};
  const share=p.onShareAppMessage({from:'button',target:{dataset:{}}});
- assert.equal(share.path,'/pages/dj-detail/dj-detail?id=9');assert.match(share.title,/LIUYANG/);assert.equal(p.data.showShareActions,false);
+ assert.equal(share.path,'/pages/dj-detail/dj-detail?id=9');assert.match(share.title,/LIUYANG/);
+ p._testApp.globalData={userInfo:{role:'admin'}};p.checkAdminStatus();assert.equal(p.data.isAdmin,false);assert.equal(p.data.isLoggedIn,false);
 });

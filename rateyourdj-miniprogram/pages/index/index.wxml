@@ -1,12 +1,18 @@
 <!-- 首页 -->
 <view class="container">
+  <!-- 搜索框 -->
+  <view class="search-section">
+    <view class="search-bar" bindtap="goToSearch">
+      <text class="search-icon">SEARCH</text>
+      <text class="search-placeholder">{{searchPlaceholder}}</text>
+    </view>
+  </view>
+
   <!-- Slogan -->
   <view class="slogan-section">
     <text class="tagline">一个DJ评分社区</text>
     <text class="tagline-sub">好DJ值得被看见，烂DJ也是</text>
   </view>
-
-  <view class="events-entry" bindtap="goToEvents"><text>演出日历</text><text class="events-entry-note">按城市、日期找演出 · 地图查看场地 →</text></view>
 
   <!-- 统计数据看板 -->
   <stats-dashboard
@@ -22,14 +28,18 @@
     reviewCount24h="{{reviewCount24h}}"
     bind:viewall="handleViewAllReviews" />
 
-  <!-- 搜索框 -->
-  <view class="search-section">
-    <view class="search-bar" bindtap="goToSearch">
-      <text class="search-icon">SEARCH</text>
-      <text class="search-placeholder">{{searchPlaceholder}}</text>
-    </view>
-  </view>
+  <view class="events-entry" bindtap="goToEvents"><text>演出日历</text><text class="events-entry-note">按城市、日期找演出 · 地图查看场地 →</text></view>
 
+  <view class="home-feed-tabs"><view class="home-feed-tab {{activeFeed === 'for-you' ? 'selected' : ''}}" data-tab="for-you" bindtap="changeFeed">For You</view><view class="home-feed-tab {{activeFeed === 'following' ? 'selected' : ''}}" data-tab="following" bindtap="changeFeed">关注的 DJ</view><view class="home-feed-tab {{activeFeed === 'hot' ? 'selected' : ''}}" data-tab="hot" bindtap="changeFeed">热门 DJ</view></view>
+  <view wx:if="{{activeFeed !== 'hot'}}" class="home-review-feed">
+    <text class="feed-description">{{activeFeed === 'following' ? '你收藏的 DJ 就是这里的关注 · 按评价发布时间排序' : '结合关注、相近风格、新鲜度和有帮助投票推荐 · 不改变 DJ 评分'}}</text>
+    <feed-review wx:for="{{feedReviews}}" wx:key="id" review="{{item}}" bind:share="prepareFeedShare" bind:update="updateFeedReview" />
+    <text wx:if="{{feedLoading}}" class="feed-state">加载评价中…</text>
+    <view wx:if="{{feedError}}" class="feed-state"><text>{{feedError}}</text><button bindtap="retryFeed">重试</button></view>
+    <view wx:elif="{{!feedLoading && feedReviews.length === 0}}" class="feed-state"><block wx:if="{{activeFeed === 'following' && !feedLoggedIn}}"><text>登录后查看你关注 DJ 的评价</text><button bindtap="loginForFeed">去登录</button></block><block wx:elif="{{activeFeed === 'following' && followingCount === 0}}"><text>还没有关注 DJ，点击 DJ 主页的星标即可关注</text><button bindtap="exploreDJs">发现 DJ</button></block><text wx:else>{{activeFeed === 'following' ? '你关注的 DJ 暂时还没有公开评价' : '暂无公开评价'}}</text></view>
+    <text wx:if="{{!feedLoading && !feedMore && feedReviews.length > 0 && !feedError}}" class="feed-state">已看完这批评价，下拉可刷新</text>
+  </view>
+  <block wx:if="{{activeFeed === 'hot'}}">
   <!-- 城市选择 -->
   <view class="city-section" bindtap="goToCityList">
     <text class="city-icon">CITY</text>
@@ -182,6 +192,7 @@
       <text>{{loadingText}}</text>
     </view>
 
+    <view wx:if="{{hotError}}" class="feed-state"><text>{{hotError}}</text><button bindtap="retryHot">重试</button></view>
     <!-- 空状态 -->
     <view class="empty-state" wx:elif="{{!loading && hotDJs.length === 0}}">
       <text class="empty-icon">—</text>
@@ -193,4 +204,6 @@
       <text wx:if="{{loading}}" class="loading-text">{{loadingText}}</text>
     </view>
   </view>
+  </block>
+  <canvas canvas-id="review-share-canvas" class="review-share-canvas" />
 </view>
