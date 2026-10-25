@@ -1,0 +1,12 @@
+<view class="container">
+  <view class="intro">这里显示你的待审核内容及人工审核结果。待审核不代表已经违规。</view>
+  <view wx:for="{{items}}" wx:key="key" class="card">
+    <view class="header"><text>{{item.content_type === 'review' ? '评价' : '评论'}} · {{item.dj_name || 'DJ资料不可用'}}</text><text>{{item.statusLabel}}</text></view>
+    <text class="date">{{item.date}}</text>
+    <text class="content" selectable="{{true}}">{{item.content}}</text>
+    <view class="reason">{{item.feedback}}</view>
+  </view>
+  <view wx:if="{{error}}" class="state"><text>{{error}}</text><view class="retry" bindtap="retry">重试</view></view>
+  <view wx:elif="{{loading}}" class="state">加载中…</view>
+  <view wx:elif="{{!items.length}}" class="state">暂无需要反馈的审核记录</view>
+</view>

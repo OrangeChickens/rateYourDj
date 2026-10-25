@@ -1,5 +1,6 @@
 <!--pages/my-reviews/my-reviews.wxml-->
 <view class="container">
+  <view class="feedback-link" bindtap="goToFeedback">审核反馈 →</view>
   <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading">
     <text>{{texts.loading}}</text>
@@ -20,6 +21,10 @@
         <text class="review-date">{{item.formattedDate}}</text>
       </view>
 
+      <view class="moderation-feedback">
+        <text>{{item.status === 'pending' ? '待审核' : item.status === 'rejected' ? '未通过' : '已通过'}}</text>
+        <text wx:if="{{item.status !== 'approved'}}">{{item.moderation_reason || (item.status === 'pending' ? '待人工审核，尚未判定违规。' : '历史记录未保存拒绝原因。')}}</text>
+      </view>
       <!-- 评分 -->
       <view class="rating-section">
         <view class="overall-rating">
@@ -53,6 +58,7 @@
         </view>
         <view class="action-btns">
           <button
+            wx:if="{{item.status === 'approved'}}"
             class="action-btn share-btn"
             open-type="share"
             data-review="{{item}}"
@@ -83,4 +89,5 @@
     <text class="icon">—</text>
     <text class="text">{{texts.noReviews}}</text>
   </view>
+  <canvas canvas-id="review-share-canvas" class="review-share-canvas" />
 </view>

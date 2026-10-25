@@ -1,0 +1,37 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="state">{{texts.loading}}</view>
+  <view wx:elif="{{error}}" class="state">
+    <text>{{error}}</text>
+    <view wx:if="{{reviewId}}" class="action" bindtap="loadReview">{{texts.retry}}</view>
+  </view>
+  <view wx:elif="{{review}}" class="review-detail">
+    <view class="dj-header" bindtap="viewDJ">
+      <image class="dj-photo" src="{{review.dj_photo_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <view class="dj-info">
+        <text class="eyebrow">{{texts.title}}</text>
+        <text class="dj-name">{{review.dj_name}}</text>
+        <text class="city">{{review.dj_city}}</text>
+      </view>
+    </view>
+    <view class="review-card">
+      <view class="review-header">
+        <view class="author">
+          <text>{{review.is_anonymous ? texts.anonymousUser : review.nickname}}</text>
+          <text class="date">{{review.formattedDate}}</text>
+        </view>
+        <view class="rating">{{review.overall_rating}} / 5</view>
+      </view>
+      <view class="stars"><text wx:for="{{review.stars.full}}" wx:key="index">★</text><text wx:for="{{review.stars.empty}}" wx:key="index">☆</text></view>
+      <view class="dimensions">
+        <text>{{texts.set}} {{review.set_rating}}</text>
+        <text>{{texts.performance}} {{review.performance_rating}}</text>
+        <text>{{texts.personality}} {{review.personality_rating}}</text>
+      </view>
+      <view wx:if="{{review.tags.length}}" class="tags"><text wx:for="{{review.tags}}" wx:key="index" class="tag">{{item}}</text></view>
+      <text class="content" selectable="{{true}}">{{review.comment}}</text>
+    </view>
+    <button class="action" open-type="share">{{texts.share}}</button>
+    <view class="view-dj" bindtap="viewDJ">{{texts.viewDJ}} →</view>
+  </view>
+  <canvas canvas-id="review-share-canvas" class="review-share-canvas" />
+</view>

@@ -215,7 +215,18 @@ async function deleteAccount(req, res, next) {
   }
 }
 
+async function getModerationFeedback(req, res, next) {
+  try {
+    const Feedback = require('../models/ModerationFeedback');
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
+    const result = await Feedback.findByUserId(req.user.userId, page, limit);
+    res.json({ success: true, ...result });
+  } catch (error) { next(error); }
+}
+
 module.exports = {
+  getModerationFeedback,
   getUserProfile,
   getFavorites,
   toggleFavorite,

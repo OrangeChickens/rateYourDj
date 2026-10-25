@@ -486,6 +486,16 @@ Page({
       const res = await reviewAPI.create(data);
 
       if (res.success) {
+        if (res.data && res.data.status === 'pending') {
+          this.setData({ showSubmitAnimation: false, animationPhase: '' });
+          wx.showModal({
+            title: '评价待审核',
+            content: `${res.data.moderation_reason || res.message}\n\n可在“我的 → 审核反馈”查看后续结果。`,
+            showCancel: false,
+            success: () => wx.navigateBack()
+          });
+          return;
+        }
         // 第二阶段：显示成功动画
         this.generateConfetti();
         this.setData({

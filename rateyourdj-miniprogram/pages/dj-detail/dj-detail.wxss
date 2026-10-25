@@ -717,3 +717,18 @@
   font-size: 24rpx;
   color: #999;
 }
+
+/* 星数筛选沿用黑白直角控件。 */
+.rating-filter {
+  margin-bottom: 32rpx;
+}
+.rating-filter-label {
+  padding: 16rpx 32rpx;
+  border: 2rpx solid #000;
+  background: #FFF;
+  color: #000;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.review-share-canvas { position: fixed; left: -1000px; top: 0; width: 500px; height: 400px; pointer-events: none; }

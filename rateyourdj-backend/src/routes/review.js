@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticate, optionalAuth, requireAdmin } = require('../middleware/auth');
 const {
+  getReviewDetail,
   createReview,
   getDJReviews,
   deleteReview,
@@ -20,6 +21,9 @@ router.post('/create', authenticate, reviewNewUserCooldown, reviewUserRateLimit,
 
 // 获取所有评价列表（可选登录，管理员可看全部状态）
 router.get('/all', optionalAuth, getAllReviews);
+
+// 独立分享页，无需登录，仅返回已审核通过内容。
+router.get('/detail/:id', optionalAuth, getReviewDetail);
 
 // 获取被举报评价数量（管理员）
 router.get('/reported/count', requireAdmin, getReportedCount);

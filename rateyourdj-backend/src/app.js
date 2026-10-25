@@ -71,6 +71,7 @@ async function startServer() {
   try {
     // 测试数据库连接
     await testConnection();
+    await require('./services/ratingService').updateDJRatings();
 
     // 启动服务器（监听所有网络接口，支持局域网访问）
     app.listen(PORT, '0.0.0.0', () => {

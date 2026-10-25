@@ -3,6 +3,7 @@ import { djAPI, reviewAPI, commentAPI, userAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, showConfirm, generateStars, formatDate, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
+const { createReviewShare } = require('../../utils/review-share');
 const app = getApp();
 
 Page({
@@ -38,10 +39,18 @@ Page({
     replyInputValue: {},       // 回复输入内容（key: reviewId, value: string）
 
     // 国际化文本
+    ratingOptions: [],
+    selectedRatingIndex: 0,
+    rating: null,
     texts: {}
   },
 
   onLoad(options) {
+    // 兼容已发出的旧评价分享链接。
+    if (options.reviewId && /^[1-9]\d*$/.test(options.reviewId)) {
+      wx.redirectTo({ url: `/pages/review-detail/review-detail?id=${options.reviewId}` });
+      return;
+    }
     // 检查访问级别
     if (!checkFullAccess()) {
       return;
@@ -87,6 +96,21 @@ Page({
     }
   },
 
+  // 切换星级后重新从第一页查询全部匹配评价。
+  onRatingChange(e) {
+    const index = Number(e.detail.value);
+    if (!Number.isInteger(index) || index < 0 || index > 5 || index === this.data.selectedRatingIndex) return;
+    this.setData({
+      selectedRatingIndex: index,
+      rating: index === 0 ? null : 6 - index,
+      currentPage: 1,
+      hasMore: false,
+      reviews: [],
+      expandedComments: {},
+    });
+    this.loadReviews();
+  },
+
   // 更新语言
   updateLanguage() {
     const sortOptions = [
@@ -98,7 +122,10 @@ Page({
 
     this.setData({
       sortOptions,
+      ratingOptions: [i18n.t('djDetail.allRatings'), '5 ★', '4 ★', '3 ★', '2 ★', '1 ★'],
       texts: {
+        ratingFilter: i18n.t('djDetail.ratingFilter'),
+        noMatchingReviews: i18n.t('djDetail.noMatchingReviews'),
         reviews: i18n.t('djDetail.reviews'),
         writeReview: i18n.t('djDetail.writeReview'),
         favorite: i18n.t('djDetail.favorite'),
@@ -117,6 +144,12 @@ Page({
         noMore: i18n.t('common.noMore')
       }
     });
+  },
+
+  // 使用已展示的真实头像，缺少头像时不打开默认图片。
+  previewDJPhoto() {
+    const url = this.data.dj && this.data.dj.photo_url;
+    if (url) wx.previewImage({ current: url, urls: [url] });
   },
 
   // 加载DJ详情
@@ -158,7 +191,9 @@ Page({
 
   // 加载评论列表
   async loadReviews(append = false) {
-    if (this.data.reviewsLoading) return;
+    if (append && this.data.reviewsLoading) return;
+    const requestId = (this._reviewsRequestId || 0) + 1;
+    this._reviewsRequestId = requestId;
 
     try {
       this.setData({ reviewsLoading: true });
@@ -168,9 +203,11 @@ Page({
         sort: this.data.sortType,
         order: this.data.sortOrder,
         page,
-        limit: 10
+        limit: 10,
+        rating: this.data.rating
       });
 
+      if (requestId !== this._reviewsRequestId) return;
       if (res.success) {
         console.log('📊 后端返回的评价数据:', res.data);
 
@@ -201,6 +238,7 @@ Page({
 
           // 延迟展开，等待 DOM 渲染完成
           setTimeout(() => {
+            if (requestId !== this._reviewsRequestId) return;
             this.setData({
               [`expandedComments.${firstReviewId}`]: true
             });
@@ -212,10 +250,11 @@ Page({
         showToast(res.message);
       }
     } catch (error) {
+      if (requestId !== this._reviewsRequestId) return;
       console.error('加载评论失败:', error);
       showToast(i18n.t('error.loadFailed'));
     } finally {
-      this.setData({ reviewsLoading: false });
+      if (requestId === this._reviewsRequestId) this.setData({ reviewsLoading: false });
     }
   },
 
@@ -458,12 +497,9 @@ Page({
 
     // 如果是从分享按钮触发的
     if (options.from === 'button') {
-      const { djId, reviewId } = options.target.dataset;
-      return {
-        title: `查看 ${this.data.dj.name} 的评价 - 烂u盘`,
-        path: `/pages/dj-detail/dj-detail?id=${djId}&reviewId=${reviewId}`,
-        imageUrl: this.data.dj.photo_url || ''
-      };
+      const { reviewId } = options.target.dataset;
+      const review = this.data.reviews.find(item => String(item.id) === String(reviewId));
+      if (review) return createReviewShare(review, this.data.dj, this);
     }
 
     // 默认分享（右上角分享）
@@ -601,6 +637,13 @@ Page({
     return past.toLocaleDateString();
   },
 
+  showCommentResult(res, successText) {
+    if (res.data && res.data.status === 'pending') {
+      wx.showModal({ title: '评论待审核', showCancel: false,
+        content: `${res.data.moderation_reason || res.message}\n\n可在“我的 → 审核反馈”查看后续结果。` });
+    } else showToast(successText);
+  },
+
   // 评论输入
   onCommentInput(e) {
     const { reviewId } = e.currentTarget.dataset;
@@ -650,7 +693,7 @@ Page({
       );
 
       if (res.success) {
-        showToast(i18n.t('comment.submitSuccess') || '评论成功');
+        this.showCommentResult(res, '评论成功');
 
         // 清空输入（不清空 replyingTo 因为那是回复框的状态）
         this.setData({
@@ -662,7 +705,7 @@ Page({
 
         // 手动增加评论计数
         const reviews = this.data.reviews.map(review => {
-          if (review.id === parseInt(reviewId)) {
+          if (review.id === parseInt(reviewId) && res.data && res.data.status === 'approved') {
             return { ...review, comment_count: (review.comment_count || 0) + 1 };
           }
           return review;
@@ -859,7 +902,7 @@ Page({
       );
 
       if (res.success) {
-        showToast('回复成功');
+        this.showCommentResult(res, '回复成功');
 
         // 清空输入和回复状态
         this.setData({
@@ -873,7 +916,7 @@ Page({
 
         // 手动增加评论计数
         const reviews = this.data.reviews.map(review => {
-          if (review.id === parseInt(reviewId)) {
+          if (review.id === parseInt(reviewId) && res.data && res.data.status === 'approved') {
             return { ...review, comment_count: (review.comment_count || 0) + 1 };
           }
           return review;

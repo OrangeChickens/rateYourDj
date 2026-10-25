@@ -64,7 +64,18 @@ export default {
     filterSort: '筛选排序'
   },
 
+  reviewDetail: {
+    title: '评价详情',
+    viewDJ: '查看该DJ全部评价',
+    unavailable: '评价已删除或暂不可查看',
+    loadFailed: '评价暂时无法加载，请稍后重试',
+    retry: '重试',
+  },
+
   djDetail: {
+    allRatings: '全部星数',
+    ratingFilter: '综合星数',
+    noMatchingReviews: '暂无符合该星数的评价',
     overallRating: '综合评分',
     setRating: 'Set评分',
     performance: '表演力',
@@ -165,6 +176,7 @@ export default {
   },
 
   settings: {
+    aboutDescription: '一个为DJ评分的社区平台',
     title: '设置',
     language: '语言设置',
     chinese: '简体中文',
