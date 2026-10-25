@@ -37,6 +37,11 @@ try:
     migration = (root/'rateyourdj-backend/migrations/016_dj_content_tools.sql').read_bytes()
     sql(migration)
     sql(migration)
+    sql(b"INSERT INTO dj_events(dj_id,title,starts_at,city,venue,status) VALUES(9,'Legacy fixture','2030-01-01 20:00','Fixture city','Fixture venue','approved');")
+    location_migration = (root/'rateyourdj-backend/migrations/017_event_locations_lineup.sql').read_bytes()
+    sql(location_migration)
+    sql(location_migration)
+    print('PASS migration017 applies and reruns on MySQL8', flush=True)
     print('PASS migration016 applies and reruns on MySQL8', flush=True)
     port = run(['docker','port',name,'3306'], text=True).strip().split(':')[-1]
     env = {**os.environ, 'NODE_PATH': str(deps.resolve()), 'RATEYOURDJ_LOCAL_FIXTURE':'1','DB_HOST':'127.0.0.1','DB_PORT':port,'DB_USER':'root','DB_PASSWORD':'','DB_NAME':'rateyourdj','JWT_SECRET':'local-disposable-fixture','NODE_ENV':'test'}

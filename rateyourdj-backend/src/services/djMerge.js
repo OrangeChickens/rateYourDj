@@ -18,6 +18,8 @@ async function merge(reportId, adminId) {
     await c.query('INSERT IGNORE INTO favorites (user_id, dj_id) SELECT user_id, ? FROM favorites WHERE dj_id = ?', [target, source]);
     await c.query('DELETE FROM favorites WHERE dj_id = ?', [source]);
     await c.query('UPDATE dj_sets SET dj_id = ? WHERE dj_id = ?', [target, source]);
+    await c.query('INSERT IGNORE INTO dj_event_djs(event_id,dj_id) SELECT event_id, ? FROM dj_event_djs WHERE dj_id = ?', [target, source]);
+    await c.query('DELETE FROM dj_event_djs WHERE dj_id = ?', [source]);
     await c.query('UPDATE dj_events SET dj_id = ? WHERE dj_id = ?', [target, source]);
     // Keep the source row and its original edit requests for audit; pending edits must not revive it.
     await c.query("UPDATE dj_edit_requests SET status = 'rejected' WHERE dj_id = ? AND status = 'pending'", [source]);
