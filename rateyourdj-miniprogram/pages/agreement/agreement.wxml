@@ -49,6 +49,7 @@
         <text class="text">• 微信昵称和头像（用于显示身份）</text>
         <text class="text">• 您发布的评价内容</text>
         <text class="text">• 您的收藏和互动记录</text>
+        <text class="text">• 您录入的演出场地名称、地址及主动选择的场地坐标，用于展示演出和地图；选择场地时由微信提供地图及定位能力，我们不持续获取或保存您的实时位置。您可不使用地图，直接手动填写。</text>
       </view>
 
       <view class="section">

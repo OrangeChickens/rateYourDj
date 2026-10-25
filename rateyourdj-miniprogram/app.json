@@ -20,7 +20,9 @@
     "pages/label-detail/label-detail",
     "pages/dj-content/dj-content",
     "pages/dj-content-review/dj-content-review",
-    "pages/dj-share-code/dj-share-code"
+    "pages/dj-share-code/dj-share-code",
+    "pages/events/events",
+    "pages/event-detail/event-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -63,6 +65,12 @@
     },
     "scope.camera": {
       "desc": "需要使用您的相机，用于拍摄DJ照片"
+    },
+    "scope.userLocation": {
+      "desc": "用于在地图搜索并选择演出场地，不记录您的实时位置"
     }
-  }
+  },
+  "requiredPrivateInfos": [
+    "chooseLocation"
+  ]
 }

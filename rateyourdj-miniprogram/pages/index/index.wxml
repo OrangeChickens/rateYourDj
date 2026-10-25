@@ -6,6 +6,8 @@
     <text class="tagline-sub">好DJ值得被看见，烂DJ也是</text>
   </view>
 
+  <view class="events-entry" bindtap="goToEvents"><text>演出日历</text><text class="events-entry-note">按城市、日期找演出 · 地图查看场地 →</text></view>
+
   <!-- 统计数据看板 -->
   <stats-dashboard
     wx:if="{{dashboardStats}}"

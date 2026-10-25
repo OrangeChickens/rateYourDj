@@ -11,3 +11,5 @@ button::after { border: none; } button[disabled] { color: #666; background: #E0E
 .card { padding: 32rpx; border: 2rpx solid #000; margin-top: 16rpx; font-size: 26rpx; }
 .history { margin-top: 64rpx; padding-top: 32rpx; border-top: 2rpx solid #000; }
 .player { display: block; width: 100%; height: 368rpx; margin-top: 32rpx; }
+
+.lineup-row { display:flex; justify-content:space-between; align-items:center; gap:16rpx; margin-bottom:16rpx; } .lineup-row button { margin:0; padding:16rpx; font-size:24rpx; }

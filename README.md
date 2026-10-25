@@ -191,3 +191,5 @@ npm run dev
 ## 许可证
 
 ISC
+
+演出日历与原生地图：见 [DJ 内容管理说明](docs/dj-content-tools.md)。

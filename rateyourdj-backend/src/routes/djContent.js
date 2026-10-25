@@ -1,6 +1,10 @@
 const router = require('express').Router();
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const c = require('../controllers/djContentController');
+const events = require('../controllers/eventsController');
+router.get('/events', events.list);
+router.get('/events/cities', events.cities);
+router.get('/events/:id', events.detail);
 router.get('/admin/:type', requireAdmin, c.adminList);
 router.get('/mine/:type', authenticate, c.mine);
 router.post('/duplicates/:id/merge', requireAdmin, c.merge);

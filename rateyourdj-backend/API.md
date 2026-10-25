@@ -519,3 +519,10 @@ curl -X POST http://localhost:3000/api/review/create \
     "comment": "非常棒！"
   }'
 ```
+
+
+### 0.3.9 演出日历与位置
+
+公开 GET `/api/dj-content/events` 支持from/to（YYYY-MM-DD，含首尾、北京时间自然日、最多93天）、city精确匹配、page/limit（最多50）。GET `/api/dj-content/events/cities`返回公开活动城市；GET `/api/dj-content/events/:id`只返回已通过且主DJ有效的活动，否则404。活动列表/详情增加address、latitude、longitude和djs阵容，不返回提交人或审核原因。
+
+创建/更新演出增加可选address（300字）、成对latitude/longitude（GCJ-02）、dj_ids（去重后含主DJ最多30位、必须全部有效）。普通用户创建待审，管理员创建公开；更新仅管理员、需expected_status，阵容与活动字段事务更新。省略dj_ids更新时保留原阵容。既有DJ演出列表包含该DJ作为阵容成员的活动。部署需先执行017_event_locations_lineup.sql。

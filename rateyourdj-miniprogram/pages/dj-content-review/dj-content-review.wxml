@@ -6,6 +6,7 @@
   <view wx:for="{{rows}}" wx:key="id" class="card">
     <text class="label">{{item.dj_name}} · ID {{item.dj_id}}</text><text>{{item.title || item.reason}}</text>
     <text wx:if="{{type === 'events'}}" class="muted">{{item.starts_at}}（北京时间） · {{item.city}} · {{item.venue}}</text>
+    <text wx:if="{{type === 'events'}}" class="muted">{{item.address || '未补充详细地址'}}</text><view wx:if="{{type === 'events'}}"><text wx:for="{{item.djs}}" wx:for-item="dj" wx:key="id" class="muted">{{dj.name}}</text></view>
     <text wx:if="{{type === 'duplicates'}}" class="muted">来源 {{item.source_review_count}} 条评价 · 目标 {{item.target_review_count}} 条评价</text><text wx:if="{{type === 'duplicates'}}" class="label">保留：{{item.target_name}} · ID {{item.target_dj_id}}</text>
     <text wx:if="{{item.moderation_reason}}" class="muted">{{item.moderation_reason}}</text>
     <view class="row"><button data-id="{{item.dj_id}}" bindtap="viewDJ">查看DJ</button><button wx:if="{{type === 'duplicates'}}" data-id="{{item.target_dj_id}}" bindtap="viewDJ">查看目标</button><button wx:else data-id="{{item.id}}" bindtap="edit">编辑</button></view>

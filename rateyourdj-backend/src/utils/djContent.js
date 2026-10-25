@@ -26,7 +26,12 @@ function eventData(body) {
     let url; try { url = new URL(source); } catch (_) { throw fail('来源链接必须是完整的HTTPS链接'); }
     if (url.protocol !== 'https:' || url.username || url.password) throw fail('来源链接必须是完整的HTTPS链接');
   }
-  return { title: text(body.title, '演出名称', 100), starts_at: `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}:00`, city: text(body.city, '城市', 50), venue: text(body.venue, '场地', 150), source_url: source || null };
+  const hasLat = body.latitude !== undefined && body.latitude !== null && body.latitude !== '';
+  const hasLng = body.longitude !== undefined && body.longitude !== null && body.longitude !== '';
+  if (hasLat !== hasLng) throw fail('请选择完整的场地位置');
+  const latitude = hasLat ? Number(body.latitude) : null, longitude = hasLng ? Number(body.longitude) : null;
+  if (hasLat && (![body.latitude, body.longitude].every(x => typeof x === 'number' || (typeof x === 'string' && x.trim() !== '')) || !Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180)) throw fail('场地坐标无效');
+  return { address: text(body.address, '场地地址', 300, true) || null, latitude, longitude, title: text(body.title, '演出名称', 100), starts_at: `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}:00`, city: text(body.city, '城市', 50), venue: text(body.venue, '场地', 150), source_url: source || null };
 }
 function kind(value) {
   if (!['sets', 'events', 'duplicates'].includes(value)) throw fail('内容类型无效');
@@ -39,3 +44,12 @@ function paging(query) {
   return { page, limit, offset: (page - 1) * limit };
 }
 module.exports = { fail, id, text, setData, eventData, kind, paging };
+
+function lineup(value, primary) {
+  if (value === undefined) return null;
+  if (!Array.isArray(value) || value.length > 30) throw fail('阵容最多30位DJ');
+  const ids = [...new Set([primary, ...value.map(id)])].sort((a,b) => a-b);
+  if (ids.length > 30) throw fail('阵容最多30位DJ');
+  return ids;
+}
+module.exports.lineup = lineup;

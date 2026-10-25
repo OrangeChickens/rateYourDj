@@ -15,7 +15,7 @@ exports.create = handler(async (req, res) => {
   const user = await User.findById(req.user.userId); if (!user) throw v.fail('用户不存在', 401);
   if (type === 'sets' && user.role !== 'admin') throw v.fail('仅管理员可添加SET', 403);
   const data = type === 'sets' ? v.setData(req.body) : type === 'events' ? v.eventData(req.body) : { target_dj_id: v.id(req.body.target_dj_id), reason: v.text(req.body.reason, '重复依据', 500) };
-  const result = await Content.create(type, djId, req.user.userId, data, user.role === 'admin');
+  const result = await Content.create(type, djId, req.user.userId, data, user.role === 'admin', type === 'events' ? v.lineup(req.body.dj_ids, djId) : null);
   res.status(201).json({ success: true, data: result });
 });
 exports.adminList = handler(async (req, res) => res.json({ success: true, ...await Content.listAdmin(v.kind(req.params.type), state(req.query.status || 'pending'), v.paging(req.query)) }));
@@ -24,7 +24,8 @@ exports.detail = handler(async (req, res) => res.json({ success: true, data: awa
 exports.update = handler(async (req, res) => {
   const type = v.kind(req.params.type); if (type === 'duplicates') throw v.fail('重复申请不可修改');
   const data = type === 'sets' ? v.setData(req.body) : v.eventData(req.body);
-  await Content.update(type, v.id(req.params.id), data, state(req.body.expected_status));
+  if (type === 'events') await require('../models/Events').update(v.id(req.params.id), data, state(req.body.expected_status), req.body.dj_ids);
+  else await Content.update(type, v.id(req.params.id), data, state(req.body.expected_status));
   res.json({ success: true });
 });
 exports.moderate = handler(async (req, res) => {

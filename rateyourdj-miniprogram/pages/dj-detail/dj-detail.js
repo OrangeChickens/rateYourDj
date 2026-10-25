@@ -278,6 +278,7 @@ Page({
     wx.showActionSheet({ itemList: actions.map(item => item.label), success: result => { if (actions[result.tapIndex]) actions[result.tapIndex].run(); } });
   },
   goToShareCode() { this.closeShareActions(); wx.navigateTo({ url: `/pages/dj-share-code/dj-share-code?djId=${this.data.djId}&name=${encodeURIComponent(this.data.dj.name)}` }); },
+  viewEvent(e) { wx.navigateTo({url:'/pages/event-detail/event-detail?id='+e.currentTarget.dataset.id}); },
   copyEventSource(e) { if (e.currentTarget.dataset.url) wx.setClipboardData({ data: e.currentTarget.dataset.url }); },
   onUnload() { this._reviewsRequestId = (this._reviewsRequestId || 0) + 1; this._setsRequest = (this._setsRequest || 0) + 1; this._eventsRequest = (this._eventsRequest || 0) + 1; },
 

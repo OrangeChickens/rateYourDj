@@ -33,6 +33,8 @@ Page({
     recentReviewsTexts: {}
   },
 
+  goToEvents() { wx.navigateTo({url:'/pages/events/events'}); },
+
   onLoad() {
     // 从 storage 读取上次选择的城市（如果有）
     const selectedCity = wx.getStorageSync('selectedCity') || '全部城市';

@@ -21,7 +21,7 @@ DJ SET、演出、重复资料与分享码操作见 [docs/dj-content-tools.md](d
 - Health check: https://rateyourdj.pbrick.cn/health 和该批接口只读冒烟。
 - Ratings audit: `cd /var/www/rateYourDj/rateyourdj-backend && node scripts/audit-ratings.js`，mismatched 必须为0。
 - Staging: 用户明确暂不搭建。后端先行生产部署须有对应批次授权。
-- Database: 所有变更使用 migrations/NNN_*.sql；015仅重算DJ派生评分，014新增审核反馈字段；016新增DJ内容/演出/重复申报与合并映射（不自动合并现存资料）。
+- Database: 所有变更使用 migrations/NNN_*.sql；015仅重算DJ派生评分，014新增审核反馈字段；016新增DJ内容/演出/重复申报与合并映射（不自动合并现存资料）；017新增演出场地坐标与共享DJ阵容。
 - Rollback: 保留前一提交；自动回滚未配置，不自动回退业务数据或撤销数据库迁移。
 - WeChat: AppID wx83a9ba4ad10f5bc0；版本来源 rateyourdj-miniprogram/config/version.js。
 - WeChat upload: 用户授权直接上传已核对范围的版本；上传成功、设置体验版、真机验收、正式审核/发布分别记录。正式审核及发布须另获确认。
