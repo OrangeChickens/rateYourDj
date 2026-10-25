@@ -236,3 +236,8 @@
   letter-spacing: 1rpx;
   color: #999;
 }
+
+.feedback-link { padding: 32rpx; margin-bottom: 32rpx; border: 2rpx solid #000; font-weight: 700; }
+.moderation-feedback { display: flex; flex-direction: column; gap: 16rpx; padding: 16rpx 0; color: #666; font-size: 24rpx; font-weight: 600; }
+
+.review-share-canvas { position: fixed; left: -1000px; top: 0; width: 500px; height: 400px; pointer-events: none; }

@@ -1,0 +1,20 @@
+.container { padding: 32rpx; background: #FFF; min-height: 100vh; box-sizing: border-box; color: #000; }
+.dj-header { display: flex; align-items: center; gap: 32rpx; padding: 32rpx 0; border-bottom: 4rpx solid #000; }
+.dj-photo { width: 160rpx; height: 160rpx; flex-shrink: 0; border: 2rpx solid #000; }
+.dj-info { min-width: 0; display: flex; flex-direction: column; gap: 16rpx; }
+.eyebrow, .city, .date { font-size: 24rpx; font-weight: 600; color: #666; }
+.dj-name { font-size: 48rpx; font-weight: 700; overflow-wrap: break-word; }
+.review-card { padding: 48rpx 0; }
+.review-header { display: flex; justify-content: space-between; gap: 32rpx; align-items: flex-start; }
+.author { display: flex; flex-direction: column; gap: 16rpx; font-size: 28rpx; font-weight: 700; min-width: 0; overflow-wrap: break-word; }
+.rating { font-size: 40rpx; font-weight: 700; flex-shrink: 0; }
+.stars { margin-top: 32rpx; font-size: 32rpx; }
+.dimensions { display: flex; flex-wrap: wrap; gap: 16rpx 32rpx; font-size: 24rpx; font-weight: 600; margin: 32rpx 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 16rpx; margin-bottom: 32rpx; }
+.tag { padding: 16rpx; border: 2rpx solid #000; font-size: 24rpx; font-weight: 600; }
+.content { display: block; font-size: 30rpx; line-height: 1.8; white-space: pre-wrap; overflow-wrap: break-word; }
+.action { display: block; margin: 32rpx 0; padding: 16rpx 32rpx; background: #000; color: #FFF; border: 2rpx solid #000; border-radius: 0; font-size: 28rpx; font-weight: 700; text-align: center; }
+.action::after { border: none; }
+.view-dj { text-align: center; padding: 32rpx 0; font-size: 28rpx; font-weight: 700; }
+.state { padding: 64rpx 0; font-size: 28rpx; font-weight: 600; }
+.review-share-canvas { position: fixed; left: -1000px; top: 0; width: 500px; height: 400px; pointer-events: none; }

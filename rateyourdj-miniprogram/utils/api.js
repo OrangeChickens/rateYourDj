@@ -151,6 +151,11 @@ export const reviewAPI = {
     });
   },
 
+  // 公开单条评价，接收分享的人无需先登录。
+  getDetail(id) {
+    return app.request({ url: `/review/detail/${id}`, method: 'GET', needAuth: false });
+  },
+
   // 获取DJ的评论列表（带 token 以获取当前用户投票状态）
   getList(djId, params = {}) {
     return app.request({
@@ -208,11 +213,11 @@ export const reviewAPI = {
   },
 
   // 更新评价状态（管理员）
-  updateStatus(reviewId, status) {
+  updateStatus(reviewId, status, reason = null) {
     return app.request({
       url: `/review/${reviewId}/status`,
       method: 'PUT',
-      data: { status },
+      data: { status, reason },
       needAuth: true
     });
   },
@@ -240,6 +245,8 @@ export const reviewAPI = {
  * 评论相关API
  */
 export const commentAPI = {
+  getAll(params) { return app.request({ url: '/comment/all', data: params, needAuth: true }); },
+  updateStatus(id, status, reason = null) { return app.request({ url: `/comment/${id}/status`, method: 'PUT', data: { status, reason }, needAuth: true }); },
   // 创建评论
   create(reviewId, content, parentCommentId = null) {
     return app.request({
@@ -297,6 +304,7 @@ export const statsAPI = {
  * 用户相关API
  */
 export const userAPI = {
+  getModerationFeedback(page = 1, limit = 20) { return app.request({ url: '/user/moderation-feedback', data: { page, limit }, needAuth: true }); },
   // 获取用户资料
   getProfile() {
     return app.request({

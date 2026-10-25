@@ -1,11 +1,12 @@
 // models/Comment.js
 const { pool } = require('../config/database');
+const { reviewReason } = require('../services/moderationFeedback');
 
 class Comment {
   /**
    * 创建评论
    */
-  static async create(reviewId, userId, content, parentCommentId = null, status = 'approved') {
+  static async create(reviewId, userId, content, parentCommentId = null, status = 'approved', reason = null) {
     const connection = await pool.getConnection();
     await connection.beginTransaction();
 
@@ -41,9 +42,9 @@ class Comment {
 
       const [result] = await connection.query(
         `INSERT INTO review_comments
-         (review_id, parent_comment_id, user_id, content, status)
-         VALUES (?, ?, ?, ?, ?)`,
-        [reviewId, parentCommentId, userId, content, status]
+         (review_id, parent_comment_id, user_id, content, status, moderation_reason)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [reviewId, parentCommentId, userId, content, status, reason]
       );
 
       const commentId = result.insertId;
@@ -344,10 +345,11 @@ class Comment {
   /**
    * 更新评论状态（管理员用）
    */
-  static async updateStatus(commentId, status) {
+  static async updateStatus(commentId, status, reason) {
+    const feedback = reviewReason(status, reason);
     const [result] = await pool.query(
-      'UPDATE review_comments SET status = ? WHERE id = ?',
-      [status, commentId]
+      'UPDATE review_comments SET status = ?, moderation_reason = ?, moderated_at = NOW() WHERE id = ?',
+      [status, feedback, commentId]
     );
 
     if (result.affectedRows === 0) {

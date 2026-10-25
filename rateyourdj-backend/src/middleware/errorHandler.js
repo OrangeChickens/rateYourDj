@@ -28,6 +28,7 @@ function errorHandler(err, req, res, next) {
 function notFoundHandler(req, res) {
   res.status(404).json({
     success: false,
+    code: 'ROUTE_NOT_FOUND',
     message: '请求的资源不存在'
   });
 }

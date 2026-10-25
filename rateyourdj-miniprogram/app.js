@@ -212,7 +212,10 @@ App({
             this.logout();
             reject(new Error('登录已过期，请重新登录'));
           } else {
-            reject(new Error(res.data.message || '请求失败'));
+            const error = new Error(res.data.message || '请求失败');
+            error.statusCode = res.statusCode;
+            error.code = res.data.code;
+            reject(error);
           }
         },
         fail: (error) => {

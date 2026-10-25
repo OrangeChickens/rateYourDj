@@ -1,4 +1,6 @@
 const { pool } = require('../config/database');
+const { parseReviewRating } = require('../utils/reviewRating');
+const { reviewReason } = require('../services/moderationFeedback');
 
 // 辅助函数：将 HTTP URL 转换为 HTTPS（微信小程序要求）
 function convertToHttps(url) {
@@ -37,6 +39,7 @@ class Review {
       would_choose_again,
       comment,
       tags,
+      moderation_reason = null,
       status = 'approved'
     } = reviewData;
 
@@ -49,8 +52,8 @@ class Review {
       const [result] = await connection.query(
         `INSERT INTO reviews
          (dj_id, user_id, is_anonymous, overall_rating, set_rating,
-          performance_rating, personality_rating, would_choose_again, comment, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          performance_rating, personality_rating, would_choose_again, comment, status, moderation_reason)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           dj_id,
           user_id,
@@ -61,7 +64,8 @@ class Review {
           personality_rating,
           would_choose_again,
           comment,
-          status
+          status,
+          moderation_reason
         ]
       );
 
@@ -133,9 +137,40 @@ class Review {
     return processReview(review);
   }
 
+  // 分享页仅可读取已通过审核的评价及DJ，不返回作者账户ID。
+  static async findPublicById(id) {
+    const [rows] = await pool.query(
+      `SELECT r.id, r.dj_id, r.overall_rating, r.set_rating,
+              r.performance_rating, r.personality_rating, r.would_choose_again,
+              r.comment, r.is_anonymous, r.created_at,
+              CASE WHEN r.is_anonymous THEN '匿名用户' ELSE u.nickname END AS nickname,
+              CASE WHEN r.is_anonymous THEN NULL ELSE u.avatar_url END AS avatar_url,
+              d.name AS dj_name, d.photo_url AS dj_photo_url, d.city AS dj_city
+       FROM reviews r
+       JOIN djs d ON d.id = r.dj_id
+       LEFT JOIN users u ON u.id = r.user_id
+       WHERE r.id = ? AND r.status = 'approved' AND d.status = 'approved'`,
+      [id]
+    );
+    if (rows.length === 0) return null;
+    const review = rows[0];
+    const [tags] = await pool.query('SELECT tag_name FROM review_tags WHERE review_id = ?', [id]);
+    review.tags = tags.map(tag => tag.tag_name);
+    // 保持匿名边界，即使适配器/测试数据未执行SQL中的CASE也不泄漏作者信息。
+    if (review.is_anonymous) {
+      review.nickname = '匿名用户';
+      review.avatar_url = null;
+    }
+    review.dj_photo_url = convertToHttps(review.dj_photo_url);
+    return processReview(review);
+  }
+
   // 获取DJ的评论列表
   static async findByDJId(djId, options = {}, userId = null) {
     const { sort = 'created_at', order = 'DESC', page = 1, limit = 20 } = options;
+    const rating = parseReviewRating(options.rating);
+    const ratingCondition = rating === null ? '' : ' AND r.overall_rating = ?';
+    const filterParams = rating === null ? [djId] : [djId, rating];
 
     const offset = (page - 1) * limit;
 
@@ -153,8 +188,8 @@ class Review {
       : `, NULL as user_vote`;
 
     const params = userId
-      ? [userId, djId, parseInt(limit), parseInt(offset)]
-      : [djId, parseInt(limit), parseInt(offset)];
+      ? [userId, ...filterParams, parseInt(limit), parseInt(offset)]
+      : [...filterParams, parseInt(limit), parseInt(offset)];
 
     const [rows] = await pool.query(
       `SELECT r.*, u.nickname, u.avatar_url,
@@ -163,7 +198,7 @@ class Review {
        FROM reviews r
        LEFT JOIN users u ON r.user_id = u.id
        ${userVoteJoin}
-       WHERE r.dj_id = ? AND r.status = 'approved'
+       WHERE r.dj_id = ? AND r.status = 'approved'${ratingCondition}
        ORDER BY ${isHotSort
          ? `(r.helpful_count * 2 + (SELECT COUNT(*) FROM review_comments WHERE review_id = r.id AND status = 'approved') * 3 - r.not_helpful_count) DESC, r.created_at DESC`
          : `r.${sortField} ${sortOrder}`}
@@ -188,8 +223,8 @@ class Review {
 
     // 获取总数
     const [countResult] = await pool.query(
-      'SELECT COUNT(*) as total FROM reviews WHERE dj_id = ? AND status = "approved"',
-      [djId]
+      `SELECT COUNT(*) as total FROM reviews r WHERE r.dj_id = ? AND r.status = 'approved'${ratingCondition}`,
+      filterParams
     );
 
     return {
@@ -211,7 +246,7 @@ class Review {
       `SELECT r.*, d.name as dj_name, d.city
        FROM reviews r
        JOIN djs d ON r.dj_id = d.id
-       WHERE r.user_id = ? AND r.status = 'approved'
+       WHERE r.user_id = ?
        ORDER BY r.created_at DESC
        LIMIT ? OFFSET ?`,
       [userId, parseInt(limit), parseInt(offset)]
@@ -226,7 +261,7 @@ class Review {
     }
 
     const [countResult] = await pool.query(
-      "SELECT COUNT(*) as total FROM reviews WHERE user_id = ? AND status = 'approved'",
+      "SELECT COUNT(*) as total FROM reviews WHERE user_id = ?",
       [userId]
     );
 
@@ -335,7 +370,8 @@ class Review {
 
   // 获取所有评价（用于"所有评价"页面）
   // isAdmin=true 时返回所有状态并包含 status 字段；filter='reported' 只返回被举报的
-  static async getAllReviews({ page = 1, limit = 20, sort = 'created_at', order = 'DESC', isAdmin = false, filter = null }) {
+  static async getAllReviews({ page = 1, limit = 20, sort = 'created_at', order = 'DESC', isAdmin = false, filter = null, rating = null }) {
+    rating = parseReviewRating(rating);
     const offset = (page - 1) * limit;
 
     // 验证排序字段（白名单）
@@ -372,6 +408,11 @@ class Review {
       statusParams = ['approved'];
     }
 
+    if (rating !== null) {
+      statusCondition += ' AND r.overall_rating = ?';
+      statusParams.push(rating);
+    }
+
     const query = `
       SELECT
         r.id,
@@ -384,6 +425,7 @@ class Review {
         r.not_helpful_count,
         r.report_count,
         r.status,
+        ${isAdmin ? 'r.moderation_reason, r.moderated_at,' : ''}
         u.nickname,
         u.avatar_url,
         d.name as dj_name,
@@ -423,7 +465,8 @@ class Review {
   }
 
   // 更新评价状态（管理员）
-  static async updateStatus(id, status) {
+  static async updateStatus(id, status, reason) {
+    const feedback = reviewReason(status, reason);
     const validStatuses = ['pending', 'approved', 'rejected'];
     if (!validStatuses.includes(status)) {
       throw new Error('无效的状态值');
@@ -435,7 +478,7 @@ class Review {
       throw new Error('评价不存在');
     }
 
-    await pool.query('UPDATE reviews SET status = ? WHERE id = ?', [status, id]);
+    await pool.query('UPDATE reviews SET status = ?, moderation_reason = ?, moderated_at = NOW() WHERE id = ?', [status, feedback, id]);
 
     return { djId: rows[0].dj_id };
   }

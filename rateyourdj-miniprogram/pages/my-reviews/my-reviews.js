@@ -3,6 +3,7 @@ import { userAPI, reviewAPI } from '../../utils/api';
 import { showToast, formatDate, generateStars, checkFullAccess } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
+const { createReviewShare } = require('../../utils/review-share');
 const app = getApp();
 
 Page({
@@ -22,7 +23,6 @@ Page({
     }
 
     this.updateLanguage();
-    this.loadReviews();
 
     // 启用分享到朋友圈功能
     wx.showShareMenu({
@@ -32,6 +32,7 @@ Page({
   },
 
   onShow() {
+    this.loadReviews();
     // 检查是否有待处理的分享任务
     if (this.pendingShareTask) {
       console.log('🔄 检测到待处理的分享任务，开始记录...');
@@ -39,6 +40,8 @@ Page({
       this.recordShareTask();
     }
   },
+
+  goToFeedback() { wx.navigateTo({ url: '/pages/moderation-feedback/moderation-feedback' }); },
 
   // 更新语言
   updateLanguage() {
@@ -160,27 +163,14 @@ Page({
     // 从按钮的 dataset 中获取评论信息
     const review = options && options.target && options.target.dataset ? options.target.dataset.review : null;
 
-    if (!review) {
+    if (!review || review.status !== 'approved') {
       return {
         title: '我的DJ评价 - 烂u盘',
         path: '/pages/index/index'
       };
     }
 
-    // 构建星星显示
-    const stars = '⭐'.repeat(review.overall_rating);
-
-    // 构建分享标题
-    const title = `我给${review.dj_name}的评价：${stars} ${review.overall_rating}分`;
-
-    // 构建分享路径，跳转到DJ详情页
-    const path = `/pages/dj-detail/dj-detail?id=${review.dj_id}`;
-
-    return {
-      title: title,
-      path: path,
-      imageUrl: '' // 可以使用DJ的照片
-    };
+    return createReviewShare(review, { name: review.dj_name, photo_url: review.dj_photo_url }, this);
   },
 
   // 分享到朋友圈

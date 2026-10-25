@@ -1,0 +1,9 @@
+.container { padding: 32rpx; background: #FFF; min-height: 100vh; color: #000; box-sizing: border-box; }
+.intro { padding: 32rpx 0; font-size: 26rpx; font-weight: 600; line-height: 1.6; color: #666; }
+.card { border: 2rpx solid #000; padding: 32rpx; margin-bottom: 32rpx; }
+.header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16rpx; font-size: 28rpx; font-weight: 700; }
+.date { display: block; margin: 16rpx 0 32rpx; font-size: 24rpx; color: #666; }
+.content { display: block; font-size: 28rpx; line-height: 1.7; white-space: pre-wrap; overflow-wrap: break-word; }
+.reason { border-top: 2rpx solid #CCC; margin-top: 32rpx; padding-top: 32rpx; font-size: 26rpx; font-weight: 600; line-height: 1.6; }
+.state { padding: 32rpx 0; font-size: 28rpx; }
+.retry { padding: 16rpx 32rpx; margin-top: 32rpx; background: #000; color: #FFF; font-weight: 700; text-align: center; }

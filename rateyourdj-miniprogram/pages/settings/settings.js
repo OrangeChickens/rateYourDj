@@ -3,10 +3,12 @@ import { userAPI, djAPI, reviewAPI, djEditRequestAPI } from '../../utils/api';
 import { showLoading, hideLoading, showToast, showConfirm } from '../../utils/util';
 import i18n from '../../utils/i18n';
 
+const versionConfig = require('../../config/version');
 const app = getApp();
 
 Page({
   data: {
+    version: versionConfig.version,
     userInfo: null,
     isLoggedIn: false,
     isAdmin: false,
@@ -44,6 +46,8 @@ Page({
       }
     }
   },
+
+  goToFeedback() { wx.navigateTo({ url: '/pages/moderation-feedback/moderation-feedback' }); },
 
   // 更新语言
   updateLanguage() {
@@ -266,9 +270,9 @@ Page({
   showAbout() {
     wx.showModal({
       title: 'RateYourDJ',
-      content: 'Version 1.0.0\n\n一个为DJ评分的社区平台\n\n© 2024 RateYourDJ',
+      content: `${i18n.t('settings.version')} ${versionConfig.version}\n\n${i18n.t('settings.aboutDescription')}\n\n© ${new Date().getFullYear()} RateYourDJ`,
       showCancel: false,
-      confirmText: '确定'
+      confirmText: i18n.t('common.confirm')
     });
   },
 

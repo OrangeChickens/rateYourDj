@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middleware/auth');
 const {
+  getModerationFeedback,
   getUserProfile,
   getFavorites,
   toggleFavorite,
@@ -22,6 +23,7 @@ router.post('/favorite/:djId', authenticate, toggleFavorite);
 
 // 获取用户的评论历史（需要登录）
 router.get('/reviews', authenticate, getUserReviews);
+router.get('/moderation-feedback', authenticate, getModerationFeedback);
 
 // 获取搜索历史（需要登录）
 router.get('/search-history', authenticate, getSearchHistory);

@@ -1,12 +1,20 @@
 <!-- 所有评价页面 -->
 <view class="container">
+  <view wx:if="{{filter === 'moderation'}}" class="tab-bar">
+    <view class="tab-item {{contentType === 'review' ? 'active' : ''}}" data-type="review" bindtap="switchContentType">评价</view>
+    <view class="tab-item {{contentType === 'comment' ? 'active' : ''}}" data-type="comment" bindtap="switchContentType">评论</view>
+  </view>
   <!-- Tab 栏 -->
   <view class="tab-bar" wx:if="{{filter === 'moderation'}}">
     <view class="tab-item {{activeTab === 'pending' ? 'active' : ''}}" data-tab="pending" bindtap="switchTab">PENDING</view>
-    <view class="tab-item {{activeTab === 'reported' ? 'active' : ''}}" data-tab="reported" bindtap="switchTab">REPORTED</view>
+    <view wx:if="{{contentType === 'review'}}" class="tab-item {{activeTab === 'reported' ? 'active' : ''}}" data-tab="reported" bindtap="switchTab">REPORTED</view>
     <view class="tab-item {{activeTab === 'approved' ? 'active' : ''}}" data-tab="approved" bindtap="switchTab">APPROVED</view>
     <view class="tab-item {{activeTab === 'rejected' ? 'active' : ''}}" data-tab="rejected" bindtap="switchTab">REJECTED</view>
   </view>
+
+  <picker wx:if="{{contentType === 'review'}}" class="rating-filter" mode="selector" range="{{ratingOptions}}" value="{{selectedRatingIndex}}" bindchange="onRatingChange">
+    <view class="rating-filter-label">{{texts.ratingFilter}}: {{ratingOptions[selectedRatingIndex]}} ▼</view>
+  </picker>
 
   <view class="reviews-list" wx:if="{{filteredReviews.length > 0}}">
     <view
@@ -45,6 +53,7 @@
         <text>{{item.comment}}</text>
       </view>
 
+      <view wx:if="{{isAdmin && item.moderation_reason}}" class="review-content">{{item.moderation_reason}}</view>
       <!-- 管理员操作按钮 -->
       <view class="action-buttons" wx:if="{{isAdmin}}" catchtap="">
         <view class="btn-approve" wx:if="{{item.status !== 'approved'}}" data-id="{{item.id}}" catchtap="handleApproveReview">APPROVE</view>
@@ -61,7 +70,7 @@
   <!-- 空状态 -->
   <view class="empty-state" wx:elif="{{!loading && filteredReviews.length === 0}}">
     <text class="empty-icon">—</text>
-    <text class="empty-text">{{texts.noReviews}}</text>
+    <text class="empty-text">{{rating ? texts.noMatchingReviews : texts.noReviews}}</text>
   </view>
 
   <!-- 底部加载状态 -->

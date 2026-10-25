@@ -64,7 +64,18 @@ export default {
     filterSort: 'Filter & Sort'
   },
 
+  reviewDetail: {
+    title: 'Review details',
+    viewDJ: 'View all reviews of this DJ',
+    unavailable: 'This review is unavailable',
+    loadFailed: 'Unable to load this review. Please retry.',
+    retry: 'Retry',
+  },
+
   djDetail: {
+    allRatings: 'All ratings',
+    ratingFilter: 'Overall rating',
+    noMatchingReviews: 'No reviews match this rating',
     overallRating: 'Overall Rating',
     setRating: 'Set Rating',
     performance: 'Performance',
@@ -165,6 +176,7 @@ export default {
   },
 
   settings: {
+    aboutDescription: 'A community platform for DJ ratings',
     title: 'Settings',
     language: 'Language',
     chinese: '简体中文',

@@ -1,5 +1,6 @@
 // controllers/commentController.js
 const Comment = require('../models/Comment');
+const { pendingReason } = require('../services/moderationFeedback');
 const { msgSecCheck } = require('../services/wechatService');
 
 /**
@@ -65,7 +66,7 @@ exports.createComment = async (req, res, next) => {
     }
 
     // 创建评论
-    const comment = await Comment.create(reviewId, userId, content.trim(), parentCommentId, commentStatus);
+    const comment = await Comment.create(reviewId, userId, content.trim(), parentCommentId, commentStatus, pendingReason(null, null, wxCheckResult));
 
     res.json({
       success: true,
@@ -216,7 +217,7 @@ exports.updateCommentStatus = async (req, res, next) => {
       });
     }
 
-    await Comment.updateStatus(id, status);
+    await Comment.updateStatus(id, status, req.body.reason);
 
     res.json({
       success: true,

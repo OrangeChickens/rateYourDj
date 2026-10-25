@@ -1,4 +1,6 @@
 const Review = require('../models/Review');
+const { pendingReason } = require('../services/moderationFeedback');
+const { parseReviewRating } = require('../utils/reviewRating');
 const DJ = require('../models/DJ');
 const { updateDJRatings } = require('../services/ratingService');
 const TaskService = require('../services/taskService');
@@ -118,7 +120,8 @@ async function createReview(req, res, next) {
       would_choose_again: would_choose_again || false,
       comment: comment || null,
       tags: tags || [],
-      status: reviewStatus
+      status: reviewStatus,
+      moderation_reason: pendingReason(contentResult, qualityResult, wxCheckResult, req.spamFlags || [])
     });
 
     // 记录评论事件（防刷计数）
@@ -145,12 +148,31 @@ async function createReview(req, res, next) {
   }
 }
 
+// 公开单条评价；待审核、拒绝、删除均按不可查看处理。
+async function getReviewDetail(req, res, next) {
+  try {
+    const rawId = req.params.id;
+    const id = Number(rawId);
+    if (!/^[1-9]\d*$/.test(rawId) || !Number.isSafeInteger(id)) {
+      return res.status(400).json({ success: false, message: '评价ID无效' });
+    }
+    const review = await Review.findPublicById(id);
+    if (!review) {
+      return res.status(404).json({ success: false, code: 'REVIEW_UNAVAILABLE', message: '评价不存在或暂不可查看' });
+    }
+    res.json({ success: true, data: review });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // 获取DJ的评论列表
 async function getDJReviews(req, res, next) {
   try {
     const { djId } = req.params;
     const userId = req.user ? req.user.userId : null;
     const options = {
+      rating: parseReviewRating(req.query.rating),
       sort: req.query.sort || 'created_at',
       order: req.query.order || 'DESC',
       page: parseInt(req.query.page) || 1,
@@ -283,7 +305,8 @@ async function getAllReviews(req, res, next) {
       sort,
       order,
       isAdmin: isAdmin && status === 'all',
-      filter: isAdmin ? filter : null
+      filter: isAdmin ? filter : null,
+      rating: parseReviewRating(req.query.rating)
     });
 
     res.json({
@@ -309,7 +332,7 @@ async function updateReviewStatus(req, res, next) {
       });
     }
 
-    const { djId } = await Review.updateStatus(id, status);
+    const { djId } = await Review.updateStatus(id, status, req.body.reason);
 
     // 重新计算DJ评分
     await updateDJRatings(djId);
@@ -350,6 +373,7 @@ async function getPendingReviewCount(req, res, next) {
 }
 
 module.exports = {
+  getReviewDetail,
   createReview,
   getDJReviews,
   deleteReview,

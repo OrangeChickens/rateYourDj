@@ -9,7 +9,7 @@
   <view wx:else class="dj-detail">
     <!-- DJ头部信息 -->
     <view class="dj-header">
-      <view class="dj-photo skeleton">
+      <view class="dj-photo skeleton" bindtap="previewDJPhoto">
         <image
           src="{{dj.photo_url || '/images/default-avatar.png'}}"
           mode="aspectFill"
@@ -113,6 +113,10 @@
           {{sortOptions[selectedSortIndex]}} ▼
         </text>
       </view>
+
+  <picker class="rating-filter" mode="selector" range="{{ratingOptions}}" value="{{selectedRatingIndex}}" bindchange="onRatingChange">
+    <view class="rating-filter-label">{{texts.ratingFilter}}: {{ratingOptions[selectedRatingIndex]}} ▼</view>
+  </picker>
 
       <!-- 评论列表 -->
       <view wx:if="{{reviews.length > 0}}" class="review-list">
@@ -236,9 +240,11 @@
         </view>
       </view>
 
+      <view wx:elif="{{reviewsLoading}}" class="loading"><text>{{texts.loading}}</text></view>
+
       <!-- 空状态 -->
       <view wx:else class="empty-state">
-        <text>{{texts.noReviews}}</text>
+        <text>{{rating ? texts.noMatchingReviews : texts.noReviews}}</text>
       </view>
     </view>
 
@@ -247,4 +253,5 @@
       <text>{{texts.writeReview}}</text>
     </view>
   </view>
+  <canvas canvas-id="review-share-canvas" class="review-share-canvas" />
 </view>
